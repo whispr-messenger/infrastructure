@@ -1,0 +1,82 @@
+# Terraform Dev Container Commands
+
+# Variables
+terraform_image := "hashicorp/terraform:latest"
+compose_file := "compose.dev.yml"
+
+# List all available commands
+default:
+    @just --list
+
+# Start the dev container
+up:
+    docker-compose -f {{compose_file}} up -d
+
+# Stop the dev container
+down:
+    docker-compose -f {{compose_file}} down
+
+# Initialize Terraform
+init:
+    docker-compose -f {{compose_file}} exec terraform terraform init
+
+# Format Terraform files
+fmt:
+    docker-compose -f {{compose_file}} exec terraform terraform fmt -recursive
+
+# Validate Terraform configuration
+validate:
+    docker-compose -f {{compose_file}} exec terraform terraform validate
+
+# Plan Terraform changes
+plan:
+    docker-compose -f {{compose_file}} exec terraform terraform plan
+
+# Apply Terraform changes
+apply:
+    docker-compose -f {{compose_file}} exec terraform terraform apply
+
+# Apply with auto-approve
+apply-auto:
+    docker-compose -f {{compose_file}} exec terraform terraform apply -auto-approve
+
+# Destroy infrastructure
+destroy:
+    docker-compose -f {{compose_file}} exec terraform terraform destroy
+
+# Destroy with auto-approve
+destroy-auto:
+    docker-compose -f {{compose_file}} exec terraform terraform destroy -auto-approve
+
+# Show Terraform state
+show:
+    docker-compose -f {{compose_file}} exec terraform terraform show
+
+# List Terraform state resources
+list:
+    docker-compose -f {{compose_file}} exec terraform terraform state list
+
+# Open a shell in the container
+shell:
+    docker-compose -f {{compose_file}} exec terraform sh
+
+# Run terraform with custom arguments
+tf *args:
+    docker-compose -f {{compose_file}} exec terraform terraform {{args}}
+
+# Install/update Terraform providers
+upgrade:
+    docker-compose -f {{compose_file}} exec terraform terraform init -upgrade
+
+# Clean up - remove containers and volumes
+clean:
+    docker-compose -f {{compose_file}} down -v
+    docker-compose -f {{compose_file}} rm -f
+
+# View logs
+logs:
+    docker-compose -f {{compose_file}} logs -f terraform
+
+# Check if container is running
+status:
+    docker-compose -f {{compose_file}} ps

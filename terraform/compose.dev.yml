@@ -1,0 +1,37 @@
+services:
+  terraform:
+    image: hashicorp/terraform:latest
+    container_name: terraform-dev
+    working_dir: /workspace
+    volumes:
+      # Mount le répertoire courant dans le container
+      - .:/workspace
+      # Cache pour les plugins Terraform
+      - terraform_cache:/root/.terraform.d
+      # Cache pour les providers
+      - terraform_plugins:/root/.terraform
+    environment:
+      # Variables d'environnement pour Terraform
+      - TF_IN_AUTOMATION=1
+      - TF_INPUT=0
+      # Ajoutez vos variables d'environnement spécifiques ici
+      # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      # - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+    # Garde le container en vie
+    stdin_open: true
+    tty: true
+    # Commande par défaut pour garder le container actif
+    entrypoint: tail -f /dev/null
+    networks:
+      - terraform-network
+
+volumes:
+  terraform_cache:
+    driver: local
+  terraform_plugins:
+    driver: local
+
+networks:
+  terraform-network:
+    driver: bridge
