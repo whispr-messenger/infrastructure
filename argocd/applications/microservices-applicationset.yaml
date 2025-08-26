@@ -16,7 +16,7 @@ spec:
       - path: argocd/microservices/*/
   template:
     metadata:
-      name: 'microservice-{{path.basename}}'
+      name: 'microservice-{{.path.basename}}'
       namespace: argocd
       annotations:
         argocd.argoproj.io/sync-wave: "10" # Deploy after infrastructure
@@ -25,10 +25,10 @@ spec:
       source:
         repoURL: https://github.com/whispr-messenger/infrastructure
         targetRevision: HEAD
-        path: '{{path}}'
+        path: '{{.path.path}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path.basename}}' # Each microservice in its own namespace
+        namespace: '{{.path.basename}}' # Each microservice in its own namespace
       syncPolicy:
         automated:
           prune: true
