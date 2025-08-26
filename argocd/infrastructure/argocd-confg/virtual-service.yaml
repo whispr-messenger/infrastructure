@@ -1,13 +1,12 @@
 ---
-# VirtualService pour ArgoCD
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: argocd-vs
-  namespace: argocd
+  namespace: istio-ingress
 spec:
   hosts:
-  - argocd.example.com
+  - argocd.whispr.epitech-msc2026.me
   gateways:
   - argocd-gateway
   http:
@@ -16,6 +15,6 @@ spec:
         prefix: /
     route:
     - destination:
-        host: argocd-server
+        host: argocd-server.argocd.svc.cluster.local  # Full FQDN for cross-namespace
         port:
           number: 80
