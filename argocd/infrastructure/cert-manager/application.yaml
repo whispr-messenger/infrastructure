@@ -5,7 +5,7 @@ metadata:
   name: cert-manager
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "0" # Deploy before everything else
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   source:
@@ -16,9 +16,28 @@ spec:
       releaseName: cert-manager
       values: |
         installCRDs: true
+        namespace: cert-manager
+        serviceAccount:
+          create: true
+        # Ressources recommandées pour la production
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+        # Configuration pour éviter les conflits
         global:
           leaderElection:
             namespace: cert-manager
+        # Webhook configuration
+        webhook:
+          serviceAccount:
+            create: true
+        cainjector:
+          serviceAccount:
+            create: true
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
@@ -29,3 +48,10 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - Replace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
