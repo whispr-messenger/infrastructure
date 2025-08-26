@@ -5,7 +5,8 @@ metadata:
   name: istio
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "1" # Déployé en premier
+    argocd.argoproj.io/sync-wave: "2" # Deployed after cert-manager
+    argocd.argoproj.io/display-name: Istio Helm Chart
 spec:
   project: default
   source:
