@@ -1,0 +1,51 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2" # Deploy after cert-manager  
+    argocd.argoproj.io/display-name: "Istio"
+spec:
+  project: default
+  sources:
+    # 1. Install CRDs first
+    - repoURL: https://istio-release.storage.googleapis.com/charts
+      chart: base
+      targetRevision: 1.19.0
+      helm:
+        releaseName: istio-base
+        values: |
+          global:
+            meshID: mesh1
+            network: network1
+    # 2. Then install control plane
+    - repoURL: https://istio-release.storage.googleapis.com/charts
+      chart: istiod
+      targetRevision: 1.19.0
+      helm:
+        releaseName: istiod
+        values: |
+          global:
+            meshID: mesh1
+            network: network1
+          pilot:
+            resources:
+              requests:
+                cpu: 200m
+                memory: 128Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: false  # Important: Don't auto-delete CRDs
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - Replace=true  # Allow CRD updates
+    managedNamespaceMetadata:
+      labels:
+        istio-injection: enabled
