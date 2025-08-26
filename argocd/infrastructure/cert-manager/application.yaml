@@ -5,7 +5,8 @@ metadata:
   name: cert-manager
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-wave: "2" # After Istio CRDs, before Istio control plane
+    argocd.argoproj.io/display-name: Cert-Manager
 spec:
   project: default
   source:
@@ -19,7 +20,6 @@ spec:
         namespace: cert-manager
         serviceAccount:
           create: true
-        # Ressources recommandées pour la production
         resources:
           requests:
             cpu: 10m
@@ -27,11 +27,9 @@ spec:
           limits:
             cpu: 100m
             memory: 128Mi
-        # Configuration pour éviter les conflits
         global:
           leaderElection:
             namespace: cert-manager
-        # Webhook configuration
         webhook:
           serviceAccount:
             create: true
