@@ -10,3 +10,4 @@ metadata:
 data:
   url: https://argocd.whispr.epitech-msc2026.me
   server.enable.proxy.extension: "true"
+  server.insecure: "true"  # Since ArgoCD runs HTTP internally behind HTTPS proxy

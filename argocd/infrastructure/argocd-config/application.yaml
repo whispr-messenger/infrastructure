@@ -2,10 +2,11 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argocd-istio-config
+  name: argocd-config
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "3" # Après Istio
+    argocd.argoproj.io/sync-wave: "5" # Deployed after istio-gateway
+    argocd.argoproj.io/display-name: ArgoCD Configuration
 spec:
   project: default
   source:
@@ -17,7 +18,7 @@ spec:
     namespace: argocd
   syncPolicy:
     automated:
-      prune: false # Important : ne pas supprimer la config existante
+      prune: false # Important : Do not delete the existing config
       selfHeal: true
     syncOptions:
       - RespectIgnoreDifferences=true
