@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/whispr-messenger/infrastructure 
+    repoURL: https://github.com/whispr-messenger/infrastructure
     targetRevision: main
     path: argocd/applications/
   destination:
