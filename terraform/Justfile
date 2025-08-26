@@ -105,3 +105,10 @@ logs:
 status:
     docker-compose -f {{compose_file}} ps
 
+[group('gcp')]
+get-kube-config project_id:
+    gcloud container clusters get-credentials whispr-cluster --zone europe-west1-b --project {{project_id}}
+
+[group('gcp')]
+forward-argocd:
+    kubectl port-forward svc/argocd-server -n argocd 8080:443
