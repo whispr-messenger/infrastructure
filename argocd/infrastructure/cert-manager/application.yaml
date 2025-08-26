@@ -5,8 +5,8 @@ metadata:
   name: cert-manager
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
-    argocd.argoproj.io/display-name: Cert-Manager Helm Chart
+    argocd.argoproj.io/sync-wave: "2" # After Istio CRDs, before Istio control plane
+    argocd.argoproj.io/display-name: Cert-Manager
 spec:
   project: default
   source:

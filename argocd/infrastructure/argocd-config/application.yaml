@@ -5,7 +5,7 @@ metadata:
   name: argocd-config
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "4" # Deployed after istio-gateway
+    argocd.argoproj.io/sync-wave: "5" # Deployed after istio-gateway
     argocd.argoproj.io/display-name: ArgoCD Configuration
 spec:
   project: default
