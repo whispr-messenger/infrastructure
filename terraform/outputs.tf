@@ -1,3 +1,6 @@
+####################################################################################################
+# GKE MODULE OUTPUTS
+####################################################################################################
 output "cluster_name" {
   description = "The name of the GKE cluster"
   value       = module.google_kubernetes_engine.cluster_name
@@ -19,4 +22,23 @@ output "access_token" {
   description = "The access token for the GCP client"
   value       = data.google_client_config.default.access_token
   sensitive   = true
+}
+
+####################################################################################################
+# ARGOCD MODULE OUTPUTS
+####################################################################################################
+
+output "argocd_namespace" {
+  value = module.argocd.namespace
+}
+
+output "argocd_admin_password" {
+  description = "Mot de passe admin ArgoCD"
+  value       = nonsensitive(module.argocd.admin_password)
+  sensitive   = false
+}
+
+output "argocd_server_url" {
+  description = "URL du serveur ArgoCD"
+  value       = module.argocd.server_url 
 }
