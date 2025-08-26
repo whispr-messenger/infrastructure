@@ -16,7 +16,7 @@ spec:
       - path: argocd/infrastructure/*/
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: '{{.path.basename}}'
       namespace: argocd
       annotations:
         # Set sync waves based on directory name
