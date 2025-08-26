@@ -1,0 +1,4 @@
+*key.json
+*.env
+gcp-terraform-key.json
+.terraform

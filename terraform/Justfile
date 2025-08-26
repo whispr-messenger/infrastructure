@@ -1,0 +1,107 @@
+# Terraform Dev Container Commands
+
+# Variables
+terraform_image := "hashicorp/terraform:latest"
+compose_file := "compose.dev.yml"
+
+# List all available commands
+default:
+    @just --list
+
+# Setup GCP credentials and project (requires PROJECT_ID as argument)
+[group('gcp')]
+setup-gcp project_id:
+    chmod +x scripts/setup-gcp.sh
+    ./scripts/setup-gcp.sh {{project_id}}
+
+# Start the dev container
+[group('docker')]
+up:
+    docker-compose -f {{compose_file}} up -d
+
+# Stop the dev container
+[group('docker')]
+down:
+    docker-compose -f {{compose_file}} down
+
+# Initialize Terraform
+[group('terraform')]
+init:
+    docker-compose -f {{compose_file}} exec terraform terraform init
+
+# Format Terraform files
+[group('terraform')]
+fmt:
+    docker-compose -f {{compose_file}} exec terraform terraform fmt -recursive
+
+# Validate Terraform configuration
+[group('terraform')]
+validate:
+    docker-compose -f {{compose_file}} exec terraform terraform validate
+
+# Plan Terraform changes
+[group('terraform')]
+plan:
+    docker-compose -f {{compose_file}} exec terraform terraform plan
+
+# Apply Terraform changes
+[group('terraform')]
+apply:
+    docker-compose -f {{compose_file}} exec terraform terraform apply
+
+# Apply with auto-approve
+[group('terraform')]
+apply-auto:
+    docker-compose -f {{compose_file}} exec terraform terraform apply -auto-approve
+
+# Destroy infrastructure
+[group('terraform')]
+destroy:
+    docker-compose -f {{compose_file}} exec terraform terraform destroy
+
+# Destroy with auto-approve
+[group('terraform')]
+destroy-auto:
+    docker-compose -f {{compose_file}} exec terraform terraform destroy -auto-approve
+
+# Show Terraform state
+[group('terraform')]
+show:
+    docker-compose -f {{compose_file}} exec terraform terraform show
+
+# List Terraform state resources
+[group('terraform')]
+list:
+    docker-compose -f {{compose_file}} exec terraform terraform state list
+
+# Open a shell in the container
+[group('docker')]
+shell:
+    docker-compose -f {{compose_file}} exec terraform sh
+
+# Run terraform with custom arguments
+[group('terraform')]
+tf *args:
+    docker-compose -f {{compose_file}} exec terraform terraform {{args}}
+
+# Install/update Terraform providers
+[group('terraform')]
+upgrade:
+    docker-compose -f {{compose_file}} exec terraform terraform init -upgrade
+
+# Clean up - remove containers and volumes
+[group('docker')]
+clean:
+    docker-compose -f {{compose_file}} down -v
+    docker-compose -f {{compose_file}} rm -f
+
+# View logs
+[group('docker')]
+logs:
+    docker-compose -f {{compose_file}} logs -f terraform
+
+# Check if container is running
+[group('docker')]
+status:
+    docker-compose -f {{compose_file}} ps
+

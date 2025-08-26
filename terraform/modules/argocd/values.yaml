@@ -1,0 +1,82 @@
+# Configuration ArgoCD pour le bootstrap initial
+server:
+  # Configuration initiale simple
+  service:
+    type: ClusterIP
+
+  # Pas d'ingress pour le moment
+  ingress:
+    enabled: false
+
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+
+  # Configuration métrique de base
+  metrics:
+    enabled: true
+
+# Configuration globale pour le bootstrap
+global:
+  # Pas d'injection Istio au début
+  podAnnotations: {}
+
+configs:
+  cm:
+    # URL temporaire (sera mise à jour par l'app of apps)
+    url: http://localhost:8080
+
+    # Configuration des dépôts
+    repositories: |
+      - url: https://github.com/whispr-messenger/infrastructure/
+        type: git
+        name: argocd-apps
+    
+    # RBAC minimal
+    policy.default: role:readonly
+    policy.csv: |
+      p, role:admin, applications, *, */*, allow
+      p, role:admin, clusters, *, *, allow
+      p, role:admin, repositories, *, *, allow
+      p, role:admin, projects, *, *, allow
+      g, argocd-admins, role:admin
+    params:
+    # Mode insecure pour l'accès initial
+    server.insecure: true
+    application.instanceLabelKey: argocd.argoproj.io/instance
+
+
+  secret:
+    createSecret: true
+
+# Configurations de base pour les autres composants
+controller:
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+
+repoServer:
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+
+redis:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
