@@ -84,15 +84,15 @@ resource "null_resource" "wait_for_argocd_crds" {
 }
 
 # Create the root application in ArgoCD for the app of apps pattern
-# resource "kubernetes_manifest" "root_app" {
-  # manifest = yamldecode(file("${path.module}/app.yaml"))
+resource "kubernetes_manifest" "root_app" {
+  manifest = yamldecode(file("${path.module}/app.yaml"))
 
-  # depends_on = [
-    # helm_release.argocd,
-    # null_resource.wait_for_argocd_crds,
-    # data.kubernetes_resource.argocd_application_crd,
-  # ]
-# }
+  depends_on = [
+    helm_release.argocd,
+    null_resource.wait_for_argocd_crds,
+    data.kubernetes_resource.argocd_application_crd,
+  ]
+}
 
 
 
