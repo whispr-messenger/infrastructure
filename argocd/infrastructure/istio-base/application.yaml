@@ -2,38 +2,31 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istio
+  name: istio-base
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2" # Deployed after cert-manager
-    argocd.argoproj.io/display-name: Istio Helm Chart
+    argocd.argoproj.io/sync-wave: "1" # Deployed first - before cert-manager
+    argocd.argoproj.io/display-name: Istio Base (CRDs)
 spec:
   project: default
   source:
     repoURL: https://istio-release.storage.googleapis.com/charts
-    chart: istiod
+    chart: base
     targetRevision: 1.19.0
     helm:
-      releaseName: istiod
+      releaseName: istio-base
       values: |
         global:
           meshID: mesh1
           network: network1
-        pilot:
-          resources:
-            requests:
-              cpu: 200m
-              memory: 128Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
   syncPolicy:
     automated:
-      prune: true
+      prune: false  # Important: Don't auto-delete CRDs
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-    managedNamespaceMetadata:
-      labels:
-        istio-injection: enabled
+      - Replace=true  # Allow CRD updates
