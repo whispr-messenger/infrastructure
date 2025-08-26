@@ -1,0 +1,23 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-istio-config
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3" # Après Istio
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/whispr-messenger/infrastructure
+    targetRevision: HEAD
+    path: argocd/infrastructure/argocd-config
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: false # Important : ne pas supprimer la config existante
+      selfHeal: true
+    syncOptions:
+      - RespectIgnoreDifferences=true
