@@ -8,7 +8,7 @@ spec:
   hosts:
   - argocd.whispr.epitech-msc2026.me
   gateways:
-  - argocd/argocd-gateway  # Specify the namespace since VS is in istio-ingress
+  - argocd-gateway
   http:
   - match:
     - uri:
