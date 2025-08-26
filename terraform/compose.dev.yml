@@ -10,15 +10,7 @@ services:
       - terraform_cache:/root/.terraform.d
       # Cache pour les providers
       - terraform_plugins:/root/.terraform
-    environment:
-      # Variables d'environnement pour Terraform
-      - TF_IN_AUTOMATION=1
-      - TF_INPUT=0
-      # Ajoutez vos variables d'environnement spécifiques ici
-      # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      # - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
-    # Garde le container en vie
+    env_file: .env
     stdin_open: true
     tty: true
     # Commande par défaut pour garder le container actif
