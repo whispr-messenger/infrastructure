@@ -1,5 +1,5 @@
 ---
-apiVersion: networking.istio.io/v1beta1
+apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
   name: argocd-vs
@@ -9,6 +9,7 @@ spec:
   - argocd.whispr.epitech-msc2026.me
   gateways:
   - argocd-gateway
+
   http:
   - match:
     - uri:
@@ -18,3 +19,8 @@ spec:
         host: argocd-server.argocd.svc.cluster.local  # Full FQDN for cross-namespace
         port:
           number: 80
+    headers:
+      request:
+        add:
+          x-forwarded-proto: https
+          x-forwarded-ssl: "on"
