@@ -4,7 +4,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: argocd-cert
-  namespace: istio-system # Should match the namespace of the Gateway
+  namespace: istio-ingress # Should match the namespace of the Gateway
 spec:
   secretName: argocd-cert  # Matches the credentialName in the Gateway
   issuerRef:
