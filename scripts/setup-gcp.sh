@@ -9,7 +9,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Global variables
-PROJECT_ID=""
+PROJECT_ID="whisp-469509"
 SA_NAME="terraform-gke"
 SA_EMAIL=""
 KEY_FILE="gcp-terraform-key.json"
