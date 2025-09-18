@@ -153,7 +153,7 @@ generate_service_account_key() {
 create_env_file() {
     log_info "Creating .env file..."
 
-    cat > .env << EOF
+    cat > ./docker/.env << EOF
 # Google Cloud Platform Configuration
 GOOGLE_PROJECT=$PROJECT_ID
 GOOGLE_CREDENTIALS=$(cat $KEY_FILE | tr -s '\n' ' ')
@@ -166,51 +166,18 @@ TF_INPUT=0
 
 # GKE Configuration
 TF_VAR_gcp_project_id=$PROJECT_ID
-TF_VAR_gke_cluster_name=whispr-cluster
+TF_VAR_gke_cluster_name=whispr-messenger-cluster
 
 EOF
 
 }
 
-create_terraform_tfvars() {
-    if [ ! -f "terraform.tfvars" ]; then
-        log_info "Creating terraform.tfvars file..."
-        cat > terraform.tfvars << EOF
-# GCP Project Configuration
-project_id = "$PROJECT_ID"
-region     = "europe-west1"
-zone       = "europe-west1-a"
-
-# GKE Cluster Configuration
-cluster_name = "my-gke-cluster"
-node_count   = 3
-machine_type = "e2-medium"
-
-# Network Configuration
-network_name = "gke-network"
-subnet_name  = "gke-subnet"
-subnet_cidr  = "10.10.0.0/24"
-
-# Labels
-environment = "development"
-team        = "infrastructure"
-
-# Node Configuration
-preemptible_nodes = true
-disk_size_gb      = 30
-disk_type         = "pd-standard"
-
-# Security Configuration
-enable_network_policy       = true
-enable_pod_security_policy  = false
-
-# Monitoring and Logging
-enable_logging_service    = true
-enable_monitoring_service = true
-EOF
-        log_info "terraform.tfvars file created. Modify it according to your needs."
+delete_service_account_key() {
+    if [ -f "$KEY_FILE" ]; then
+        log_info "Deleting service account key $KEY_FILE..."
+        rm $KEY_FILE
     else
-        log_warn "terraform.tfvars file already exists. Update it manually if necessary."
+        log_warn "Key file $KEY_FILE does not exist"
     fi
 }
 
@@ -252,7 +219,7 @@ main() {
     assign_service_account_roles
     generate_service_account_key
     create_env_file
-    create_terraform_tfvars
+    delete_service_account_key
     update_gitignore
     display_final_instructions
 }
