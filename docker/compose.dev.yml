@@ -1,0 +1,29 @@
+services:
+  terraform:
+    image: hashicorp/terraform:latest
+    container_name: terraform-dev
+    working_dir: /workspace
+    volumes:
+      # Mount le répertoire courant dans le container
+      - ..:/workspace
+      # Cache pour les plugins Terraform
+      - terraform_cache:/root/.terraform.d
+      # Cache pour les providers
+      - terraform_plugins:/root/.terraform
+    env_file: .env
+    stdin_open: true
+    tty: true
+    # Commande par défaut pour garder le container actif
+    entrypoint: tail -f /dev/null
+    networks:
+      - terraform-network
+
+volumes:
+  terraform_cache:
+    driver: local
+  terraform_plugins:
+    driver: local
+
+networks:
+  terraform-network:
+    driver: bridge
