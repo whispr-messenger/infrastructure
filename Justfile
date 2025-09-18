@@ -5,4 +5,4 @@ default:
 [group('gcp')]
 setup-gcp project_id:
     chmod +x scripts/setup-gcp.sh
-    ./scripts/setup-gcp.sh {{project_id}}
+    ./scripts/setup-gcp-project.sh {{project_id}}

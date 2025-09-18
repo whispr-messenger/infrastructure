@@ -9,10 +9,10 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Global variables
-PROJECT_ID="whisp-469509"
-SA_NAME="terraform-gke"
+PROJECT_ID=""
+SA_NAME="terraform-service-account"
 SA_EMAIL=""
-KEY_FILE="gcp-terraform-key.json"
+KEY_FILE="terraform-sa-key.json"
 
 # Logging functions
 log_info() {
@@ -63,14 +63,6 @@ configure_project() {
     if ! gcloud projects describe $PROJECT_ID > /dev/null 2>&1; then
         log_error "Project $PROJECT_ID does not exist or you don't have access to it"
         exit 1
-    fi
-}
-
-check_billing() {
-    log_info "Checking billing..."
-    BILLING_ENABLED=$(gcloud beta billing projects describe $PROJECT_ID --format="value(billingEnabled)" 2>/dev/null || echo "false")
-    if [ "$BILLING_ENABLED" != "True" ]; then
-        log_warn "Billing is not enabled on this project. Enable it in the GCP console."
     fi
 }
 
@@ -188,24 +180,6 @@ update_gitignore() {
     fi
 }
 
-# Information and instruction functions
-display_final_instructions() {
-    log_info "✅ Setup completed successfully!"
-    echo
-    log_info "Next steps:"
-    echo "1. Review and modify .env and terraform.tfvars files according to your needs"
-    echo "2. Start the development environment: just up"
-    echo "3. Initialize Terraform: just init"
-    echo "4. Plan the deployment: just plan"
-    echo "5. Deploy the infrastructure: just apply"
-    echo
-    log_warn "⚠️  Security:"
-    echo "- The file $KEY_FILE contains sensitive credentials"
-    echo "- It has been added to .gitignore to prevent accidental commits"
-    echo "- Share these credentials securely with your team"
-    echo
-    log_info "For more information, see the README.md"
-}
 
 # Main execution function
 main() {
@@ -213,7 +187,6 @@ main() {
     check_gcloud_installation
     authenticate_gcp
     configure_project
-    check_billing
     enable_required_apis
     create_service_account
     assign_service_account_roles
@@ -221,7 +194,6 @@ main() {
     create_env_file
     delete_service_account_key
     update_gitignore
-    display_final_instructions
 }
 
 # Execute main function with all arguments
