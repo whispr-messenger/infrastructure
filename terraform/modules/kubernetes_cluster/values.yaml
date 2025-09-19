@@ -1,82 +1,76 @@
-# Configuration ArgoCD pour le bootstrap initial
-server:
-  # Configuration initiale simple
-  service:
-    type: ClusterIP
+# https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
 
-  # Pas d'ingress pour le moment
-  ingress:
-    enabled: false
+## Custom resource configuration
+crds:
+  # -- Install and upgrade CRDs
+  install: true
 
-  resources:
-    requests:
-      cpu: "250m"
-      memory: "512Mi"
-    limits:
-      cpu: "500m"
-      memory: "1Gi"
+####################################################################################################
+# High Availabilty mode with autoscaling
+####################################################################################################
+redis-ha:
+  enabled: true
 
-  # Configuration métrique de base
-  metrics:
+controller:
+  replicas: 1
+
+repoServer:
+  autoscaling:
     enabled: true
+    minReplicas: 2
 
-# Configuration globale pour le bootstrap
+applicationSet:
+  replicas: 2
+
+## Globally shared configuration
 global:
-  # Pas d'injection Istio au début
-  podAnnotations: {}
+  # -- Default domain used by all components
+  ## Used for ingresses, certificates, SSO, notifications, etc.
+  domain: ${ domain }
 
+## Argo Configs
 configs:
   cm:
-    # URL temporaire (sera mise à jour par l'app of apps)
+    # Temporary URL (will be updated by the app of apps)
     url: http://localhost:8080
 
-    # Configuration des dépôts
     repositories: |
       - url: https://github.com/whispr-messenger/infrastructure/
         type: git
         name: argocd-apps
-    
-    # RBAC minimal
-    policy.default: role:readonly
-    policy.csv: |
-      p, role:admin, applications, *, */*, allow
-      p, role:admin, clusters, *, *, allow
-      p, role:admin, repositories, *, *, allow
-      p, role:admin, projects, *, *, allow
-      g, argocd-admins, role:admin
-    params:
-    # Mode insecure pour l'accès initial
+
+    # Minimal RBAC policy
+    policy:
+      default: role:readonly
+      csv: |
+        p, role:admin, applications, *, */*, allow
+        p, role:admin, clusters, *, *, allow
+        p, role:admin, repositories, *, *, allow
+        p, role:admin, projects, *, *, allow
+        g, argocd-admins, role:admin
+
+  params:
+    # Mode insecure for initial setup (to be changed later)
     server.insecure: true
     application.instanceLabelKey: argocd.argoproj.io/instance
 
-
   secret:
-    createSecret: true
+    argocdServerAdminPassword: ${ admin_password_hash } # bcrypt hash of the admin password
 
-# Configurations de base pour les autres composants
-controller:
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "1Gi"
-    limits:
-      cpu: "1000m"
-      memory: "2Gi"
 
-repoServer:
-  resources:
-    requests:
-      cpu: "250m"
-      memory: "512Mi"
-    limits:
-      cpu: "500m"
-      memory: "1Gi"
 
-redis:
-  resources:
-    requests:
-      cpu: "100m"
-      memory: "128Mi"
-    limits:
-      cpu: "200m"
-      memory: "256Mi"
+server:
+  service:
+    type: ClusterIP
+
+  ingress:
+    enabled: false # We'll use Istio Gateway
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+
+  metrics:
+    enabled: true
+
+
