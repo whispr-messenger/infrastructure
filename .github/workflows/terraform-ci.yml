@@ -11,9 +11,25 @@ on:
       - '.github/workflows/terraform-ci.yml'
 
 jobs:
+
   terraform:
     name: Terraform Checks
     runs-on: ubuntu-latest
+
+    env:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+
+    strategy:
+      matrix:
+        tf-dir:
+          - google_kubernetes_engine
+          - kubernetes_cluster
+          - terraform/modules/google_kubernetes_engine
+          - terraform/modules/kubernetes_cluster
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.tf-dir }}
 
     steps:
       - name: Checkout repository
@@ -33,3 +49,5 @@ jobs:
 
       - name: Run tfsec (Security Scanner)
         uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          working_directory: ${{ matrix.tf-dir }}
