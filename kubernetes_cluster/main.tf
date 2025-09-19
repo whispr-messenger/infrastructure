@@ -1,6 +1,6 @@
 data "tfe_outputs" "whispr_gke" {
   organization = "glopez-personnal"
-  workspace   = "whispr-google-kubernetes-engine"
+  workspace    = "whispr-google-kubernetes-engine"
 }
 
 module "kubernetes_cluster" {
