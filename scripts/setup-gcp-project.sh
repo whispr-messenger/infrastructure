@@ -10,9 +10,9 @@ NC='\033[0m' # No Color
 
 # Global variables
 PROJECT_ID=""
-SA_NAME="terraform-gke"
+SA_NAME="terraform-service-account"
 SA_EMAIL=""
-KEY_FILE="gcp-terraform-key.json"
+KEY_FILE="terraform-sa-key.json"
 
 # Logging functions
 log_info() {
@@ -63,14 +63,6 @@ configure_project() {
     if ! gcloud projects describe $PROJECT_ID > /dev/null 2>&1; then
         log_error "Project $PROJECT_ID does not exist or you don't have access to it"
         exit 1
-    fi
-}
-
-check_billing() {
-    log_info "Checking billing..."
-    BILLING_ENABLED=$(gcloud beta billing projects describe $PROJECT_ID --format="value(billingEnabled)" 2>/dev/null || echo "false")
-    if [ "$BILLING_ENABLED" != "True" ]; then
-        log_warn "Billing is not enabled on this project. Enable it in the GCP console."
     fi
 }
 
@@ -153,7 +145,7 @@ generate_service_account_key() {
 create_env_file() {
     log_info "Creating .env file..."
 
-    cat > .env << EOF
+    cat > ./docker/.env << EOF
 # Google Cloud Platform Configuration
 GOOGLE_PROJECT=$PROJECT_ID
 GOOGLE_CREDENTIALS=$(cat $KEY_FILE | tr -s '\n' ' ')
@@ -166,51 +158,18 @@ TF_INPUT=0
 
 # GKE Configuration
 TF_VAR_gcp_project_id=$PROJECT_ID
-TF_VAR_gke_cluster_name=whispr-cluster
+TF_VAR_gke_cluster_name=whispr-messenger-cluster
 
 EOF
 
 }
 
-create_terraform_tfvars() {
-    if [ ! -f "terraform.tfvars" ]; then
-        log_info "Creating terraform.tfvars file..."
-        cat > terraform.tfvars << EOF
-# GCP Project Configuration
-project_id = "$PROJECT_ID"
-region     = "europe-west1"
-zone       = "europe-west1-a"
-
-# GKE Cluster Configuration
-cluster_name = "my-gke-cluster"
-node_count   = 3
-machine_type = "e2-medium"
-
-# Network Configuration
-network_name = "gke-network"
-subnet_name  = "gke-subnet"
-subnet_cidr  = "10.10.0.0/24"
-
-# Labels
-environment = "development"
-team        = "infrastructure"
-
-# Node Configuration
-preemptible_nodes = true
-disk_size_gb      = 30
-disk_type         = "pd-standard"
-
-# Security Configuration
-enable_network_policy       = true
-enable_pod_security_policy  = false
-
-# Monitoring and Logging
-enable_logging_service    = true
-enable_monitoring_service = true
-EOF
-        log_info "terraform.tfvars file created. Modify it according to your needs."
+delete_service_account_key() {
+    if [ -f "$KEY_FILE" ]; then
+        log_info "Deleting service account key $KEY_FILE..."
+        rm $KEY_FILE
     else
-        log_warn "terraform.tfvars file already exists. Update it manually if necessary."
+        log_warn "Key file $KEY_FILE does not exist"
     fi
 }
 
@@ -221,24 +180,6 @@ update_gitignore() {
     fi
 }
 
-# Information and instruction functions
-display_final_instructions() {
-    log_info "✅ Setup completed successfully!"
-    echo
-    log_info "Next steps:"
-    echo "1. Review and modify .env and terraform.tfvars files according to your needs"
-    echo "2. Start the development environment: just up"
-    echo "3. Initialize Terraform: just init"
-    echo "4. Plan the deployment: just plan"
-    echo "5. Deploy the infrastructure: just apply"
-    echo
-    log_warn "⚠️  Security:"
-    echo "- The file $KEY_FILE contains sensitive credentials"
-    echo "- It has been added to .gitignore to prevent accidental commits"
-    echo "- Share these credentials securely with your team"
-    echo
-    log_info "For more information, see the README.md"
-}
 
 # Main execution function
 main() {
@@ -246,15 +187,13 @@ main() {
     check_gcloud_installation
     authenticate_gcp
     configure_project
-    check_billing
     enable_required_apis
     create_service_account
     assign_service_account_roles
     generate_service_account_key
     create_env_file
-    create_terraform_tfvars
+    delete_service_account_key
     update_gitignore
-    display_final_instructions
 }
 
 # Execute main function with all arguments
