@@ -2,9 +2,9 @@
 # KUBERNETES PROVIDER
 ####################################################################################################
 provider "kubernetes" {
-  host                   = "https://${data.tfe_outputs.whispr_gke.cluster_endpoint}"
-  token                  = data.google_client_config.default.access_token
-  cluster_ca_certificate = base64decode(data.tfe_outputs.whispr_gke.cluster_ca_certificate)
+  host                   = "https://${data.tfe_outputs.whispr_gke.values.cluster_endpoint}"
+  token                  = data.tfe_outputs.whispr_gke.values.access_token
+  cluster_ca_certificate = base64decode(data.tfe_outputs.whispr_gke.values.cluster_ca_certificate)
 }
 
 ####################################################################################################
@@ -12,8 +12,8 @@ provider "kubernetes" {
 ####################################################################################################
 provider "helm" {
   kubernetes {
-    host                   = "https://${data.tfe_outputs.whispr_gke.cluster_endpoint}"
-    token                  = data.google_client_config.default.access_token
-    cluster_ca_certificate = base64decode(data.tfe_outputs.whispr_gke.cluster_ca_certificate)
+    host                   = "https://${data.tfe_outputs.whispr_gke.values.cluster_endpoint}"
+    token                  = data.tfe_outputs.whispr_gke.values.access_token
+    cluster_ca_certificate = base64decode(data.tfe_outputs.whispr_gke.values.cluster_ca_certificate)
   }
 }
