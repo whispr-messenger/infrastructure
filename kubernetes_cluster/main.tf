@@ -8,6 +8,5 @@ module "kubernetes_cluster" {
 
   gke_cluster_name      = data.tfe_outputs.whispr_gke.values.cluster_name
   argocd_domain         = "argocd.whispr.epitech-msc2026.me"
-  argocd_namespace      = "argocd"
   argocd_admin_password = "" # If empty, a random one will be generated
 }
