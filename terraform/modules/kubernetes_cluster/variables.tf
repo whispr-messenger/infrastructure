@@ -7,11 +7,6 @@ variable "gke_cluster_name" {
   default     = "whispr-cluster"
   type        = string
 }
-variable "argocd_namespace" {
-  description = "Kubernetes namespace for ArgoCD"
-  type        = string
-  default     = "argocd"
-}
 
 variable "argocd_admin_password" {
   description = "Admin password for ArgoCD (if empty, a random one will be generated)"
