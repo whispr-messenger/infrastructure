@@ -14,3 +14,9 @@ output "cluster_ca_certificate" {
   value       = module.google_kubernetes_engine.cluster_ca_certificate
   sensitive   = true
 }
+
+output "access_token" {
+  description = "The access token for the GKE cluster"
+  value       = data.google_client_config.default.access_token
+  sensitive   = true
+}
