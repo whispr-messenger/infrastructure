@@ -13,7 +13,7 @@ data "terraform_remote_state" "gke" {
 module "kubernetes_cluster" {
   source = "git::https://github.com/whispr-messenger/infrastructure.git//terraform/modules/kubernetes_cluster?ref=main"
 
-  gke_cluster_name      = data.terraform_remote_state.gke.gke_cluster_name
+  gke_cluster_name      = data.terraform_remote_state.gke.cluster_name
   argocd_domain         = "argocd.whispr.epitech-msc2026.me"
   argocd_namespace      = "argocd"
   argocd_admin_password = "" # If empty, a random one will be generated
