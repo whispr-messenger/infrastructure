@@ -12,6 +12,19 @@ locals {
 }
 
 ####################################################################################################
+# Create the namespace for ArgoCD
+####################################################################################################
+
+resource "kubernetes_namespace" "argocd" {
+  metadata {
+    name = var.argocd_namespace
+    labels = {
+      name = var.argocd_namespace
+    }
+  }
+}
+
+####################################################################################################
 # Deploy ArgoCD using Helm
 ####################################################################################################
 
@@ -30,7 +43,7 @@ resource "helm_release" "argocd" {
   values = [
     templatefile("${path.module}/values.yaml", {
       domain              = var.argocd_domain
-      admin_password_hash = bcrypt(var.argocd_admin_password)
+      admin_password_hash = bcrypt(local.argocd_admin_password)
     })
   ]
 
