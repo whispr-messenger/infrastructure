@@ -5,7 +5,7 @@ services:
     working_dir: /workspace
     volumes:
       # Mount le répertoire courant dans le container
-      - .:/workspace
+      - ..:/workspace
       # Cache pour les plugins Terraform
       - terraform_cache:/root/.terraform.d
       # Cache pour les providers
