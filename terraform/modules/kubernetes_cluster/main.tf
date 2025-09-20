@@ -71,6 +71,10 @@ resource "null_resource" "wait_for_argocd_crds" {
 
       echo "ArgoCD is ready!"
     EOF
+
+    triggers = {
+      argocd_manifest_sha = sha1(helm_release.argocd.manifest)
+    }
   }
 
   depends_on = [
