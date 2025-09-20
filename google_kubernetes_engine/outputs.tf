@@ -6,6 +6,7 @@ output "cluster_name" {
 output "cluster_endpoint" {
   description = "The endpoint to access the GKE cluster"
   value       = module.google_kubernetes_engine.cluster_endpoint
+  sensitive   = true
 }
 
 output "cluster_ca_certificate" {
