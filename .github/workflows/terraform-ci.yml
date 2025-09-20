@@ -2,6 +2,8 @@ name: Terraform CI
 
 on:
   push:
+    branches:
+      - main
     paths:
       - '**.tf'
       - '.github/workflows/terraform-ci.yml'
