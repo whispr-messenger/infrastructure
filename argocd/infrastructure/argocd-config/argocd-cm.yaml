@@ -1,4 +1,5 @@
 ---
+# General Argo CD configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,6 +9,7 @@ metadata:
     app.kubernetes.io/name: argocd-cm
     app.kubernetes.io/part-of: argocd
 data:
+  # Argo CD's externally facing base URL (optional). Required when configuring SSO
   url: https://argocd.whispr.epitech-msc2026.me
-  server.enable.proxy.extension: "true"
-  server.insecure: "true"  # Since ArgoCD runs HTTP internally behind HTTPS proxy
+  # Enables application status badge feature
+  statusbadge.enabled: "true"
