@@ -8,35 +8,18 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
-  source:
-    repoURL: https://charts.jetstack.io
+  sources:
+  - repoURL: https://charts.jetstack.io
     chart: cert-manager
-    targetRevision: v1.13.2
+    targetRevision: v1.18.2
     helm:
-      releaseName: cert-manager
-      values: |
-        installCRDs: true
-        namespace: cert-manager
-        startupapicheck:
-          enabled: false
-        serviceAccount:
-          create: true
-        resources:
-          requests:
-            cpu: 10m
-            memory: 32Mi
-          limits:
-            cpu: 100m
-            memory: 128Mi
-        global:
-          leaderElection:
-            namespace: cert-manager
-        webhook:
-          serviceAccount:
-            create: true
-        cainjector:
-          serviceAccount:
-            create: true
+      valueFiles:
+        - $values/argocd/infrastructure/cert-manager/values.yaml
+
+  - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+    targetRevision: main
+    ref: values
+
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
