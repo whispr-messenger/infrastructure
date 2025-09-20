@@ -58,11 +58,14 @@ resource "helm_release" "argocd" {
 
 resource "null_resource" "wait_for_argocd_crds" {
   provisioner "local-exec" {
-    command = <<-EOF
+    interpreter = ["/bin/bash", "-c"]
+    command     = <<-EOF
+      set -euo pipefail
+
       # Wait for ArgoCD to be ready
       echo "Waiting for ArgoCD deployment to be ready..."
       kubectl wait --for=condition=available deployment/argocd-server -n ${kubernetes_namespace.argocd.metadata[0].name} --timeout=600s
-      kubectl wait --for=condition=available deployment/argocd-application-controller -n ${kubernetes_namespace.argocd.metadata[0].name} --timeout=600s
+      kubectl wait --for=condition=available statefulset/argocd-application-controller -n ${kubernetes_namespace.argocd.metadata[0].name} --timeout=600s
 
       # Wait for CRDs to be established
       echo "Waiting for ArgoCD CRDs to be established..."
