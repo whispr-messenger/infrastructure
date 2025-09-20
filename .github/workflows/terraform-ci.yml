@@ -1,0 +1,49 @@
+name: Terraform CI
+
+on:
+  pull_request:
+    paths:
+      - '**.tf'
+      - '.github/workflows/terraform-ci.yml'
+
+jobs:
+
+  terraform:
+    name: Terraform Checks
+    runs-on: ubuntu-latest
+
+    env:
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+
+    strategy:
+      matrix:
+        tf-dir:
+          - google_kubernetes_engine
+          - kubernetes_cluster
+          - terraform/modules/google_kubernetes_engine
+          - terraform/modules/kubernetes_cluster
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.tf-dir }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+    #   - name: Run tfsec (Security Scanner)
+    #     uses: aquasecurity/tfsec-action@v1.0.0
+    #     with:
+    #       working_directory: ${{ matrix.tf-dir }}
