@@ -5,14 +5,14 @@
 data "kubernetes_secret" "argocd_initial_admin_secret" {
   depends_on = [helm_release.argocd]
   metadata {
-    name      = "argocd-initial-admin-secret"
+    name      = "argocd-secret"
     namespace = "argocd"
   }
 }
 
 output "argocd_admin_password" {
   description = "Mot de passe admin ArgoCD"
-  value       = nonsensitive(data.kubernetes_secret.argocd_initial_admin_secret.data["password"])
+  value       = nonsensitive(data.kubernetes_secret.argocd_initial_admin_secret.data["admin.password"])
   sensitive   = false
 }
 
