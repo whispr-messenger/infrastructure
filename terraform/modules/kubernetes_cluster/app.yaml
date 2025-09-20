@@ -6,7 +6,7 @@ metadata:
   # Ensure that all Kubernetes resources deployed by the application are properly
   # deleted before the Application itself is deleted.
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argoproj.io/finalizer
 spec:
   project: default
   source:
