@@ -5,5 +5,3 @@ module "google_kubernetes_engine" {
   gke_cluster_name = var.gke_cluster_name
   gke_zone         = var.gke_zone
 }
-
-data "google_client_config" "default" {}
