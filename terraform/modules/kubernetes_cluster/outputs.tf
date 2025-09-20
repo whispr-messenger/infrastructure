@@ -2,16 +2,11 @@
 # OUTPUTS
 ####################################################################################################
 
-output "argocd_namespace" {
-  value = var.argocd_namespace
-}
-
-
 data "kubernetes_secret" "argocd_initial_admin_secret" {
   depends_on = [helm_release.argocd]
   metadata {
     name      = "argocd-initial-admin-secret"
-    namespace = var.argocd_namespace
+    namespace = "argocd"
   }
 }
 
