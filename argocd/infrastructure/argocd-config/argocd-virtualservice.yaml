@@ -2,14 +2,13 @@
 apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
-  name: argocd-vs
-  namespace: istio-ingress
+  name: argocd-virtualservice
+  namespace: argocd
 spec:
   hosts:
   - argocd.whispr.epitech-msc2026.me
   gateways:
   - argocd-gateway
-
   http:
   - match:
     - uri:
