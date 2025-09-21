@@ -41,6 +41,7 @@ docker:
   - '**/compose*.yml'
   - '**/compose*.yaml'
   - '**/compose*.yml'
+  - '**/compose*.yaml'
 
 script:
   - '**/scripts/**'
