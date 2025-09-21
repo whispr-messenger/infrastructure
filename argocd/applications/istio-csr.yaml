@@ -5,7 +5,7 @@ metadata:
   name: istio-csr
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2" # Deploy after cert-manager but before istio
+    argocd.argoproj.io/sync-wave: "3" # Deploy after cert-manager but before istio
     argocd.argoproj.io/display-name: "Istio CSR"
 spec:
   project: default
@@ -15,6 +15,23 @@ spec:
     targetRevision: v0.7.0
     helm:
       releaseName: cert-manager-istio-csr
+      values: |
+        app:
+          certmanager:
+            issuer:
+              name: istio-ca
+              kind: Issuer
+              group: cert-manager.io
+          tls:
+            rootCAFile: /var/run/secrets/istio-csr/ca.pem
+            istiodCertificateEnable: true
+        volumeMounts:
+          - name: root-ca
+            mountPath: /var/run/secrets/istio-csr
+        volumes:
+          - name: root-ca
+            secret:
+              secretName: istio-root-ca
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
