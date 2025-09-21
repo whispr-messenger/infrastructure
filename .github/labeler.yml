@@ -12,7 +12,7 @@ kubernetes:
   - '**/istio*.yaml'
   - '**/cert-manager*.yaml'
   - '**/microservices/**'
-  - '**/*.yaml'
+  # Removed overly broad '**/*.yaml' pattern to avoid false positives
   - '!**/docker/**'
 
 gcp:
