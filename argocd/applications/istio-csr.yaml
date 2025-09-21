@@ -1,0 +1,30 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-csr
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2" # Deploy after cert-manager but before istio
+    argocd.argoproj.io/display-name: "Istio CSR"
+spec:
+  project: default
+  source:
+    repoURL: https://charts.jetstack.io
+    chart: cert-manager-istio-csr
+    targetRevision: v0.7.0
+    helm:
+      releaseName: cert-manager-istio-csr
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false  # cert-manager namespace should already exist
+      - ServerSideApply=true
+    managedNamespaceMetadata:
+      labels:
+        name: cert-manager

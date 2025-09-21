@@ -10,16 +10,6 @@ spec:
   gateways:
   - argocd-gateway
   http:
-  # Autorise le challenge ACME HTTP-01 sans redirection
-  - match:
-    - uri:
-        prefix: "/.well-known/acme-challenge/"
-    route:
-    - destination:
-        host: argocd-server.argocd.svc.cluster.local
-        port:
-          number: 80
-  # Redirige tout le reste du trafic HTTP vers HTTPS
   - match:
     - uri:
         prefix: "/"
