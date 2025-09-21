@@ -12,9 +12,8 @@ kubernetes:
   - '**/istio*.yaml'
   - '**/cert-manager*.yaml'
   - '**/microservices/**'
-  - '**/*.yaml'
   - '!**/docker/**'
-
+  # Removed overly broad '**/*.yaml' pattern to avoid false positives
 gcp:
   - '**/google_kubernetes_engine/**'
   - '**/setup-gcp-project.sh'
@@ -26,15 +25,21 @@ argocd:
 
 istio:
   - '**/istio*.yaml'
+  - '**/istio*.yml'
 
 cert-manager:
   - '**/cert-manager*.yaml'
+  - '**/cert-manager*.yml'
 
 microservices:
   - '**/microservices/**'
 
 docker:
   - '**/docker/**'
+  - '**/docker-compose*.yml'
+  - '**/docker-compose*.yaml'
+  - '**/compose*.yml'
+  - '**/compose*.yaml'
   - '**/compose*.yml'
 
 script:
