@@ -1,0 +1,69 @@
+# Labeler configuration for PRs and issues
+# See: https://github.com/actions/labeler
+
+terraform:
+  - '**/*.tf'
+  - 'terraform/**'
+  - 'terraform/**/*.tf'
+
+kubernetes:
+  - '**/kubernetes_cluster/**'
+  - '**/argocd/**'
+  - '**/istio*.yaml'
+  - '**/cert-manager*.yaml'
+  - '**/microservices/**'
+  - '**/*.yaml'
+  - '!**/docker/**'
+
+gcp:
+  - '**/google_kubernetes_engine/**'
+  - '**/setup-gcp-project.sh'
+  - '**/gcp*'
+
+argocd:
+  - '**/argocd/**'
+  - '**/argocd*.yaml'
+
+istio:
+  - '**/istio*.yaml'
+
+cert-manager:
+  - '**/cert-manager*.yaml'
+
+microservices:
+  - '**/microservices/**'
+
+docker:
+  - '**/docker/**'
+  - '**/compose*.yml'
+
+script:
+  - '**/scripts/**'
+  - '**/*.sh'
+
+yaml:
+  - '**/*.yaml'
+  - '**/*.yml'
+
+module:
+  - '**/modules/**'
+
+provider:
+  - '**/providers.tf'
+
+output:
+  - '**/outputs.tf'
+
+application:
+  - '**/applications/**'
+
+setup:
+  - '**/setup*'
+
+project:
+  - '**/project*'
+
+security:
+  - '**/certificate*'
+  - '**/issuer*'
+  - '**/cert-manager*'
