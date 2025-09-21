@@ -15,10 +15,6 @@ spec:
     helm:
       releaseName: istio-ingressgateway
       values: |
-        deployment:
-          image:
-            repository: docker.io/istio/proxyv2
-            tag: 1.19.0
         service:
           type: LoadBalancer
           annotations:
