@@ -1,0 +1,282 @@
+version: 2
+updates:
+  # GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "platform-team"
+      - "devops-team"
+    assignees:
+      - "platform-team"
+    commit-message:
+      prefix: "ci"
+      prefix-development: "ci"
+      include: "scope"
+    groups:
+      setup-actions:
+        patterns:
+          - "actions/checkout"
+          - "actions/setup-*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+      cloud-actions:
+        patterns:
+          - "azure/*"
+          - "aws-actions/*"
+          - "google-github-actions/*"
+        update-types:
+          - "minor"
+          - "patch"
+      security-actions:
+        patterns:
+          - "github/codeql-action"
+          - "securecodewarrior/github-action-add-sarif"
+          - "anchore/*"
+        update-types:
+          - "minor"
+          - "patch"
+      docker-actions:
+        patterns:
+          - "docker/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Terraform configurations
+  - package-ecosystem: "terraform"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "08:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 8
+    reviewers:
+      - "platform-team"
+      - "devops-team"
+    assignees:
+      - "platform-team"
+    commit-message:
+      prefix: "infra"
+      prefix-development: "infra"
+      include: "scope"
+    groups:
+      aws-providers:
+        patterns:
+          - "hashicorp/aws"
+          - "hashicorp/awscc"
+        update-types:
+          - "minor"
+          - "patch"
+      azure-providers:
+        patterns:
+          - "hashicorp/azurerm"
+          - "hashicorp/azuread"
+          - "hashicorp/azurestack"
+        update-types:
+          - "minor"
+          - "patch"
+      gcp-providers:
+        patterns:
+          - "hashicorp/google"
+          - "hashicorp/google-beta"
+        update-types:
+          - "minor"
+          - "patch"
+      k8s-providers:
+        patterns:
+          - "hashicorp/kubernetes"
+          - "hashicorp/helm"
+          - "gavinbunney/kubectl"
+        update-types:
+          - "minor"
+          - "patch"
+      utility-providers:
+        patterns:
+          - "hashicorp/random"
+          - "hashicorp/tls"
+          - "hashicorp/local"
+          - "hashicorp/null"
+          - "hashicorp/template"
+        update-types:
+          - "minor"
+          - "patch"
+      monitoring-providers:
+        patterns:
+          - "datadog/datadog"
+          - "splunk-terraform/signalfx"
+          - "newrelic/newrelic"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Major version updates for cloud providers (can have breaking changes)
+      - dependency-name: "hashicorp/aws"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "hashicorp/azurerm"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "hashicorp/google"
+        update-types: ["version-update:semver-major"]
+      # Kubernetes providers can have breaking changes
+      - dependency-name: "hashicorp/kubernetes"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "hashicorp/helm"
+        update-types: ["version-update:semver-major"]
+
+  # Terraform configurations in subdirectories (if applicable)
+  - package-ecosystem: "terraform"
+    directory: "/terraform"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "08:30"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "platform-team"
+    assignees:
+      - "platform-team"
+    commit-message:
+      prefix: "infra(terraform)"
+      include: "scope"
+
+  - package-ecosystem: "terraform"
+    directory: "/infrastructure"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "platform-team"
+    assignees:
+      - "platform-team"
+    commit-message:
+      prefix: "infra(infrastructure)"
+      include: "scope"
+
+  # Docker images in Kubernetes manifests
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "08:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 15
+    reviewers:
+      - "platform-team"
+      - "devops-team"
+    assignees:
+      - "platform-team"
+    commit-message:
+      prefix: "k8s"
+      prefix-development: "k8s"
+      include: "scope"
+    groups:
+      system-images:
+        patterns:
+          - "nginx*"
+          - "redis*"
+          - "postgres*"
+          - "mysql*"
+          - "mongo*"
+        update-types:
+          - "minor"
+          - "patch"
+      k8s-system:
+        patterns:
+          - "k8s.gcr.io/*"
+          - "registry.k8s.io/*"
+          - "quay.io/coreos/*"
+          - "calico/*"
+          - "flannel/*"
+        update-types:
+          - "minor"
+          - "patch"
+      monitoring:
+        patterns:
+          - "prometheus/*"
+          - "grafana/*"
+          - "prom/*"
+          - "jaegertracing/*"
+        update-types:
+          - "minor"
+          - "patch"
+      ingress:
+        patterns:
+          - "nginx/nginx-ingress*"
+          - "traefik*"
+          - "envoyproxy/*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Major version updates for critical system images
+      - dependency-name: "nginx"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "redis"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "postgres"
+        update-types: ["version-update:semver-major"]
+      # Kubernetes system images (should be updated carefully)
+      - dependency-name: "k8s.gcr.io/kube-*"
+        update-types: ["version-update:semver-major"]
+
+  # Docker images in Kubernetes subdirectories
+  - package-ecosystem: "docker"
+    directory: "/k8s"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "08:30"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "platform-team"
+    assignees:
+      - "platform-team"
+    commit-message:
+      prefix: "k8s(manifests)"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/kubernetes"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "platform-team"
+    assignees:
+      - "platform-team"
+    commit-message:
+      prefix: "k8s(kubernetes)"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/manifests"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "09:30"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "platform-team"
+    assignees:
+      - "platform-team"
+    commit-message:
+      prefix: "k8s(manifests)"
+      include: "scope"
