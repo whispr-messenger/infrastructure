@@ -1,0 +1,59 @@
+name: "Create GitHub Labels"
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  create-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Create labels for technologies and topics
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = [
+              { name: 'terraform', color: '5C4EE5', description: 'Terraform IaC' },
+              { name: 'kubernetes', color: '326CE5', description: 'Kubernetes resources' },
+              { name: 'gcp', color: '4285F4', description: 'Google Cloud Platform' },
+              { name: 'argocd', color: 'EF7B4D', description: 'ArgoCD deployment' },
+              { name: 'istio', color: '466BB0', description: 'Istio service mesh' },
+              { name: 'cert-manager', color: '0078D4', description: 'Cert-Manager' },
+              { name: 'microservices', color: 'E67E22', description: 'Microservices architecture' },
+              { name: 'infrastructure', color: '6E5494', description: 'Infrastructure' },
+              { name: 'cloud', color: '00B4AB', description: 'Cloud topics' },
+              { name: 'automation', color: 'B60205', description: 'Automation & CI/CD' },
+              { name: 'docker', color: '2496ED', description: 'Docker & containers' },
+              { name: 'yaml', color: 'CB171E', description: 'YAML configuration' },
+              { name: 'script', color: 'C5DEF5', description: 'Shell or automation scripts' },
+              { name: 'setup', color: 'FBCA04', description: 'Setup & bootstrap' },
+              { name: 'project', color: '0E8A16', description: 'Project management' },
+              { name: 'security', color: 'D93F0B', description: 'Security & certificates' },
+              { name: 'provider', color: '5319E7', description: 'Terraform provider' },
+              { name: 'module', color: '1D76DB', description: 'Terraform module' },
+              { name: 'output', color: '0052CC', description: 'Terraform output' },
+              { name: 'application', color: '5319E7', description: 'K8s application' },
+            ];
+            for (const label of labels) {
+              try {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                  color: label.color,
+                  description: label.description
+                if (e.status !== 422) throw e; // 422 = already exists
+                // If label exists, update its color and description to match desired state
+                await github.rest.issues.updateLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                  color: label.color,
+                  description: label.description
+                });
+              } catch (e) {
+                if (e.status !== 422) throw e; // 422 = already exists
+              }
+            }

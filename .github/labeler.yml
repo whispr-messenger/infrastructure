@@ -1,0 +1,153 @@
+# GitHub Labeler Configuration
+# Automatically applies labels based on changed files
+
+# Terraform related files
+terraform:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '**/*.tfstate'
+
+# Terraform providers
+provider:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/providers.tf'
+      - '**/terraform.tf'
+
+# Terraform modules
+module:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'terraform/modules/**/*'
+
+# Terraform outputs
+output:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/outputs.tf'
+
+# Kubernetes related files
+kubernetes:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.yaml'
+      - '**/*.yml'
+      - 'kubernetes_cluster/**/*'
+      - 'google_kubernetes_engine/**/*'
+
+# ArgoCD related files
+argocd:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'argocd/**/*'
+
+# Google Cloud Platform
+gcp:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'google_kubernetes_engine/**/*'
+      - 'scripts/setup-gcp-project.sh'
+
+# Istio service mesh
+istio:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'argocd/applications/istio.yaml'
+      - 'argocd/applications/istio-gateway.yaml'
+      - 'argocd/infrastructure/argocd-config/argocd-gateway.yaml'
+      - 'argocd/infrastructure/argocd-config/argocd-virtualservice.yaml'
+
+# Cert-Manager
+cert-manager:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'argocd/applications/cert-manager.yaml'
+      - 'argocd/infrastructure/cert-manager/**/*'
+      - 'argocd/infrastructure/argocd-config/argocd-certificate.yaml'
+      - 'argocd/infrastructure/argocd-config/cluster-issuer.yaml'
+
+# Microservices
+microservices:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'argocd/applications/whispr-microservices.yaml'
+      - 'argocd/microservices/**/*'
+
+# Infrastructure
+infrastructure:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'argocd/infrastructure/**/*'
+      - 'terraform/**/*'
+      - 'kubernetes_cluster/**/*'
+      - 'google_kubernetes_engine/**/*'
+
+# Cloud topics
+cloud:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'google_kubernetes_engine/**/*'
+      - 'kubernetes_cluster/**/*'
+
+# Automation & CI/CD
+automation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**/*'
+      - 'scripts/**/*'
+      - 'Justfile'
+
+# Docker & containers
+docker:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'docker/**/*'
+      - '**/Dockerfile*'
+      - '**/*docker*'
+
+# YAML configuration
+yaml:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.yaml'
+      - '**/*.yml'
+
+# Shell or automation scripts
+script:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'scripts/**/*'
+      - '**/*.sh'
+      - 'Justfile'
+
+# Setup & bootstrap
+setup:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'scripts/setup-gcp-project.sh'
+      - 'argocd/root.yaml'
+
+# Project management
+project:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'README.md'
+      - '**/*.md'
+      - 'Justfile'
+
+# Security & certificates
+security:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'argocd/infrastructure/argocd-config/argocd-certificate.yaml'
+      - 'argocd/infrastructure/argocd-config/cluster-issuer.yaml'
+      - 'argocd/applications/cert-manager.yaml'
+      - 'argocd/infrastructure/cert-manager/**/*'
+
+# K8s applications
+application:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'argocd/applications/**/*'
