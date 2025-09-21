@@ -44,6 +44,14 @@ jobs:
                   name: label.name,
                   color: label.color,
                   description: label.description
+                if (e.status !== 422) throw e; // 422 = already exists
+                // If label exists, update its color and description to match desired state
+                await github.rest.issues.updateLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                  color: label.color,
+                  description: label.description
                 });
               } catch (e) {
                 if (e.status !== 422) throw e; // 422 = already exists
