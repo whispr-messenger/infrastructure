@@ -67,7 +67,7 @@ spec:
           
           # Extract the CA certificate
           echo "Extracting CA certificate..."
-          kubectl get secret istio-ca -n istio-system -o jsonpath='{.data.tls\.crt}' | base64 -d > /tmp/ca.pem
+          kubectl get secret istio-ca -n istio-system -o jsonpath="{.data['tls.crt']}" | base64 -d > /tmp/ca.pem
           
           # Create the root-ca secret for istio-csr in cert-manager namespace
           echo "Creating istio-root-ca secret in cert-manager namespace..."
