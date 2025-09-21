@@ -4,7 +4,7 @@ metadata:
   name: istio-gateway
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "3" # Immediately after Istio control plane
+    argocd.argoproj.io/sync-wave: "5" # Immediately after Istio control plane
     argocd.argoproj.io/display-name: "Istio Ingress Gateway"
 spec:
   project: default
