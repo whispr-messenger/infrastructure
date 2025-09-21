@@ -2,3 +2,4 @@
 *.env
 gcp-terraform-key.json
 .terraform
+terraform-sa-key.json
