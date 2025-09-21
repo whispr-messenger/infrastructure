@@ -8,15 +8,13 @@ spec:
   selector:
     istio: ingressgateway
   servers:
-  # HTTP server to redirect to HTTPS
+  # HTTP server (no automatic redirect - managed by VirtualService)
   - port:
       number: 80
       name: http
       protocol: HTTP
     hosts:
     - argocd.whispr.epitech-msc2026.me
-    tls:
-      httpsRedirect: true
   # HTTPS server
   - port:
       number: 443
