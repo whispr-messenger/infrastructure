@@ -20,6 +20,7 @@ spec:
           global:
             meshID: mesh1
             network: network1
+
     # 2. Then install control plane
     - repoURL: https://istio-release.storage.googleapis.com/charts
       chart: istiod
