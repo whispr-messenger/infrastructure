@@ -5,7 +5,7 @@ metadata:
   name: istio
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2" # Deploy after cert-manager  
+    argocd.argoproj.io/sync-wave: "2" # Deploy after cert-manager
     argocd.argoproj.io/display-name: "Istio"
 spec:
   project: default
