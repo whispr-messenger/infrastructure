@@ -1,9 +1,0 @@
----
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: argocd-ssl-cert
-  namespace: argocd
-spec:
-  domains:
-    - argocd.whispr.epitech-msc2026.me
