@@ -1,12 +1,11 @@
 ---
-# Certificate for ArgoCD
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: argocd-cert
-  namespace: argocd # Should match the namespace of the Gateway
+  name: argocd-server-tls
+  namespace: argocd
 spec:
-  secretName: argocd-cert  # Matches the credentialName in the Gateway
+  secretName: argocd-server-tls
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
