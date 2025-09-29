@@ -29,5 +29,4 @@ data:
         clientSecret: $dex.github.clientSecret
         orgs:
         - name: whispr-messenger
-          teams:
-          - whispr-team  # Your actual team slug
+          # Remove teams restriction to allow all org members
