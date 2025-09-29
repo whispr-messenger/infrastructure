@@ -39,4 +39,4 @@ data:
         orgs:
         - name: whispr-messenger
           teams:
-          - developers  # You can specify a specific team or remove this to allow all org members
+          - whispr-team  # Your actual team slug

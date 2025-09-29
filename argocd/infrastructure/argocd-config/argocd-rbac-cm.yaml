@@ -14,8 +14,8 @@ data:
   
   # CSV format for RBAC policies
   policy.csv: |
-    # Admin access for whispr-messenger org members
-    g, whispr-messenger:developers, role:admin
+    # Admin access for whispr-messenger org members in whispr-team
+    g, whispr-messenger:whispr-team, role:admin
     g, whispr-messenger, role:developer
     
     # Custom developer role with specific permissions
