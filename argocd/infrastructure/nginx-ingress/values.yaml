@@ -1,7 +1,7 @@
 controller:
   service:
     type: LoadBalancer
-    loadBalancerIP: "34.54.120.120"  # Our static IP
+    loadBalancerIP: "34.34.178.239"  # Regional static IP
     annotations:
       cloud.google.com/load-balancer-type: "External"
   config:
