@@ -17,3 +17,26 @@ data:
   server.insecure: "true"
   # Application instance label key
   application.instanceLabelKey: argocd.argoproj.io/instance
+  
+  # GitHub OAuth configuration via OIDC
+  oidc.config: |
+    name: GitHub
+    issuer: https://github.com
+    clientId: $oidc.github.clientId
+    clientSecret: $oidc.github.clientSecret
+    requestedScopes: ["read:user", "user:email", "read:org"]
+    requestedIDTokenClaims: {"groups": {"essential": true}}
+  
+  # Dex configuration for GitHub OAuth
+  dex.config: |
+    connectors:
+    - type: github
+      id: github
+      name: GitHub
+      config:
+        clientID: $dex.github.clientId
+        clientSecret: $dex.github.clientSecret
+        orgs:
+        - name: whispr-messenger
+          teams:
+          - developers  # You can specify a specific team or remove this to allow all org members
