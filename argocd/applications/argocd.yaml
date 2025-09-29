@@ -5,7 +5,7 @@ metadata:
   name: argocd-config
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2" # Deployed after cert-manager
+    argocd.argoproj.io/sync-wave: "3" # Deployed after nginx-ingress
 spec:
   project: default
   source:
