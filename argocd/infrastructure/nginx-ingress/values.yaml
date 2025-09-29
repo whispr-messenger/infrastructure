@@ -1,0 +1,25 @@
+controller:
+  service:
+    type: LoadBalancer
+    loadBalancerIP: "34.54.120.120"  # Notre IP statique
+    annotations:
+      cloud.google.com/load-balancer-type: "External"
+  config:
+    use-forwarded-headers: "true"
+    proxy-real-ip-cidr: "0.0.0.0/0"
+    enable-real-ip: "true"
+  metrics:
+    enabled: true
+  admissionWebhooks:
+    enabled: false
+  ingressClassResource:
+    name: nginx
+    enabled: true
+    default: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
