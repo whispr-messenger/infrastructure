@@ -13,3 +13,7 @@ data:
   url: https://argocd.whispr.epitech-msc2026.me
   # Enables application status badge feature
   statusbadge.enabled: "true"
+  # Enable insecure mode for server (will be terminated by ingress)
+  server.insecure: "true"
+  # Application instance label key
+  application.instanceLabelKey: argocd.argoproj.io/instance
