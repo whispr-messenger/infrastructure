@@ -28,8 +28,8 @@ ingress:
 sonarProperties:
   sonar.forceAuthentication: "false"
   sonar.auth.github.enabled: "true"
-  sonar.auth.github.clientId.secured: "Iv23liXhU4MJnWeaqNf8"
-  sonar.auth.github.clientSecret.secured: "44acefbc166a338a8b71e11460ac7a90945fcdf0"
+  sonar.auth.github.clientId.secured: "Ov23liyFBsJZ4bBBdixd"
+  sonar.auth.github.clientSecret.secured: "240bb9475735bbf6627752a5d19475e111961478"
   sonar.auth.github.organizations: "whispr-messenger"
   sonar.auth.github.allowUsersToSignUp: "true"
   sonar.auth.github.loginStrategy: "Unique"
