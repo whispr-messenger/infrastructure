@@ -32,6 +32,8 @@ sonarProperties:
   sonar.auth.github.clientSecret.secured: "240bb9475735bbf6627752a5d19475e111961478"
   sonar.auth.github.organizations: "whispr-messenger"
   sonar.auth.github.allowUsersToSignUp: "true"
+  sonar.auth.github.loginStrategy: "Unique"
+  sonar.core.serverBaseURL: "https://sonarqube.whispr.epitech-msc2026.me"
 
 # PostgreSQL configuration - minimal overrides
 postgresql:
