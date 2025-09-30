@@ -1,109 +1,42 @@
 # SonarQube configuration for GKE with HTTPS and GitHub OAuth
-#
-# GitHub OAuth Setup:
-# - Application name: SonarQube whispr-messenger
-# - Homepage URL: https://sonarqube.whispr.epitech-msc2026.me
-# - Authorization callback URL: https://sonarqube.whispr.epitech-msc2026.me/oauth2/callback/github
-# - Client ID: Ov23liyFBsJZ4bBBdixd
-# - Organization: whispr-messenger (all members can access)
-#
-replicaCount: 1
+# Using minimal overrides to avoid conflicts with chart defaults
 
-# SonarQube Community Build configuration
+# Enable SonarQube Community Build
 community:
   enabled: true
-  # Use latest community build version
-  # buildNumber: latest
 
-# Service configuration
-service:
-  type: ClusterIP
-  externalPort: 9000
-  internalPort: 9000
-  labels: {}
-  annotations: {}
-
-# Ingress configuration for HTTPS
+# HTTPS Ingress configuration
 ingress:
   enabled: true
   hosts:
     - name: sonarqube.whispr.epitech-msc2026.me
       path: /
-      pathType: Prefix
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   ingressClassName: nginx
   tls:
     - secretName: sonarqube-tls
       hosts:
         - sonarqube.whispr.epitech-msc2026.me
 
-# Resource limits and requests
-resources:
-  requests:
-    memory: "1Gi"
-    cpu: "500m"
-  limits:
-    memory: "2Gi"
-    cpu: "1000m"
-
-# Persistence for SonarQube data
-persistence:
-  enabled: true
-  accessMode: ReadWriteOnce
-  size: 10Gi
-  storageClass: "standard-rwo"  # GKE standard storage class
-
-# SonarQube specific configurations
+# GitHub OAuth configuration
 sonarProperties:
-  # Database configuration will be handled by the chart
   sonar.forceAuthentication: "true"
-  sonar.web.javaOpts: "-Xmx1G -Xms1G -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError"
-  sonar.ce.javaOpts: "-Xmx1G -Xms1G -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError"
-  # GitHub OAuth configuration
   sonar.auth.github.enabled: "true"
   sonar.auth.github.clientId.secured: "Ov23liyFBsJZ4bBBdixd"
   sonar.auth.github.clientSecret.secured: "240bb9475735bbf6627752a5d19475e111961478"
   sonar.auth.github.organizations: "whispr-messenger"
   sonar.auth.github.allowUsersToSignUp: "true"
 
-# PostgreSQL subchart configuration
+# PostgreSQL configuration - minimal overrides
 postgresql:
   enabled: true
   auth:
-    username: sonarUser
     database: sonarDB
   primary:
     persistence:
       enabled: true
-      size: 20Gi
+      size: 10Gi
       storageClass: "standard-rwo"
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "250m"
-      limits:
-        memory: "1Gi"
-        cpu: "500m"
-
-# Security context
-securityContext:
-  fsGroup: 1000
-
-# Pod security context
-podSecurityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
-
-# Environment variables - removed to avoid conflicts with chart defaults
-# The JDBC credentials will be handled automatically by the chart
-
-# Probes configuration - using chart defaults for compatibility
-# Custom probes removed to avoid conflicts with chart's built-in probes
