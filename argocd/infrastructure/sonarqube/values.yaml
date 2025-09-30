@@ -25,6 +25,10 @@ service:
 # Ingress configuration for HTTPS
 ingress:
   enabled: true
+  hosts:
+    - name: sonarqube.whispr.epitech-msc2026.me
+      path: /
+      pathType: Prefix
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -33,11 +37,7 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-  hosts:
-    - host: sonarqube.whispr.epitech-msc2026.me
-      paths:
-        - path: /
-          pathType: Prefix
+  ingressClassName: nginx
   tls:
     - secretName: sonarqube-tls
       hosts:
