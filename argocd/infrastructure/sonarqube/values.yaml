@@ -1,4 +1,12 @@
-# SonarQube configuration for GKE with HTTPS
+# SonarQube configuration for GKE with HTTPS and GitHub OAuth
+#
+# GitHub OAuth Setup:
+# - Application name: SonarQube whispr-messenger
+# - Homepage URL: https://sonarqube.whispr.epitech-msc2026.me
+# - Authorization callback URL: https://sonarqube.whispr.epitech-msc2026.me/oauth2/callback/github
+# - Client ID: Ov23liyFBsJZ4bBBdixd
+# - Organization: whispr-messenger (all members can access)
+#
 replicaCount: 1
 
 image:
@@ -57,6 +65,13 @@ sonarProperties: |
   sonar.forceAuthentication=true
   sonar.web.javaOpts=-Xmx1G -Xms1G -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError
   sonar.ce.javaOpts=-Xmx1G -Xms1G -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError
+  
+  # GitHub OAuth configuration
+  sonar.auth.github.enabled=true
+  sonar.auth.github.clientId.secured=Ov23liyFBsJZ4bBBdixd
+  sonar.auth.github.clientSecret.secured=240bb9475735bbf6627752a5d19475e111961478
+  sonar.auth.github.organizations=whispr-messenger
+  sonar.auth.github.allowUsersToSignUp=true
 
 # PostgreSQL subchart configuration
 postgresql:
