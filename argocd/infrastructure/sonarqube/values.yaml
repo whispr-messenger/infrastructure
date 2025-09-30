@@ -26,7 +26,7 @@ ingress:
 
 # GitHub OAuth configuration
 sonarProperties:
-  sonar.forceAuthentication: "true"
+  sonar.forceAuthentication: "false"
   sonar.auth.github.enabled: "true"
   sonar.auth.github.clientId.secured: "Ov23liyFBsJZ4bBBdixd"
   sonar.auth.github.clientSecret.secured: "240bb9475735bbf6627752a5d19475e111961478"
@@ -47,9 +47,3 @@ postgresql:
       enabled: true
       size: 10Gi
       storageClass: "standard-rwo"
-
-# Additional environment variables for admin setup
-env:
-  # Disable default admin user creation to rely on OAuth
-  - name: SONAR_SECURITY_REALM
-    value: "github"
