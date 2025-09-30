@@ -75,8 +75,6 @@ sonarProperties:
 # PostgreSQL subchart configuration
 postgresql:
   enabled: true
-  image:
-    tag: "15.4.0-debian-11-r45"
   auth:
     username: sonarUser
     database: sonarDB
