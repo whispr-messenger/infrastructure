@@ -9,10 +9,11 @@
 #
 replicaCount: 1
 
-image:
-  repository: sonarqube
-  tag: "10.7.0-community"
-  pullPolicy: IfNotPresent
+# SonarQube Community Build configuration
+community:
+  enabled: true
+  # Use latest community build version
+  # buildNumber: latest
 
 # Service configuration
 service:
