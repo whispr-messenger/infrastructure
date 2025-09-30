@@ -34,6 +34,8 @@ sonarProperties:
   sonar.auth.github.allowUsersToSignUp: "true"
   sonar.auth.github.loginStrategy: "Unique"
   sonar.core.serverBaseURL: "https://sonarqube.whispr.epitech-msc2026.me"
+  # Allow GitHub organization members to have admin rights
+  sonar.auth.github.groupsSync: "true"
 
 # PostgreSQL configuration - minimal overrides
 postgresql:
@@ -45,3 +47,9 @@ postgresql:
       enabled: true
       size: 10Gi
       storageClass: "standard-rwo"
+
+# Additional environment variables for admin setup
+env:
+  # Disable default admin user creation to rely on OAuth
+  - name: SONAR_SECURITY_REALM
+    value: "github"
