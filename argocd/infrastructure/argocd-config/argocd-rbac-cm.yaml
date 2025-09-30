@@ -1,0 +1,36 @@
+---
+# RBAC configuration for ArgoCD
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-rbac-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  # Default policy for authenticated users
+  policy.default: role:readonly
+  
+  # CSV format for RBAC policies
+  policy.csv: |
+    # Admin access for whispr-messenger org members in whispr-team
+    g, whispr-messenger:whispr-team, role:admin
+    g, whispr-messenger, role:developer
+    
+    # Custom developer role with specific permissions
+    p, role:developer, applications, *, */*, allow
+    p, role:developer, applicationsets, *, */*, allow
+    p, role:developer, clusters, get, *, allow
+    p, role:developer, repositories, *, *, allow
+    p, role:developer, projects, *, *, allow
+    p, role:developer, logs, get, */*, allow
+    p, role:developer, exec, create, */*, allow
+    
+    # Read-only access for all authenticated users
+    p, role:readonly, applications, get, */*, allow
+    p, role:readonly, applicationsets, get, */*, allow
+    p, role:readonly, clusters, get, *, allow
+    p, role:readonly, repositories, get, *, allow
+    p, role:readonly, projects, get, *, allow
+    p, role:readonly, logs, get, */*, allow
