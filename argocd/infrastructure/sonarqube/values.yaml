@@ -5,6 +5,9 @@
 community:
   enabled: true
 
+# Monitoring passcode required by chart 2025.5.0
+monitoringPasscode: "whispr-monitoring-2025"
+
 # HTTPS Ingress configuration
 ingress:
   enabled: true
