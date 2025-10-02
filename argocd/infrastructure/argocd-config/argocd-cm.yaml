@@ -29,5 +29,5 @@ data:
         clientSecret: $dex.github.clientSecret
         orgs:
         - name: whispr-messenger
-          teams:
-          - developers  # You can specify a specific team or remove this to allow all org members
+          # teams:
+          # - developers  # Commented out to allow all org members
