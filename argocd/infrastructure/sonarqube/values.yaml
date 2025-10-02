@@ -26,7 +26,7 @@ ingress:
 
 # GitHub OAuth configuration
 sonarProperties:
-  sonar.forceAuthentication: "false"
+  sonar.forceAuthentication: "true"
   sonar.auth.github.enabled: "true"
   sonar.auth.github.clientId.secured: "Ov23liyFBsJZ4bBBdixd"
   sonar.auth.github.clientSecret.secured: "240bb9475735bbf6627752a5d19475e111961478"
@@ -36,9 +36,6 @@ sonarProperties:
   sonar.core.serverBaseURL: "https://sonarqube.whispr.epitech-msc2026.me"
   # Allow GitHub organization members to have admin rights
   sonar.auth.github.groupsSync: "true"
-  # GitHub Code Scanning integration
-  sonar.alm.github.app.webhookSecret.secured: "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456"
-  sonar.github.security.enable: "true"
 
 # PostgreSQL configuration - minimal overrides
 postgresql:
