@@ -18,6 +18,15 @@ data:
   # Application instance label key
   application.instanceLabelKey: argocd.argoproj.io/instance
   
+  # OIDC configuration pointing to DEX (not directly to GitHub)
+  oidc.config: |
+    name: GitHub
+    issuer: https://argocd.whispr.epitech-msc2026.me/api/dex
+    clientId: $dex.github.clientId
+    clientSecret: $dex.github.clientSecret
+    requestedScopes: ["openid", "profile", "email", "groups"]
+    requestedIDTokenClaims: {"groups": {"essential": true}}
+  
   # Dex configuration for GitHub OAuth
   dex.config: |
     connectors:
