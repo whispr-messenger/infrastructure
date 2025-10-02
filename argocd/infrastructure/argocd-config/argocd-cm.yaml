@@ -18,13 +18,13 @@ data:
   # Application instance label key
   application.instanceLabelKey: argocd.argoproj.io/instance
   
-  # OIDC configuration pointing to DEX (not directly to GitHub)
+  # GitHub OAuth configuration via OIDC
   oidc.config: |
     name: GitHub
-    issuer: https://argocd.whispr.epitech-msc2026.me/api/dex
-    clientId: $dex.github.clientId
-    clientSecret: $dex.github.clientSecret
-    requestedScopes: ["openid", "profile", "email", "groups"]
+    issuer: https://github.com
+    clientId: $oidc.github.clientId
+    clientSecret: $oidc.github.clientSecret
+    requestedScopes: ["read:user", "user:email", "read:org"]
     requestedIDTokenClaims: {"groups": {"essential": true}}
   
   # Dex configuration for GitHub OAuth
@@ -38,5 +38,4 @@ data:
         clientSecret: $dex.github.clientSecret
         orgs:
         - name: whispr-messenger
-          # teams:
-          # - developers  # Commented out to allow all org members
+          # Remove teams restriction to allow all org members
