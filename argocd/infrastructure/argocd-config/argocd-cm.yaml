@@ -22,8 +22,8 @@ data:
   oidc.config: |
     name: GitHub
     issuer: https://github.com
-    clientId: $oidc.github.clientId
-    clientSecret: $oidc.github.clientSecret
+    clientId: $dex.github.clientId
+    clientSecret: $dex.github.clientSecret
     requestedScopes: ["read:user", "user:email", "read:org"]
     requestedIDTokenClaims: {"groups": {"essential": true}}
   
