@@ -2,6 +2,14 @@
 # Based on Bitnami Redis Helm chart v22.0.7
 # Uses chart default images for better compatibility
 
+## Global settings
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  defaultStorageClass: ""
+  redis:
+    password: "" # Will be auto-generated if empty
+
 ## Redis Architecture
 # Available options: standalone, replication
 architecture: replication
@@ -11,6 +19,8 @@ auth:
   enabled: true
   sentinel: true
   # Password will be auto-generated and stored in secret
+  # existingSecret: "redis-secret"
+  # existingSecretPasswordKey: "redis-password"
 
 ## Redis Master configuration
 master:
@@ -28,6 +38,7 @@ master:
   ## Persistence configuration
   persistence:
     enabled: true
+    storageClass: ""
     size: 8Gi
     accessModes:
       - ReadWriteOnce
@@ -67,6 +78,7 @@ replica:
   ## Persistence configuration
   persistence:
     enabled: true
+    storageClass: ""
     size: 8Gi
     accessModes:
       - ReadWriteOnce
@@ -156,10 +168,39 @@ redis:
     save 300 10     # Save the DB if at least 10 keys changed in 300 seconds
     save 60 10000   # Save the DB if at least 10,000 keys changed in 60 seconds
 
+## Network Policy
+networkPolicy:
+  enabled: false
+  
 ## Pod Disruption Budget
 pdb:
   create: true
   minAvailable: 1
+
+## Service Monitor for Prometheus
+serviceMonitor:
+  enabled: false
+  # Enable when Prometheus is deployed
+  # enabled: true
+  # namespace: monitoring
+  # interval: 30s
+  # scrapeTimeout: 10s
+
+## Metrics configuration
+metrics:
+  enabled: false
+  # Enable when monitoring is setup
+  # enabled: true
+  # resources:
+  #   requests:
+  #     memory: "64Mi"
+  #     cpu: "50m"
+  #   limits:
+  #     memory: "128Mi"
+  #     cpu: "100m"
+  # serviceMonitor:
+  #   enabled: true
+  #   namespace: monitoring
 
 ## Pod Annotations
 commonAnnotations:
