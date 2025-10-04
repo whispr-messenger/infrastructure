@@ -1,0 +1,212 @@
+# Redis configuration for Whispr project
+# Based on Bitnami Redis Helm chart v22.0.7
+
+## Global settings
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  defaultStorageClass: ""
+  redis:
+    password: "" # Will be auto-generated if empty
+
+## Redis Architecture
+# Available options: standalone, replication
+architecture: replication
+
+## Redis Authentication
+auth:
+  enabled: true
+  sentinel: true
+  # Password will be auto-generated and stored in secret
+  # existingSecret: "redis-secret"
+  # existingSecretPasswordKey: "redis-password"
+
+## Redis Master configuration
+master:
+  count: 1
+  
+  ## Resource configuration
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  
+  ## Persistence configuration
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 8Gi
+    accessModes:
+      - ReadWriteOnce
+  
+  ## Pod Security Context
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+    runAsUser: 1001
+    runAsNonRoot: true
+  
+  ## Container Security Context
+  containerSecurityContext:
+    enabled: true
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 1001
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+## Redis Replica configuration
+replica:
+  replicaCount: 2
+  
+  ## Resource configuration
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  
+  ## Persistence configuration
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: 8Gi
+    accessModes:
+      - ReadWriteOnce
+  
+  ## Pod Security Context
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+    runAsUser: 1001
+    runAsNonRoot: true
+  
+  ## Container Security Context
+  containerSecurityContext:
+    enabled: true
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 1001
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+## Redis Sentinel configuration
+sentinel:
+  enabled: true
+  
+  ## Resource configuration
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "200m"
+  
+  ## Pod Security Context
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+    runAsUser: 1001
+    runAsNonRoot: true
+  
+  ## Container Security Context
+  containerSecurityContext:
+    enabled: true
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 1001
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+## Redis configuration
+redis:
+  ## Redis configuration file content
+  configmap: |
+    # Redis configuration optimized for caching and session storage
+    # Enable AOF persistence
+    appendonly yes
+    appendfsync everysec
+    
+    # Set maximum memory and eviction policy
+    # maxmemory is set to 384mb to provide headroom below the 512Mi container memory limit,
+    # allowing for Redis overhead, AOF persistence, and OS usage to prevent OOM kills.
+    maxmemory 384mb
+    maxmemory-policy allkeys-lru
+    
+    # Optimize for performance
+    tcp-keepalive 300
+    timeout 0
+    
+    # Security settings
+    protected-mode yes
+    
+    # Logging
+    loglevel notice
+    
+    # Performance tuning
+    tcp-backlog 511
+    databases 16
+    
+    # Save configuration for persistence
+    save 900 1      # Save the DB if at least 1 key changed in 900 seconds
+    save 300 10     # Save the DB if at least 10 keys changed in 300 seconds
+    save 60 10000   # Save the DB if at least 10,000 keys changed in 60 seconds
+
+## Network Policy
+networkPolicy:
+  enabled: false
+  
+## Pod Disruption Budget
+pdb:
+  create: true
+  minAvailable: 1
+
+## Service Monitor for Prometheus
+serviceMonitor:
+  enabled: false
+  # Enable when Prometheus is deployed
+  # enabled: true
+  # namespace: monitoring
+  # interval: 30s
+  # scrapeTimeout: 10s
+
+## Metrics configuration
+metrics:
+  enabled: false
+  # Enable when monitoring is setup
+  # enabled: true
+  # resources:
+  #   requests:
+  #     memory: "64Mi"
+  #     cpu: "50m"
+  #   limits:
+  #     memory: "128Mi"
+  #     cpu: "100m"
+  # serviceMonitor:
+  #   enabled: true
+  #   namespace: monitoring
+
+## Pod Annotations
+commonAnnotations:
+  "whispr.dev/component": "cache"
+  "whispr.dev/team": "platform"
+
+## Pod Labels
+commonLabels:
+  app.kubernetes.io/part-of: "whispr"
+  app.kubernetes.io/component: "cache"
