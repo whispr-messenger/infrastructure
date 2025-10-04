@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-security
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"  # --> After nginx-ingress (1) and before sonarqube (4)
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # --> Avoid orphans istio resources in kubernetes when application is deleted
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/whispr-messenger/infrastructure
+    targetRevision: HEAD
+    path: infrastructure/istio-security
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: whispr-prod
+  
+  syncPolicy:
+    automated:
+      prune: true # Delete if not in git anymore to avoid oprhans services
+      selfHeal: true # If someone do a modification manually force the git version
+      allowEmpty: false # Don't sync if git folder is empty
+    syncOptions:
+      - CreateNamespace=true # If namespace doesn't exist --> create it
+      - ServerSideApply=true # Kub manage the conflict and fields
+    retry: # 5 retry with backoff set
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

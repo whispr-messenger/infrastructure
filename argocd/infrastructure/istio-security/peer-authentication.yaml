@@ -1,0 +1,8 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: whispr-strict-mtls
+  namespace: whispr-prod
+spec:
+  mtls:
+    mode: STRICT

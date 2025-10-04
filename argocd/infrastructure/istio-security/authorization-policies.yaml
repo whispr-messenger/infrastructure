@@ -1,0 +1,191 @@
+# =============================================================================
+# Title: API Gateway
+# Description: Accept external traffic
+# =============================================================================
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: api-gateway-authz
+  namespace: whispr-prod
+spec:
+  selector:
+    matchLabels:
+      app: api-gateway
+  action: ALLOW
+  rules:
+  - to:
+    - operation:
+        ports: ["8080"]
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
+
+# =============================================================================
+# Title: Auth Service
+# Description: Manage by api-gateway only
+# =============================================================================
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: auth-service-authz
+  namespace: whispr-prod
+spec:
+  selector:
+    matchLabels:
+      app: auth-service
+  action: ALLOW
+  rules:
+  # --> api-gateway can request auth-service
+  - from:
+    - source:
+        principals: ["cluster.local/ns/whispr-prod/sa/api-gateway"]
+    to:
+    - operation:
+        ports: ["8080"]
+        methods: ["POST", "GET", "PUT"]
+        paths: ["/api/v1/auth/*"]
+
+# =============================================================================
+# Title: User Service
+# Description: Requested by api-gateway AND auth-service
+# =============================================================================
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: user-service-authz
+  namespace: whispr-prod
+spec:
+  selector:
+    matchLabels:
+      app: user-service
+  action: ALLOW
+  rules:
+  # --> auth-service can request user-service (gRPC)
+  - from:
+    - source:
+        principals: ["cluster.local/ns/whispr-prod/sa/auth-service"]
+    to:
+    - operation:
+        ports: ["8080"]
+        methods: ["POST"]  # ** gRPC use POST **
+        paths: 
+          - "/user.UserService/GetUserProfile"
+          - "/user.UserService/UpdateUser"
+  
+  # --> api-gateway can request user-service api
+  - from:
+    - source:
+        principals: ["cluster.local/ns/whispr-prod/sa/api-gateway"]
+    to:
+    - operation:
+        ports: ["8080"]
+        methods: ["POST", "GET", "PUT", "DELETE"]
+
+# =============================================================================
+# Title: Notification Service
+# Description: Requested by auth-service AND messaging-service
+# =============================================================================
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: notification-service-authz
+  namespace: whispr-prod
+spec:
+  selector:
+    matchLabels:
+      app: notification-service
+  action: ALLOW
+  rules:
+  # --> auth-service sends code verification
+  - from:
+    - source:
+        principals: ["cluster.local/ns/whispr-prod/sa/auth-service"]
+    to:
+    - operation:
+        ports: ["8081"]
+        methods: ["POST"]
+        paths: ["/notification.NotificationService/SendVerificationCode"]
+  
+  # --> messaging-service sends messages notifications
+  - from:
+    - source:
+        principals: ["cluster.local/ns/whispr-prod/sa/messaging-service"]
+    to:
+    - operation:
+        ports: ["8081"]
+        methods: ["POST"]
+        paths: ["/notification.NotificationService/SendMessageNotification"]
+
+# =============================================================================
+# Title: Media Service
+# Description: Requested by user-service only
+# =============================================================================
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: media-service-authz
+  namespace: whispr-prod
+spec:
+  selector:
+    matchLabels:
+      app: media-service
+  action: ALLOW
+  rules:
+  # --> user-service can upload photos
+  - from:
+    - source:
+        principals: ["cluster.local/ns/whispr-prod/sa/user-service"]
+    to:
+    - operation:
+        ports: ["8082"]
+        methods: ["POST"]
+        paths: ["/media.MediaService/UploadProfilePicture"]
+
+# =============================================================================
+# Title: Moderation Service
+# Description: Requested by media-service only
+# =============================================================================
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: moderation-service-authz
+  namespace: whispr-prod
+spec:
+  selector:
+    matchLabels:
+      app: moderation-service
+  action: ALLOW
+  rules:
+  # --> media-service ask moderation
+  - from:
+    - source:
+        principals: ["cluster.local/ns/whispr-prod/sa/media-service"]
+    to:
+    - operation:
+        ports: ["8083"]
+        methods: ["POST"]
+        paths: 
+          - "/moderation.ModerationService/CheckMediaHash"
+          - "/moderation.ModerationService/AnalyzeImage"
+
+# =============================================================================
+# Title: Messaging Service
+# Description: Requested by api-gateway only
+# =============================================================================
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: messaging-service-authz
+  namespace: whispr-prod
+spec:
+  selector:
+    matchLabels:
+      app: messaging-service
+  action: ALLOW
+  rules:
+  # --> api-gateway manage messages
+  - from:
+    - source:
+        principals: ["cluster.local/ns/whispr-prod/sa/api-gateway"]
+    to:
+    - operation:
+        ports: ["8084"]
+        methods: ["POST", "GET", "PUT", "DELETE"]
