@@ -1,6 +1,6 @@
 # Redis configuration for Whispr project
 # Based on Bitnami Redis Helm chart v22.0.7
-# Uses chart default images for better compatibility
+# Updated for Bitnami catalog migration - using latest tags only
 
 ## Global settings
 global:
@@ -13,6 +13,12 @@ global:
 ## Redis Architecture
 # Available options: standalone, replication
 architecture: replication
+
+## Image overrides - use latest tags due to Bitnami catalog migration
+image:
+  registry: docker.io
+  repository: bitnami/redis
+  tag: "latest"
 
 ## Redis Authentication
 auth:
@@ -105,6 +111,12 @@ replica:
 ## Redis Sentinel configuration
 sentinel:
   enabled: true
+  
+  ## Image override - use latest tag due to Bitnami catalog migration
+  image:
+    registry: docker.io
+    repository: bitnami/redis-sentinel
+    tag: "latest"
   
   ## Resource configuration
   resources:
