@@ -1,5 +1,6 @@
 # Redis configuration for Whispr project
 # Based on Bitnami Redis Helm chart v22.0.7
+# Uses chart default images for better compatibility
 
 ## Global settings
 global:

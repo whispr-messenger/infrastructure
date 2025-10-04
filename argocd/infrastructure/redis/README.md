@@ -46,9 +46,9 @@ The Redis deployment uses the following architecture:
 
 The Redis cluster can be accessed using the following service endpoints:
 
-- **Master (Read/Write)**: `redis.redis.svc.cluster.local:6379`
-- **Replica (Read-only)**: `redis-replica.redis.svc.cluster.local:6379`
-- **Sentinel**: `redis-sentinel.redis.svc.cluster.local:26379`
+- **Master (Read/Write)**: `redis-redis-master.redis.svc.cluster.local:6379`
+- **Replica (Read-only)**: `redis-redis-replicas.redis.svc.cluster.local:6379`
+- **Sentinel**: `redis-redis-sentinel.redis.svc.cluster.local:26379`
 
 ### Authentication
 
@@ -64,10 +64,10 @@ kubectl get secret redis -n redis -o jsonpath="{.data.redis-password}" | base64 
 #### From within the cluster:
 ```bash
 # Connect to master
-redis-cli -h redis.redis.svc.cluster.local -p 6379 -a $(kubectl get secret redis -n redis -o jsonpath="{.data.redis-password}" | base64 -d)
+redis-cli -h redis-redis-master.redis.svc.cluster.local -p 6379 -a $(kubectl get secret redis -n redis -o jsonpath="{.data.redis-password}" | base64 -d)
 
 # Connect to replica
-redis-cli -h redis-replica.redis.svc.cluster.local -p 6379 -a $(kubectl get secret redis -n redis -o jsonpath="{.data.redis-password}" | base64 -d)
+redis-cli -h redis-redis-replicas.redis.svc.cluster.local -p 6379 -a $(kubectl get secret redis -n redis -o jsonpath="{.data.redis-password}" | base64 -d)
 ```
 
 #### For applications:
@@ -75,7 +75,7 @@ redis-cli -h redis-replica.redis.svc.cluster.local -p 6379 -a $(kubectl get secr
 # Environment variables for application pods
 env:
 - name: REDIS_HOST
-  value: "redis.redis.svc.cluster.local"
+  value: "redis-redis-master.redis.svc.cluster.local"
 - name: REDIS_PORT
   value: "6379"
 - name: REDIS_PASSWORD
@@ -106,22 +106,26 @@ Each Redis instance has:
 ### Check Redis status:
 ```bash
 kubectl get pods -n redis
-kubectl logs -n redis redis-node-0
+kubectl logs -n redis redis-redis-master-0
+kubectl logs -n redis redis-redis-replicas-0
 ```
 
 ### Test connectivity:
 ```bash
-kubectl exec -it redis-node-0 -n redis -- redis-cli ping
+kubectl exec -it redis-redis-master-0 -n redis -- redis-cli ping
+kubectl exec -it redis-redis-replicas-0 -n redis -- redis-cli ping
 ```
 
 ### Check replication:
 ```bash
-kubectl exec -it redis-node-0 -n redis -- redis-cli info replication
+kubectl exec -it redis-redis-master-0 -n redis -- redis-cli info replication
+kubectl exec -it redis-redis-replicas-0 -n redis -- redis-cli info replication
 ```
 
 ### Sentinel status:
 ```bash
-kubectl exec -it redis-node-0 -n redis -- redis-cli -p 26379 sentinel masters
+kubectl exec -it redis-redis-master-0 -n redis -- redis-cli -p 26379 -a $(kubectl get secret redis -n redis -o jsonpath="{.data.redis-password}" | base64 -d) sentinel masters
+kubectl exec -it redis-redis-replicas-0 -n redis -- redis-cli -p 26379 -a $(kubectl get secret redis -n redis -o jsonpath="{.data.redis-password}" | base64 -d) sentinel masters
 ```
 
 ## Resources
