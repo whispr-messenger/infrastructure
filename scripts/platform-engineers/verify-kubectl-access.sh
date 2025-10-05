@@ -141,7 +141,7 @@ echo "  kubectl get authorizationpolicies -A     # Voir toutes les politiques Is
 echo "  kubectl logs POD_NAME -n whispr-prod     # Voir les logs d'un pod"
 echo "  kubectl config set-context --current --namespace=platform-dev  # Basculer vers votre namespace"
 echo ""
-echo "Namespace recommande pour vos tests: platform-dev"
+echo "Namespace recommandé pour vos tests: platform-dev"
 echo "   kubectl config set-context --current --namespace=platform-dev"
 
 echo ""
