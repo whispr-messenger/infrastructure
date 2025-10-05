@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Script decho "Fichiers mis à jour avec ces valeurs:"
-echo "  - scripts/platform-engineers/create-platform-enginéers-sa.sh"
+# Script de vérification et mise à jour des configurations
+echo "  - scripts/platform-engineers/create-platform-engineers-sa.sh"
 echo "  - scripts/platform-engineers/grant-gke-access.sh"
 echo "  - scripts/platform-engineers/platform-engineers-rbac.yaml"
 echo "  - scripts/platform-engineers/README-kubectl-setup-team.md"
-echo "  - scripts/platform-engineers/verify-kubectl-access.sh"fication et mise à jour des configurations
+echo "  - scripts/platform-engineers/verify-kubectl-access.sh"
 # Affiche les vraies valeurs du cluster et projet
 
 echo "Informations réelles du cluster GKE"
