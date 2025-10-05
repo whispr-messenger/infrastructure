@@ -29,7 +29,7 @@ log_test() {
     echo -e "${BLUE}[TEST]${NC} $1"
 }
 
-echo "Verification de l'acces au cluster GKE pour l'equipe plateforme"
+echo "Vérification de l'accès au cluster GKE pour l'équipe plateforme"
 echo "================================================================="
 
 # Test 1: Vérifier l'authentification gcloud
