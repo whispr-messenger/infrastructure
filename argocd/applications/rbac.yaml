@@ -1,0 +1,35 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rbac
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1" # Deploye tot - permissions fondamentales
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/whispr-messenger/infrastructure
+    targetRevision: HEAD
+    path: argocd/infrastructure/rbac
+    
+  destination:
+    server: https://kubernetes.default.svc
+    
+  syncPolicy:
+    automated:
+      prune: true # Supprime les ressources supprimées du git
+      selfHeal: true # Auto-correction si modification manuelle
+      allowEmpty: false # Ne sync pas si le dossier est vide
+    syncOptions:
+      - CreateNamespace=true # Crée les namespaces si nécessaire
+      - ServerSideApply=true # Kubernetes gère les conflits
+    retry: # Retry avec backoff
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

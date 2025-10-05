@@ -1,0 +1,220 @@
+# RBAC pour l'équipe Platform Engineering - Accès partagé au cluster Whispr
+# Ce fichier configure les permissions Kubernetes pour l'équipe plateforme
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform-dev
+  labels:
+    purpose: platform-development
+    team: platform-engineers
+    istio-injection: enabled  # Pour les tests Istio
+
+---
+# ClusterRole pour les Platform Engineers - Permissions étendues
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: platform-engineers
+rules:
+# Lecture globale sur toutes les ressources
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints", "persistentvolumeclaims", "configmaps", "secrets", "serviceaccounts"]
+  verbs: ["get", "list", "watch"]
+
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
+  verbs: ["get", "list", "watch"]
+
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses", "networkpolicies"]
+  verbs: ["get", "list", "watch"]
+
+# Permissions Istio - lecture et modification pour tests
+- apiGroups: ["security.istio.io"]
+  resources: ["authorizationpolicies", "peerauthentications"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+- apiGroups: ["networking.istio.io"]
+  resources: ["virtualservices", "destinationrules", "gateways", "serviceentries"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+- apiGroups: ["install.istio.io"]
+  resources: ["istiooperators"]
+  verbs: ["get", "list", "watch"]
+
+# ArgoCD resources - pour debugging des déploiements
+- apiGroups: ["argoproj.io"]
+  resources: ["applications", "applicationsets"]
+  verbs: ["get", "list", "watch"]
+
+# Permissions étendues pour debugging
+- apiGroups: [""]
+  resources: ["events", "nodes"]
+  verbs: ["get", "list", "watch"]
+
+- apiGroups: [""]
+  resources: ["pods/log", "pods/exec"]
+  verbs: ["get", "list", "create"]
+
+- apiGroups: [""]
+  resources: ["pods/portforward"]
+  verbs: ["get", "list", "create"]
+
+# Metrics et monitoring
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+
+# Namespaces management
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+
+# CRDs pour comprendre les resources custom
+- apiGroups: ["apiextensions.k8s.io"]
+  resources: ["customresourcedefinitions"]
+  verbs: ["get", "list", "watch"]
+
+# RBAC pour voir les permissions
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["roles", "rolebindings", "clusterroles", "clusterrolebindings"]
+  verbs: ["get", "list", "watch"]
+
+---
+# ClusterRoleBinding pour l'équipe plateforme
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: platform-engineers-binding
+subjects:
+- kind: ServiceAccount
+  name: platform-engineers
+  namespace: default
+- kind: User
+  name: platform-engineers@whispr-messenger-472716.iam.gserviceaccount.com  # Service account email
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: platform-engineers
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role pour le namespace de dev plateforme - Permissions complètes
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: platform-dev
+  name: platform-full-access
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+
+---
+# RoleBinding pour le namespace de dev plateforme
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: platform-full-access-binding
+  namespace: platform-dev
+subjects:
+- kind: ServiceAccount
+  name: platform-engineers
+  namespace: default
+- kind: User
+  name: platform-engineers@whispr-messenger-472716.iam.gserviceaccount.com
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: platform-full-access
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role pour whispr-prod - Permissions étendues pour infrastructure
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: whispr-prod
+  name: platform-infrastructure-access
+rules:
+# Toutes les ressources Istio
+- apiGroups: ["security.istio.io"]
+  resources: ["*"]
+  verbs: ["*"]
+
+- apiGroups: ["networking.istio.io"]
+  resources: ["*"]
+  verbs: ["*"]
+
+# Pods et services pour tests et debugging
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints", "configmaps", "serviceaccounts"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch", "update", "patch"]
+
+# Secrets pour debugging (lecture seule)
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list"]
+
+# Logs et debugging
+- apiGroups: [""]
+  resources: ["pods/log", "pods/exec", "pods/portforward", "events"]
+  verbs: ["get", "list", "create"]
+
+---
+# RoleBinding pour whispr-prod
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: platform-infrastructure-access-binding
+  namespace: whispr-prod
+subjects:
+- kind: ServiceAccount
+  name: platform-engineers
+  namespace: default
+- kind: User
+  name: platform-engineers@whispr-messenger-472716.iam.gserviceaccount.com
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: platform-infrastructure-access
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role pour les autres namespaces d'infrastructure
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: argocd
+  name: platform-readonly-access
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods/log", "pods/exec", "events"]
+  verbs: ["get", "list", "create"]
+
+---
+# RoleBinding pour argocd (lecture + logs)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: platform-readonly-access-binding
+  namespace: argocd
+subjects:
+- kind: ServiceAccount
+  name: platform-engineers
+  namespace: default
+- kind: User
+  name: platform-engineers@whispr-messenger-472716.iam.gserviceaccount.com
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: platform-readonly-access
+  apiGroup: rbac.authorization.k8s.io
