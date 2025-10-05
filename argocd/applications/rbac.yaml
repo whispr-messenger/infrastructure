@@ -5,7 +5,7 @@ metadata:
   name: rbac
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "1" # Deploye tot - permissions fondamentales
+    argocd.argoproj.io/sync-wave: "1" # Déploie tôt - permissions fondamentales
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
