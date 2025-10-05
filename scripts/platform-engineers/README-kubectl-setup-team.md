@@ -57,7 +57,7 @@ kubectl delete deployment test -n platform-dev
 
 ## Vérification des permissions
 
-l'équipe peut vérifier leurs permissions avec :
+l'équipe peut vérifier ses permissions avec :
 
 ```bash
 # Vérifier les permissions globales
