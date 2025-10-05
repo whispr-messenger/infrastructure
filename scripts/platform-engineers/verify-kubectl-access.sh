@@ -135,7 +135,7 @@ done
 
 # Commandes utiles
 echo ""
-echo "Commandes utiles pour debuter:"
+echo "Commandes utiles pour débuter:"
 echo "  kubectl get pods -n whispr-prod          # Voir les pods de production"
 echo "  kubectl get authorizationpolicies -A     # Voir toutes les politiques Istio"
 echo "  kubectl logs POD_NAME -n whispr-prod     # Voir les logs d'un pod"
