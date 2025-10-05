@@ -168,7 +168,7 @@ kubectl auth whoami  # Vérifier l'identité utilisée
 kubectl config get-contexts
 
 # Basculer vers le bon contexte
-kubectl config use-context gke_PROJECT_ID_europe-west1-b_whispr-cluster
+kubectl config use-context gke_PROJECT_ID_europe-west1-b_whispr-messenger
 ```
 
 ### Problème : Clé expirée

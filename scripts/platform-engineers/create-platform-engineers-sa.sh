@@ -119,7 +119,7 @@ ${YELLOW}Usage Instructions for Engineers:${NC}
    gcloud config set project $PROJECT_ID
    
    # Get cluster credentials
-   gcloud container clusters get-credentials whispr-cluster --zone europe-west1-b
+   gcloud container clusters get-credentials whispr-messenger --zone europe-west1-b
    
    # Test access
    kubectl get nodes
