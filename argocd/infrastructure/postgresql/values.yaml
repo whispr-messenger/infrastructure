@@ -60,21 +60,10 @@ primary:
       type: RuntimeDefault
 
 # Metrics and monitoring
+# Disabled due to compatibility issues with bitnamilegacy images
+# The metrics exporter expects secrets in a different path format
 metrics:
-  enabled: true
-  image:
-    registry: docker.io
-    repository: bitnamilegacy/postgres-exporter
-    tag: "0.16.0-debian-12-r7"
-  serviceMonitor:
-    enabled: false
-  resources:
-    requests:
-      memory: "64Mi"
-      cpu: "50m"
-    limits:
-      memory: "128Mi"
-      cpu: "100m"
+  enabled: false
 
 # Backup configuration
 backup:
