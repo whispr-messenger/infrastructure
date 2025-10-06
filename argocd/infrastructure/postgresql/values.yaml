@@ -42,6 +42,10 @@ primary:
     work_mem = 4MB
     maintenance_work_mem = 128MB
 
+  # Pod annotations to force restart
+  podAnnotations:
+    whispr.dev/restartedAt: "2025-10-06T18:35:00Z"
+
   podSecurityContext:
     enabled: true
     fsGroup: 1001
@@ -81,7 +85,6 @@ volumePermissions:
 commonAnnotations:
   "whispr.dev/component": "database"
   "whispr.dev/team": "platform"
-  "whispr.dev/restartedAt": "2025-10-06T18:25:00Z"
 
 # Pod Labels
 commonLabels:
