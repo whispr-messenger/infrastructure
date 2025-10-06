@@ -1,0 +1,80 @@
+# ArgoCD Helm Chart values
+# Based on argo-cd chart v8.5.2
+
+# Redis HA configuration with persistence
+redis-ha:
+  enabled: true
+  persistentVolume:
+    enabled: true
+    size: 8Gi
+    storageClass: standard-rwo
+
+  # Resource limits for Redis
+  redis:
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+        cpu: 200m
+
+  # Sentinel configuration
+  sentinel:
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 50m
+      limits:
+        memory: 128Mi
+        cpu: 100m
+
+# Keep existing configuration
+global:
+  domain: argocd.whispr.epitech-msc2026.me
+
+controller:
+  replicas: 1
+
+repoServer:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+
+server:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+  service:
+    type: ClusterIP
+  metrics:
+    enabled: true
+  ingress:
+    enabled: false
+
+applicationSet:
+  replicas: 2
+
+crds:
+  install: true
+
+configs:
+  params:
+    application.instanceLabelKey: argocd.argoproj.io/instance
+    server.insecure: true
+  cm:
+    url: http://localhost:8080
+    repositories: |
+      - url: https://github.com/whispr-messenger/infrastructure/
+        type: git
+        name: argocd-apps
+    policy:
+      default: role:readonly
+      csv: |
+        p, role:admin, applications, *, */*, allow
+        p, role:admin, clusters, *, *, allow
+        p, role:admin, repositories, *, *, allow
+        p, role:admin, projects, *, *, allow
+        g, argocd-admins, role:admin
+  secret:
+    argocdServerAdminPassword: $2a$10$9Qy2iWAWOh2/MgY6qniJZ.ErnKuI/.rgUv3ptJpgcu4j.KrQmo1hG
