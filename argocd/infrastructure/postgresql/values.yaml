@@ -81,6 +81,7 @@ volumePermissions:
 commonAnnotations:
   "whispr.dev/component": "database"
   "whispr.dev/team": "platform"
+  "whispr.dev/restartedAt": "2025-10-06T18:25:00Z"
 
 # Pod Labels
 commonLabels:
