@@ -34,10 +34,11 @@ infrastructure/
 |-------------|-------------|-----------|
 | `rbac` | Permissions et contrôles d'accès | 1 |
 | `argocd` | ArgoCD self-management | 2 |
+| `postgresql` | Base de données partagée | 2 |
+| `redis` | Cache et sessions | 2 |
 | `cert-manager` | Certificats TLS automatiques | 3 |
 | `nginx-ingress` | Ingress controller | 4 |
-| `redis` | Cache et sessions | 5 |
-| `sonarqube` | Qualité de code | 6 |
+| `sonarqube` | Qualité de code | 4 |
 | `whispr-microservices` | Application principale | 10 |
 
 ### Workflow GitOps :
@@ -58,8 +59,9 @@ infrastructure/
 
 **Composants :**
 - ArgoCD (GitOps)
-- Istio (Service mesh)  
+- Istio (Service mesh)
 - Cert-Manager (TLS)
 - Nginx Ingress
+- PostgreSQL
 - Redis
 - SonarQube
