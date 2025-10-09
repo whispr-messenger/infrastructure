@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istio-base
+  name: istiod
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "3"  # --> After nginx-ingress (1) and before istio-base (2) and before sonarqube (4)
