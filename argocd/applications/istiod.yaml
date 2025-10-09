@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-base
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"  # --> After nginx-ingress (1) and before istio-base (2) and before sonarqube (4)
+spec:
+  project: default
+  
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: istiod
+    targetRevision: 1.23.2
+    helm:
+      releaseName: istiod
+      valueFiles:
+        - $values/argocd/infrastructure/istio-security/istiod-values.yaml
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: whispr-prod
+  
+  syncPolicy:
+    automated:
+      prune: true # Delete if not in git anymore to avoid oprhans services
+      selfHeal: true # If someone do a modification manually force the git version
+    syncOptions:
+      - CreateNamespace=true # If namespace doesn't exist --> create it
+      - ServerSideApply=true # Kub manage the conflict and fields
