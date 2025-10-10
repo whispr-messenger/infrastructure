@@ -1,0 +1,71 @@
+# Allow all
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-all
+  namespace: test
+spec:
+  rules:
+    - {}
+
+# --> Default: DENY ALL
+# apiVersion: security.istio.io/v1
+# kind: AuthorizationPolicy
+# metadata:
+#   name: deny-all
+#   namespace: test
+# spec:
+#   {} # Empty spec = deny all traffic by default
+
+#---
+# --> Enable Ingress Gateway to App A
+# apiVersion: security.istio.io/v1
+# kind: AuthorizationPolicy
+# metadata:
+#   name: allow-gateway-to-app-a
+#   namespace: test
+# spec:
+#   selector:
+#     matchLabels:
+#       app: app-a
+#   action: ALLOW
+#   rules:
+#   - from:
+#     - source:
+#         namespaces: ["cluster.local/ns/test/sa/istio-gateway"]
+#     to:
+#     - operation:
+#         methods: ["GET", "POST"]
+#         paths: ["/*"]
+
+#---
+# --> Enable App A to App B
+# apiVersion: security.istio.io/v1
+# kind: AuthorizationPolicy
+# metadata:
+#   name: allow-app-a-to-app-b
+#   namespace: test
+# spec:
+#   selector:
+#     matchLabels:
+#       app: app-b
+#   action: ALLOW
+#   rules:
+#   - from:
+#     - source:
+#         principals: ["cluster.local/ns/test/sa/app-a"]
+#     to:
+#     - operation:
+#         methods: ["GET"]
+#         paths: ["/*"]
+
+---
+# --> PeerAuthentication : mTLS STRICT
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: test
+spec:
+  mtls:
+    mode: STRICT # Force mTLS
