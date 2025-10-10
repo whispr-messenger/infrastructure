@@ -2,7 +2,7 @@ apiVersion: networking.istio.io/v1
 kind: Gateway
 metadata:
   name: gateway
-  namespace: test
+  namespace: whispr-prod
 spec:
   selector:
     istio: ingressgateway # --> CRD will configure all pods Gateway which have this label, so this pod will be configured
@@ -20,7 +20,7 @@ apiVersion: networking.istio.io/v1
 kind: VirtualService # --> # Define where to route the requests
 metadata:
   name: app-routes
-  namespace: test
+  namespace: whispr-prod
 spec:
   hosts:
     #- "test.local"
@@ -34,7 +34,7 @@ spec:
             prefix: "/api"
       route:
         - destination:
-            host: app-b
+            host: app-b # Dummy host in waiting to the real service to be deployed
             port:
               number: 80
   # -> Exemple: http://test.local/api/users → App B
@@ -44,7 +44,7 @@ spec:
             prefix: "/"
       route:
         - destination:
-            host: app-a
+            host: app-a # Dummy host in waiting to the real service to be deployed
             port:
               number: 80
 
