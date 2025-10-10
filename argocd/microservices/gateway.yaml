@@ -1,0 +1,52 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: test-gateway
+  namespace: test
+spec:
+  selector:
+    istio: ingressgateway # --> CRD will configure all pods Gateway which have this label, so this pod will be configured
+  servers:
+    - port:
+        number: 80 # -> Gateway listen on 80 port
+        name: http
+        protocol: HTTP
+      hosts:
+        #- "test.local" # -> accept request for test.local
+        - "*" # -> accept also all other hosts
+
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService # --> # Define where to route the requests
+metadata:
+  name: app-routes
+  namespace: test
+spec:
+  hosts:
+    #- "test.local"
+    - "*" # -> apply to all hosts
+  gateways:
+    - test-gateway # VirtualService is attached to the test-gateway without that the traffic will only apply to the mesh (internal traffic)
+  http:
+  # --> Rules HTTP in order, fist to match win
+    - match:
+        - uri:
+            prefix: "/api"
+      route:
+        - destination:
+            host: app-b
+            port:
+              number: 80
+  # -> Exemple: http://test.local/api/users → App B
+
+    - match:
+        - uri:
+            prefix: "/"
+      route:
+        - destination:
+            host: app-a
+            port:
+              number: 80
+
+  # --> Exemple: http://test.local/ → App A
+  # --> Exemple: http://test.local/index.html → App A

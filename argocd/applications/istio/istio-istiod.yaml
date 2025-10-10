@@ -2,25 +2,28 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istiod
+  name: istio-istiod
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "3"  # --> After nginx-ingress (1) and before istio-base (2) and before sonarqube (4)
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
   
   source:
-    repoURL: https://istio-release.storage.googleapis.com/charts
-    chart: istiod
-    targetRevision: 1.23.2
-    helm:
-      releaseName: istiod
+    - repoURL: https://istio-release.storage.googleapis.com/charts
+      chart: istiod
+      targetRevision: 1.24.0
+      helm:
       valueFiles:
-        - $values/argocd/infrastructure/istio-security/istiod-values.yaml
+        - $values/argocd/infrastructure/istio/istiod/values.yaml
+
+    - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+      targetRevision: HEAD
+      ref: values
   
   destination:
     server: https://kubernetes.default.svc
-    namespace: whispr-prod
+    namespace: istio-system
   
   syncPolicy:
     automated:

@@ -5,22 +5,26 @@ metadata:
   name: istio-base
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2"  # --> After nginx-ingress (1) and before sonarqube (4)
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   
   source:
-    repoURL: https://istio-release.storage.googleapis.com/charts
-    chart: base
-    targetRevision: 1.23.2
-    helm:
+    - repoURL: https://istio-release.storage.googleapis.com/charts
+      chart: base
+      targetRevision: 1.24.0
+      helm:
       releaseName: istio-base
       valueFiles:
-        - $values/argocd/infrastructure/istio-security/istio-base-values.yaml
+        - $values/argocd/infrastructure/istio/base/values.yaml
+
+    - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+      targetRevision: HEAD
+      ref: values
   
   destination:
     server: https://kubernetes.default.svc
-    namespace: whispr-prod
+    namespace: istio-system
   
   syncPolicy:
     automated:

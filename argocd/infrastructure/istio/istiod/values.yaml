@@ -1,0 +1,46 @@
+# Pilot configuration --> ex name of istiod
+pilot:
+  # Deploy on the test-worker
+  nodeSelector:
+    kubernetes.io/hostname: test-worker
+
+  # Toleration -> taint zone=test
+  tolerations:
+    - key: zone
+      operator: Equal
+      value: test
+      effect: NoSchedule
+  # Resources
+  resources:
+    requests:
+      cpu: 100m # 0.1 CPU minimum
+      memory: 256Mi # minimum
+    limits:
+      cpu: 500m # max 0.5 CPU no need more
+      memory: 512Mi # max 512 ram
+
+  # Replicas
+  autoscaleEnabled: false # --> No autoscale 1 replica is sufficient
+  replicaCount: 1
+
+# Telemetry
+telemetry:
+  enabled: true # enable the telemetry
+  v2:
+    enabled: true # New telemetry version --> more performant
+
+# mTLS and mesh configuration
+meshConfig:
+  # Logs and Access
+  accessLogFile: /dev/stdout # Standard output visible by kubectl logs
+  accessLogEncoding: JSON # Json for future parsing with Grafana or other tool of monitoring
+
+  # Auto mTLS
+  enableAutoMtls: true
+
+  # Config default proxy
+  defaultConfig:
+    holdApplicationUntilProxyStarts: true # Don't start application before Envoy proxy start
+    proxyMetadata:
+      ISTIO_META_DNS_CAPTURE: "true" # Redirect DNS traffic throught Envoy proxy
+      ISTIO_META_DNS_AUTO_ALLOCATE: "true" # Allocate virtual ip for services
