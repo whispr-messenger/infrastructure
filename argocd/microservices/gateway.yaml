@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1
 kind: Gateway
 metadata:
-  name: test-gateway
+  name: gateway
   namespace: test
 spec:
   selector:
@@ -26,7 +26,7 @@ spec:
     #- "test.local"
     - "*" # -> apply to all hosts
   gateways:
-    - test-gateway # VirtualService is attached to the test-gateway without that the traffic will only apply to the mesh (internal traffic)
+    - gateway # VirtualService is attached to the test-gateway without that the traffic will only apply to the mesh (internal traffic)
   http:
   # --> Rules HTTP in order, fist to match win
     - match:
