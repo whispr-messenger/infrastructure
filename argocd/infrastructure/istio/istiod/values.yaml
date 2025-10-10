@@ -1,15 +1,5 @@
 # Pilot configuration --> ex name of istiod
 pilot:
-  # Deploy on the test-worker
-  nodeSelector:
-    kubernetes.io/hostname: test-worker
-
-  # Toleration -> taint zone=test
-  tolerations:
-    - key: zone
-      operator: Equal
-      value: test
-      effect: NoSchedule
   # Resources
   resources:
     requests:
