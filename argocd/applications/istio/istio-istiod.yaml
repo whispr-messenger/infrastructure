@@ -8,14 +8,15 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
-  
-  source:
+
+  sources:
     - repoURL: https://istio-release.storage.googleapis.com/charts
       chart: istiod
       targetRevision: 1.24.0
       helm:
-      valueFiles:
-        - $values/argocd/infrastructure/istio/istiod/values.yaml
+        releaseName: istiod
+        valueFiles:
+          - $values/argocd/infrastructure/istio/istiod/values.yaml
 
     - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
       targetRevision: HEAD
@@ -32,3 +33,9 @@ spec:
     syncOptions:
       - CreateNamespace=true # If namespace doesn't exist --> create it
       - ServerSideApply=true # Kub manage the conflict and fields
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

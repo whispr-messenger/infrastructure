@@ -1,16 +1,14 @@
 # Service configuration
 service: # -> Kubernetes service that will expose the Gateway
-  type: NodePort # -> expose port to all nodes
+  type: LoadBalancer # -> provision GCP load balancer
   ports:
     - name: http2
       port: 80
       targetPort: 80
-      nodePort: 30080
       protocol: TCP
     - name: https
       port: 443
       targetPort: 443
-      nodePort: 30443
       protocol: TCP
 
 # Resources
@@ -27,7 +25,7 @@ autoscaling:
   enabled: false
 
 # Replicas
-replicaCount: 1
+replicaCount: 2
 
 # Labels
 labels:
