@@ -1,0 +1,34 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-istiod
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  
+  source:
+    - repoURL: https://istio-release.storage.googleapis.com/charts
+      chart: istiod
+      targetRevision: 1.24.0
+      helm:
+      valueFiles:
+        - $values/argocd/infrastructure/istio/istiod/values.yaml
+
+    - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+      targetRevision: HEAD
+      ref: values
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  
+  syncPolicy:
+    automated:
+      prune: true # Delete if not in git anymore to avoid oprhans services
+      selfHeal: true # If someone do a modification manually force the git version
+    syncOptions:
+      - CreateNamespace=true # If namespace doesn't exist --> create it
+      - ServerSideApply=true # Kub manage the conflict and fields

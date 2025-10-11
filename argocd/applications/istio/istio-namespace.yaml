@@ -1,0 +1,25 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-namespace
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1" # Before all
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+    targetRevision: HEAD
+    path: argocd/infrastructure/istio
+    directory:
+      include: namespace.yaml
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
