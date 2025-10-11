@@ -33,3 +33,9 @@ spec:
     syncOptions:
       - CreateNamespace=true # If namespace doesn't exist --> create it
       - ServerSideApply=true # Kub manage the conflict and fields
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
