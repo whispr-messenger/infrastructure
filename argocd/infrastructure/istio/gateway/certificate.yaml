@@ -1,0 +1,35 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+
+metadata:
+  name: istio-gateway-cert
+  namespace: whispr-prod
+
+spec:
+  secretName: istio-gateway-tls
+  
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+  
+  commonName: istio-gateway.whispr-prod.svc.cluster.local
+  
+  dnsNames:
+  - istio-gateway.whispr-prod.svc.cluster.local
+  - istio-gateway.whispr-prod.svc
+  - istio-gateway
+  - whispr.app
+  - www.whispr.app
+  #- api.whispr.app
+  
+  duration: 2160h
+  renewBefore: 360h
+  
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  
+  usages:
+  - server auth
+  - client auth
