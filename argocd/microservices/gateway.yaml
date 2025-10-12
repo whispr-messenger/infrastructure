@@ -12,9 +12,9 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - whispr.app
-        - www.whispr.app
-        #- api.whispr.app
+        - whispr.epitech-msc2026.me
+        - www.whispr.epitech-msc2026.me
+        #- api.whispr.epitech-msc2026.me
       tls:
         httpsRedirect: true
 
@@ -23,9 +23,9 @@ spec:
         name: https
         protocol: HTTPS
       hosts:
-        - whispr.app
-        - www.whispr.app
-        #- api.whispr.app
+        - whispr.epitech-msc2026.me
+        - www.whispr.epitech-msc2026.me
+        #- api.whispr.epitech-msc2026.me
       tls:
         mode: SIMPLE
         credentialName: istio-gateway-tls
@@ -40,19 +40,19 @@ metadata:
 spec:
   hosts:
     #- "test.local"
-    - whispr.app
-    - www.whispr.app
-    # - api.whispr.app
+    - whispr.epitech-msc2026.me
+    - www.whispr.epitech-msc2026.me
+    # - api.whispr.epitech-msc2026.me
   gateways:
     - gateway # VirtualService is attached to the test-gateway without that the traffic will only apply to the mesh (internal traffic)
   http:
     # --> Rules HTTP in order, fist to match win
-    # API via whispr.app/api
+    # API via whispr.epitech-msc2026.me/api
     - match:
         - uri:
             prefix: "/api"
           authority:
-            exact: whispr.app
+            exact: whispr.epitech-msc2026.me
       route:
         - destination:
             host: app-b.whispr-prod.svc.cluster.local # by FQDN
@@ -60,14 +60,14 @@ spec:
               number: 80
     # -> Exemple: http://test.local/api/users → App B
 
-    # WWW redirect --> whispr.app
+    # WWW redirect --> whispr.epitech-msc2026.me
     - match:
       - uri:
         prefix: /
         authority:
-          exact: www.whispr.app
+          exact: www.whispr.epitech-msc2026.me
       redirect:
-        authority: whispr.app
+        authority: whispr.epitech-msc2026.me
         redirectCode: 301
 
     # Catch all

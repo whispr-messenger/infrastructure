@@ -24,14 +24,14 @@ spec:
   
   tls:
   - hosts:
-    - whispr.app
-    - www.whispr.app
+    - whispr.epitech-msc2026.me
+    - www.whispr.epitech-msc2026.me
     #- api.whispr.app
     secretName: whispr-tls  # Let's Encrypt
   
   rules:
   # Site principal + API
-  - host: whispr.app
+  - host: whispr.epitech-msc2026.me
     http:
       # First to match in order win
       paths:
@@ -54,7 +54,7 @@ spec:
               number: 443
   
   # WWW redirect
-  - host: www.whispr.app
+  - host: www.whispr.epitech-msc2026.me
     http:
       paths:
       - path: /
