@@ -18,10 +18,10 @@ jobs:
     strategy:
       matrix:
         tf-dir:
-          - google_kubernetes_engine
-          - kubernetes_cluster
+          - terraform/1-gcp-infrastructure
+          - terraform/2-kubernetes-bootstrap
+          - terraform/3-argocd-installation
           - terraform/modules/google_kubernetes_engine
-          - terraform/modules/kubernetes_cluster
 
     defaults:
       run:
