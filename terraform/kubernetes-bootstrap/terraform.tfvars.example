@@ -1,0 +1,28 @@
+# ArgoCD Configuration
+argocd_admin_password = "bcrypt-hashed-password-here"
+argocd_secret_key     = "random-secret-key"
+
+# PostgreSQL Configuration
+postgres_password = "secure-postgres-password"
+postgres_user     = "postgres"
+postgres_db       = "postgres"
+
+# Redis Configuration
+redis_password = "secure-redis-password"
+
+# SonarQube Configuration
+sonarqube_jdbc_password  = "secure-jdbc-password"
+sonarqube_admin_password = "secure-admin-password"
+
+# Whispr Application Secrets
+jwt_secret             = "secure-jwt-secret"
+database_url           = "postgresql://user:pass@host:5432/db"
+redis_url              = "redis://:password@host:6379"
+aws_access_key_id      = "your-aws-access-key"
+aws_secret_access_key  = "your-aws-secret-key"
+aws_region             = "us-east-1"
+smtp_host              = "smtp.example.com"
+smtp_port              = "587"
+smtp_user              = "smtp-user"
+smtp_password          = "smtp-password"
+encryption_key         = "secure-encryption-key"
