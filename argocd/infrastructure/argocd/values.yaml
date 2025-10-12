@@ -1,9 +1,13 @@
 # ArgoCD Helm Chart values
 # Based on argo-cd chart v8.5.2
 
-# Redis HA configuration with persistence
+# Redis HA configuration with persistence and enhanced stability
 redis-ha:
   enabled: true
+
+  # Increase replica count for better resilience
+  replicas: 3
+
   persistentVolume:
     enabled: true
     size: 8Gi
@@ -19,7 +23,29 @@ redis-ha:
         memory: 512Mi
         cpu: 200m
 
-  # Sentinel configuration
+    # Increase startup probe timeouts to prevent premature failures
+    startupProbe:
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 30  # Allow 150s for startup (30 * 5s)
+
+    livenessProbe:
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
+
+    readinessProbe:
+      initialDelaySeconds: 15
+      periodSeconds: 5
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
+
+  # Sentinel configuration with improved stability
   sentinel:
     resources:
       requests:
@@ -28,6 +54,66 @@ redis-ha:
       limits:
         memory: 128Mi
         cpu: 100m
+
+    # Sentinel tuning parameters for better stability
+    quorum: 2
+    downAfterMilliseconds: 10000  # Time (ms) before considering instance down
+    failoverTimeout: 180000  # Timeout (ms) for failover operations
+    parallelSyncs: 1  # Number of replicas to sync in parallel during failover
+
+    # Increase probe timeouts
+    startupProbe:
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 30
+
+    livenessProbe:
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
+
+    readinessProbe:
+      initialDelaySeconds: 15
+      periodSeconds: 5
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
+
+  # HAProxy configuration for Redis HA
+  haproxy:
+    enabled: true
+    replicas: 3
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 50m
+      limits:
+        memory: 128Mi
+        cpu: 100m
+
+    # Health check tuning
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 3
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
+
+    livenessProbe:
+      initialDelaySeconds: 30
+      periodSeconds: 3
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
+
+  # Pod disruption budget for better availability
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 2  # Ensure at least 2 pods remain available during disruptions
 
 # Keep existing configuration
 global:
