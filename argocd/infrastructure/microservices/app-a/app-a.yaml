@@ -28,14 +28,6 @@ spec:
     spec:
       serviceAccountName: app-a
       
-      nodeSelector:
-        kubernetes.io/hostname: test-worker      
-      tolerations:
-      - key: zone
-        operator: Equal
-        value: test
-        effect: NoSchedule
-      
       containers:
       - name: app
         image: nginx:alpine
