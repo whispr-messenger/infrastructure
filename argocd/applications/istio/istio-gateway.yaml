@@ -21,6 +21,10 @@ spec:
       targetRevision: HEAD
       ref: values
 
+    - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+      targetRevision: HEAD
+      path: argocd/infrastructure/istio/gateway
+
   destination:
     server: https://kubernetes.default.svc
     namespace: whispr-prod
