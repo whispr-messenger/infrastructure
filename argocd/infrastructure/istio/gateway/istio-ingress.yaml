@@ -15,7 +15,9 @@ metadata:
     
     # TLS Backend (NGINX --> Istio) : HTTPS
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
+    # Reference the secret containing the backend certificate for SSL verification
+    nginx.ingress.kubernetes.io/proxy-ssl-secret: "whispr-prod/istio-gateway-tls"
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: "on"
     nginx.ingress.kubernetes.io/proxy-ssl-server-name: "on"
     # Use $host to forward the original hostname as SNI to Istio Gateway
     # This allows Envoy to match the correct filter chain based on the public hostname
