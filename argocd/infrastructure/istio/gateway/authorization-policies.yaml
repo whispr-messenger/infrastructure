@@ -68,5 +68,4 @@ metadata:
   namespace: whispr-prod
 spec:
   mtls:
-    #mode: STRICT # Force mTLS
-    mode: PERMISSIVE
+    mode: STRICT # Force mTLS
