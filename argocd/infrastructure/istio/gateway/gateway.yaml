@@ -73,7 +73,7 @@ spec:
     # Catch all
     - match:
         - uri:
-          prefix: /
+            prefix: /
       route:
         - destination:
             host: app-a.whispr-prod.svc.cluster.local # by FQDN
