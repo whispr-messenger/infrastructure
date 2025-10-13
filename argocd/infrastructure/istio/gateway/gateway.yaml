@@ -63,7 +63,7 @@ spec:
     # WWW redirect --> whispr.epitech-msc2026.me
     - match:
       - uri:
-        prefix: /
+          prefix: /
         authority:
           exact: www.whispr.epitech-msc2026.me
       redirect:

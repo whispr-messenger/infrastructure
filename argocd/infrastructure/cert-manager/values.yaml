@@ -6,6 +6,9 @@ startupapicheck:
 serviceAccount:
   create: true
 
+# istio-csr:
+#   enabled: false # -> not necessary for Let's Encrypt via ingress
+
 resources:
   requests:
     cpu: 10m
