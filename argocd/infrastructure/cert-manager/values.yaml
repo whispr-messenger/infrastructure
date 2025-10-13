@@ -6,6 +6,9 @@ startupapicheck:
 serviceAccount:
   create: true
 
+istio-csr:
+  enabled: false
+
 resources:
   requests:
     cpu: 10m
