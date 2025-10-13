@@ -19,7 +19,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-ssl-server-name: "on"
     # Use $host to forward the original hostname as SNI to Istio Gateway
     # This allows Envoy to match the correct filter chain based on the public hostname
-    nginx.ingress.kubernetes.io/proxy-ssl-name: "$host"
+    nginx.ingress.kubernetes.io/proxy-ssl-name: $host
 
 spec:
   ingressClassName: nginx
