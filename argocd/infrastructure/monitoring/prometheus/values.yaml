@@ -1,0 +1,72 @@
+#TODO
+alertmanager:
+  enabled: false
+
+#TODO
+pushgateway:
+  enabled: false
+
+#TODO
+kube-state-metrics:
+  enabled: true
+
+#TODO
+prometheus-node-exporter:
+  enabled: true
+
+# PROMETHEUS SERVER
+server:
+  # Storage
+  persistentVolume:
+    enabled: true
+    size: 8Gi
+  
+  # Retention
+  retention: "15d" # keep data 15 days
+  
+  # Resources --> recommended resources
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+  
+  # Service
+  service:
+    type: ClusterIP
+    ports:
+    - name: http
+      port: 80
+      targetPort: 9090
+      protocol: TCP
+    selector:
+      app: prometheus
+      component: server
+
+# SCRAPE CONFIGS ISTIO --> Recommended documentation settings
+serverFiles:
+  prometheus.yml:
+    scrape_configs:
+      # Istiod job
+      - job_name: istiod
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - istio-system
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: istiod;http-monitoring
+
+      # Envoy Stats job
+      - job_name: envoy-stats
+        metrics_path: /stats/prometheus
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_container_port_name]
+            action: keep
+            regex: '.*-envoy-prom'
