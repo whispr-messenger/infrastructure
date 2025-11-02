@@ -1,0 +1,3 @@
+argocd_namespace       = "argocd"
+argocd_admin_password  = "" # Leave empty to generate random password
+argocd_domain          = "argocd.whispr.epitech-msc2026.me"
