@@ -5,3 +5,4 @@ gcp-terraform-key.json
 terraform-sa-key.json
 platform-engineers-key.json
 .mcp.json
+auth
