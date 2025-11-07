@@ -1,0 +1,138 @@
+# MinIO Object Storage configuration for Whispr project
+# Based on Bitnami MinIO Helm chart v17.0.21
+# Using bitnamilegacy repository due to Bitnami catalog migration
+#
+# MinIO Access:
+# - Internal only (no external exposure)
+# - Microservice media can access via: http://minio.minio.svc.cluster.local:9000
+# - Console access: kubectl port-forward -n minio svc/minio 9001:9001
+#   Then open http://localhost:9001
+# - Credentials: Use root user/password from auth section below
+
+## Image overrides - use legacy repository due to Bitnami catalog migration
+image:
+  registry: docker.io
+  repository: bitnamilegacy/minio
+  tag: "2025.7.23-debian-12-r0"
+
+## MinIO Mode: standalone or distributed
+mode: standalone
+
+## MinIO Authentication
+auth:
+  # Use existing secret for credentials (not stored in Git for security)
+  existingSecret: minio-root-credentials
+  existingSecretPasswordKey: rootPassword
+  existingSecretUserKey: rootUser
+
+## MinIO API configuration
+apiPort: 9000
+
+## MinIO Console (UI) configuration
+consolePort: 9001
+
+## MinIO Server configuration
+server:
+  ## MinIO Node configuration
+  configuration:
+    ## Region for S3 API
+    region: "us-east-1"
+
+  ## Resource configuration
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+
+  ## Persistence configuration
+  persistence:
+    enabled: true
+    storageClass: "standard-rwo"
+    size: 20Gi
+    accessModes:
+      - ReadWriteOnce
+
+  ## Pod Security Context
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## Container Security Context
+  containerSecurityContext:
+    enabled: true
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 1001
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+## MinIO Client (mc) configuration
+client:
+  enabled: false
+
+## Expose MinIO via service
+service:
+  type: ClusterIP
+  port: 9000
+  consolePort: 9001
+
+## MinIO Ingress Configuration
+# Disabled: MinIO is only accessed internally by microservices
+# Access console via: kubectl port-forward -n minio svc/minio 9001:9001
+ingress:
+  enabled: false
+
+## MinIO health check configuration
+healthCheck:
+  enabled: true
+  path: /minio/health/live
+
+## MinIO livenessProbe configuration
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+## MinIO readinessProbe configuration
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+## Pod Disruption Budget
+pdb:
+  create: true
+  minAvailable: 1
+
+## Pod Annotations
+commonAnnotations:
+  "whispr.dev/component": "storage"
+  "whispr.dev/team": "platform"
+
+## Pod Labels
+commonLabels:
+  app.kubernetes.io/part-of: "whispr"
+  app.kubernetes.io/component: "object-storage"
+
+## MinIO Metrics (Prometheus)
+metrics:
+  enabled: false
+  # serviceMonitor:
+  #   enabled: true
+  #   namespace: monitoring
+  #   interval: 30s
+  #   scrapeTimeout: 10s
