@@ -1,0 +1,39 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: prometheus
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+
+spec:
+  project: default
+  sources:
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: prometheus
+      targetRevision: 25.27.0
+      helm:
+        valueFiles:
+          - $values/argocd/infrastructure/monitoring/prometheus/values.yaml
+
+    - repoURL: "https://github.com/whispr-messenger/infrastructure.git"
+      targetRevision: main
+      ref: values
+
+    - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+      targetRevision: HEAD
+      path: argocd/infrastructure/monitoring/prometheus
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

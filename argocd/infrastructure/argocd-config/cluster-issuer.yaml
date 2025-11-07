@@ -15,6 +15,7 @@ spec:
         ingress:
           class: nginx
 ---
+# ClusterIssuer self-signed for internal certificates
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer  # --> ClusterIssue is allowed in all namespaces
 
