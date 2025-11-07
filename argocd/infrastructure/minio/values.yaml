@@ -21,7 +21,7 @@ console:
   image:
     registry: docker.io
     repository: bitnamilegacy/minio-object-browser
-    tag: "ff9a524c8c200671626e3b074364c17e0da205df421cfb84275aec01e7c4a819"
+    tag: "2.0.2-debian-12-r3"
 
 ## MinIO Mode: standalone or distributed
 mode: standalone
