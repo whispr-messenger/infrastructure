@@ -32,47 +32,47 @@ apiPort: 9000
 consolePort: 9001
 
 ## MinIO Server configuration
-server:
-  ## MinIO Node configuration
-  configuration:
-    ## Region for S3 API
-    region: "us-east-1"
+## ref: https://docs.min.io/docs/minio-server-configuration-guide.html
+config:
+  - name: region
+    options:
+      name: "eu-west-1"
 
-  ## Resource configuration
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "250m"
-    limits:
-      memory: "1Gi"
-      cpu: "1000m"
+## Resource configuration
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "1000m"
 
-  ## Persistence configuration
-  persistence:
-    enabled: true
-    storageClass: "standard-rwo"
-    size: 20Gi
-    accessModes:
-      - ReadWriteOnce
+## Persistence configuration
+persistence:
+  enabled: true
+  storageClass: "standard-rwo"
+  size: 20Gi
+  accessModes:
+    - ReadWriteOnce
 
-  ## Pod Security Context
-  podSecurityContext:
-    enabled: true
-    fsGroup: 1001
-    runAsUser: 1001
-    runAsNonRoot: true
+## Pod Security Context
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+  runAsUser: 1001
+  runAsNonRoot: true
 
-  ## Container Security Context
-  containerSecurityContext:
-    enabled: true
-    allowPrivilegeEscalation: false
-    runAsNonRoot: true
-    runAsUser: 1001
-    capabilities:
-      drop:
-        - ALL
-    seccompProfile:
-      type: RuntimeDefault
+## Container Security Context
+containerSecurityContext:
+  enabled: true
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1001
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
 
 ## MinIO Client (mc) configuration
 client:
@@ -114,9 +114,10 @@ readinessProbe:
   failureThreshold: 3
 
 ## Pod Disruption Budget
+## Note: In standalone mode, minAvailable should be empty or 0 to allow disruptions
 pdb:
   create: true
-  minAvailable: 1
+  minAvailable: ""
 
 ## Pod Annotations
 commonAnnotations:
