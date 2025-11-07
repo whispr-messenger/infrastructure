@@ -36,6 +36,7 @@ infrastructure/
 | `argocd` | ArgoCD self-management | 2 |
 | `postgresql` | Base de données partagée | 2 |
 | `redis` | Cache et sessions | 2 |
+| `minio` | Stockage d'objets (media microservice) | 2 |
 | `cert-manager` | Certificats TLS automatiques | 3 |
 | `nginx-ingress` | Ingress controller | 4 |
 | `sonarqube` | Qualité de code | 4 |
@@ -55,7 +56,7 @@ infrastructure/
 
 ## Infrastructure
 
-**Cluster GKE :** `whispr-messenger` (europe-west1-b, projet whispr-messenger-472716)
+**Cluster GKE :** `whispr-messenger` (europe-west1-b, projet magnetic-racer-476808-v4)
 
 **Composants :**
 - ArgoCD (GitOps)
