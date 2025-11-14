@@ -62,8 +62,8 @@ data:
       <p><strong>Envoy Proxy:</strong> Injected by Istio</p>
       <p><strong>Node:</strong> test-worker</p>
       <hr>
-      <button onclick="fetch('/api').then(r=>r.text()).then(t=>alert(t))">
-        Call Backend (App B)
+      <button onclick="fetch('/auth').then(r=>r.text()).then(t=>alert(t))">
+        Call Backend (auth-service)
       </button>
     </body>
     </html>

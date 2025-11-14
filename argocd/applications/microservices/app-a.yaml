@@ -2,14 +2,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: app-b
+  name: app-a
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure
     targetRevision: HEAD
-    path: argocd/infrastructure/microservices/app-b
+    path: argocd/infrastructure/microservices/app-a
   destination:
     server: https://kubernetes.default.svc
     namespace: whispr-prod
