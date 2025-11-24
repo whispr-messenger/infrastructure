@@ -34,6 +34,23 @@ spec:
         ports:
         - containerPort: 3000
 
+        # env:
+        # - name: POSTGRES_USER
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: reporting-app-secrets
+        #       key: postgres-db-username
+        # - name: POSTGRES_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: reporting-app-secrets
+        #       key: postgres-db-username
+        # - name: POSTGRES_URL
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: reporting-app-configmap
+        #       key: database_url
+
 ---
 
 apiVersion: v1
