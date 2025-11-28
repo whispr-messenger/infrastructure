@@ -11,12 +11,12 @@ image:
 
 # PostgreSQL authentication
 auth:
+  # Enable "postgres" admin user 
+  enablePostgresUser: true
   username: postgres
   database: postgres
-  # Password will be auto-generated and stored in secret
-  password: ""
-  # Microservices will create their own databases and users
-
+  password: ""  # Empty string -> for auto generation
+  
 # Architecture configuration
 architecture: standalone
 
