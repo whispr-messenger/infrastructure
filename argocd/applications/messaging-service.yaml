@@ -2,14 +2,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: app-a
+  name: messaging-service
   namespace: argocd
+  labels:
+    app.kubernetes.io/name: messaging-service
+    app.kubernetes.io/part-of: whispr
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/finalizer
 spec:
   project: default
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure
-    targetRevision: HEAD
-    path: argocd/infrastructure/microservices/app-a
+    targetRevision: main
+    path: argocd/infrastructure/microservices/messaging-service
   destination:
     server: https://kubernetes.default.svc
     namespace: whispr-prod
@@ -20,3 +25,9 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
