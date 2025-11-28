@@ -13,7 +13,10 @@ image:
 auth:
   # Enable "postgres" admin user 
   enablePostgresUser: true
-
+  username: postgres
+  database: postgres
+  password: ""  # Empty string -> for auto generation
+  
 # Architecture configuration
 architecture: standalone
 
