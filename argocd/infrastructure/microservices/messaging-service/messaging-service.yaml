@@ -69,6 +69,8 @@ spec:
         prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: messaging-service
+      imagePullSecrets:
+        - name: ghcr-secret
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
