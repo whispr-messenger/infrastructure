@@ -12,3 +12,19 @@ metadata:
   name: whispr-prod
   labels:
     istio-injection: enabled  # -> Auto-injection Envoy
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: postgresql
+  labels:
+    istio-injection: enabled
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: redis
+  labels:
+    istio-injection: enabled  # -> Auto-injection Envoy
