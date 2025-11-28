@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ServiceAccount # --> ServiceAccount = Identity for pods --> For AuthorizationPolicy, using SA identity
+metadata:
+  name: auth-service
+  namespace: whispr-prod
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: whispr-prod
+  labels:
+    app: auth-service
+
+spec:
+  replicas: 1
+  
+  selector:
+    matchLabels:
+      app: auth-service
+  
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    
+    spec:
+      serviceAccountName: auth-service
+      
+      containers:
+      - name: auth
+        image: ghcr.io/whispr-messenger/auth-service/auth-service:80e931ae73e2c143ea197dca637a779eeccbe281
+        ports:
+        - containerPort: 3000
+
+        # env:
+        # - name: POSTGRES_USER
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: reporting-app-secrets
+        #       key: postgres-db-username
+        # - name: POSTGRES_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: reporting-app-secrets
+        #       key: postgres-db-username
+        # - name: POSTGRES_URL
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: reporting-app-configmap
+        #       key: database_url
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: whispr-prod
+  labels:
+    app: auth-service
+
+spec:
+  selector:
+    app: auth-service # --> Service route toward pods with label
+  
+  ports:
+  - port: 3000
+    targetPort: 3000
+    name: http # --> Name port (requiert by Istio --> protocol detection)

@@ -50,14 +50,14 @@ spec:
     # API via whispr.epitech-msc2026.me/api
     - match:
         - uri:
-            prefix: "/api"
+            prefix: "/auth"
           authority:
             exact: whispr.epitech-msc2026.me
       route:
         - destination:
-            host: app-b.whispr-prod.svc.cluster.local # by FQDN
+            host: auth-service.whispr-prod.svc.cluster.local # by FQDN
             port:
-              number: 80
+              number: 3000
     # -> Exemple: http://test.local/api/users → App B
 
     # WWW redirect --> whispr.epitech-msc2026.me
