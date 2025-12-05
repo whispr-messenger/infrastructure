@@ -13,11 +13,6 @@ metadata:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 
-    # Basic auth to prod in waiting for secure environment 
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: basic-auth
-    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
-
     # TLS Backend (NGINX --> Istio) : HTTPS
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     # Reference the secret containing the backend certificate for SSL verification
