@@ -69,31 +69,8 @@ metadata:
 spec:
   action: ALLOW
   rules:
-  # Allow egress to PostgreSQL (port 5432)
-  - to:
-    - operation:
-        ports: ["5432"]
-      destination:
-        hosts:
-          - "postgresql.whispr-prod.svc.cluster.local"
-          - "postgresql.postgresql.svc.cluster.local"
-  # Allow egress to Redis (port 6379)
-  - to:
-    - operation:
-        ports: ["6379"]
-      destination:
-        hosts:
-          - "redis.whispr-prod.svc.cluster.local"
-          - "redis.redis.svc.cluster.local"
-          - "redis-master.whispr-prod.svc.cluster.local"
-  # Allow egress to gRPC services (port 50051, 50052, 50053)
-  - to:
-    - operation:
-        ports: ["50051", "50052", "50053"]
-  # Allow internal traffic (port 80, 443)
-  - to:
-    - operation:
-        ports: ["80", "443", "3000", "3001", "4000", "4001"]
+  # Allow all traffic (permissive while debugging)
+  - {}
 
 ---
 # --> PeerAuthentication : mTLS STRICT
