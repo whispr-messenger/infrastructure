@@ -24,9 +24,6 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-<<<<<<<< HEAD:argocd/applications/microservices/app-a.yaml
-      - ServerSideApply=true
-========
       - ServerSideApply=true
     retry:
       limit: 5
@@ -34,4 +31,3 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
->>>>>>>> main:argocd/applications/messaging-service.yaml
