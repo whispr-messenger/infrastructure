@@ -9,14 +9,12 @@ image:
   repository: bitnamilegacy/postgresql
   tag: "17.2.0-debian-12-r9"
 
-# PostgreSQL authentication
+# Authentication configuration
 auth:
-  # Enable "postgres" admin user 
+  # Assign a password to the "postgres" admin user. 
+  # Otherwise, remote access will be blocked for this user
   enablePostgresUser: true
-  username: postgres
-  database: postgres
-  password: ""  # Empty string -> for auto generation
-  
+
 # Architecture configuration
 architecture: standalone
 
