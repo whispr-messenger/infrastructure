@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: whispr-prod
+
+resources:
+  - ../../base
+
+replicas:
+  - name: scheduling-service
+    count: 2
+
+images:
+  - name: ghcr.io/whispr-messenger/scheduling-service
+    newTag: latest
+
+configMapGenerator:
+  - name: scheduling-service-config
+    behavior: merge
+    literals:
+      - DB_POOL_SIZE=10

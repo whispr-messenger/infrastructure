@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-service
+  namespace: whispr-prod
+  labels:
+    app: messaging-service
+    app.kubernetes.io/name: messaging-service
+spec:
+  type: ClusterIP
+  selector:
+    app: messaging-service
+  ports:
+    - name: http
+      port: 80
+      targetPort: 4000
+      protocol: TCP
+    - name: grpc
+      port: 4001
+      targetPort: 4001
+      protocol: TCP

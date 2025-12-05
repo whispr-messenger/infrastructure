@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: whispr-prod
+
+resources:
+  - serviceaccount.yaml
+  - deployment.yaml
+  - service.yaml
+  - hpa.yaml
+  - pdb.yaml
+  - virtualservice.yaml
+  - destinationrule.yaml
+
+configMapGenerator:
+  - name: scheduling-service-config
+    literals:
+      - NODE_ENV=production
+      - PORT=3000
+      - GRPC_PORT=3001
+      - LOG_LEVEL=info
+      - DB_POOL_SIZE=10
+      - MESSAGING_SERVICE_HOST=messaging-service.whispr-prod.svc.cluster.local
+      - MESSAGING_SERVICE_GRPC_PORT=4001
+
+secretGenerator:
+  - name: scheduling-service-secrets
+    literals:
+      - DATABASE_URL=postgresql://whispr:CHANGE_ME@postgresql.whispr-prod.svc.cluster.local:5432/whispr_scheduling
+      - REDIS_URL=redis://redis-master.whispr-prod.svc.cluster.local:6379/1
+
+commonLabels:
+  app.kubernetes.io/name: scheduling-service
+  app.kubernetes.io/part-of: whispr

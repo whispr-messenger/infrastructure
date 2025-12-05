@@ -12,9 +12,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/whispr-messenger/infrastructure
+    repoURL: https://github.com/whispr-messenger/messaging-service
     targetRevision: main
-    path: argocd/infrastructure/microservices/messaging-service
+    path: k8s/overlays/production
   destination:
     server: https://kubernetes.default.svc
     namespace: whispr-prod

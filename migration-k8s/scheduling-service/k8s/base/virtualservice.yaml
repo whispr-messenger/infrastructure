@@ -1,0 +1,21 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: scheduling-service
+  namespace: whispr-prod
+spec:
+  hosts:
+    - scheduling-service
+    - scheduling-service.whispr-prod.svc.cluster.local
+  http:
+    - route:
+        - destination:
+            host: scheduling-service
+            port:
+              number: 80
+      timeout: 30s
+      retries:
+        attempts: 3
+        perTryTimeout: 10s
+        retryOn: gateway-error,connect-failure,refused-stream

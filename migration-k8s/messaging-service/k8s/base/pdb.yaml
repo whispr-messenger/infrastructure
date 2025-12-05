@@ -1,0 +1,13 @@
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: messaging-service-pdb
+  namespace: whispr-prod
+  labels:
+    app.kubernetes.io/name: messaging-service
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: messaging-service
