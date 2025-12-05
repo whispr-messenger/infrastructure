@@ -61,6 +61,8 @@ spec:
         prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: scheduling-service
+      imagePullSecrets:
+        - name: ghcr-secret
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
