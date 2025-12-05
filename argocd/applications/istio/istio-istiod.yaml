@@ -16,7 +16,7 @@ spec:
       helm:
         releaseName: istiod
         valueFiles:
-          - $values/argocd/infrastructure/istio/istiod/values.yaml
+          - $values/argocd/helm/istio/istiod/values.yaml
 
     - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
       targetRevision: HEAD

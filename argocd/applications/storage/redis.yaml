@@ -14,7 +14,7 @@ spec:
     targetRevision: 22.0.7
     helm:
       valueFiles:
-        - $values/argocd/infrastructure/redis/values.yaml
+        - $values/argocd/helm/redis/values.yaml
 
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: main

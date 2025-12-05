@@ -16,7 +16,7 @@ spec:
       targetRevision: 25.27.0
       helm:
         valueFiles:
-          - $values/argocd/infrastructure/monitoring/prometheus/values.yaml
+          - $values/argocd/helm/prometheus/values.yaml
 
     - repoURL: "https://github.com/whispr-messenger/infrastructure.git"
       targetRevision: main
@@ -24,7 +24,7 @@ spec:
 
     - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
       targetRevision: HEAD
-      path: argocd/infrastructure/monitoring/prometheus
+      path: argocd/k8s/prometheus
 
   destination:
     server: https://kubernetes.default.svc
