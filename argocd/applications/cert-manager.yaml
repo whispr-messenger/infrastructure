@@ -14,7 +14,7 @@ spec:
     targetRevision: v1.18.2
     helm:
       valueFiles:
-        - $values/argocd/infrastructure/cert-manager/values.yaml
+        - $values/argocd/helm/cert-manager/values.yaml
 
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: main

@@ -14,7 +14,7 @@ spec:
     targetRevision: 17.0.21
     helm:
       valueFiles:
-        - $values/argocd/infrastructure/minio/values.yaml
+        - $values/argocd/helm/minio/values.yaml
 
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: main
