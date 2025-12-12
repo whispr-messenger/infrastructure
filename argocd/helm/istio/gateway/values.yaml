@@ -1,9 +1,3 @@
-# Image configuration
-image:
-  repository: docker.io/istio/proxyv2
-  tag: 1.24.0
-  pullPolicy: IfNotPresent
-
 # Service configuration
 service:
   type: ClusterIP
