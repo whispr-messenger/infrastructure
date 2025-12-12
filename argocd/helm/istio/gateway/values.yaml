@@ -1,3 +1,6 @@
+# Revision configuration (required for proper image injection)
+revision: "default"
+
 # Service configuration
 service:
   type: ClusterIP
