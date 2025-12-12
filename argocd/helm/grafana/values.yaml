@@ -1,0 +1,22 @@
+grafana:
+  adminUser: admin
+  adminPassword: admin123
+
+  service:
+    type: ClusterIP
+
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClassName: standard-rwo
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.whispr.epitech-msc2026.me
+    path: /
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.whispr.epitech-msc2026.me
