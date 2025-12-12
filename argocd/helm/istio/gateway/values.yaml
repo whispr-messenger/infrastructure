@@ -10,8 +10,9 @@ service:
     targetPort: 8443
 
 # Pod annotations to specify proxy image
-annotations:
-  sidecar.istio.io/proxyImage: docker.io/istio/proxyv2:1.24.0
+_internal_defaults_do_not_set:
+  podAnnotations:
+    sidecar.istio.io/proxyImage: docker.io/istio/proxyv2:1.24.0
 
 # Resources
 resources:
