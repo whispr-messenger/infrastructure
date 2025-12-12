@@ -11,7 +11,7 @@ kind: Namespace
 metadata:
   name: whispr-prod
   labels:
-    istio-injection: disabled # -> Auto-injection Envoy
+    istio-injection: enabled # -> Auto-injection Envoy
 
 ---
 apiVersion: v1
