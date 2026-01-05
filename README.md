@@ -24,6 +24,12 @@ infrastructure/
 │   ├── infrastructure/        # Infrastructure managée
 │   └── microservices/         # Microservices deployments
 ├── scripts/                   # Scripts d'automation
+├── secrets/                   # Secrets Kubernetes (templates)
+│   ├── argocd/               # Secrets ArgoCD
+│   ├── postgresql/           # Secrets PostgreSQL
+│   ├── redis/                # Secrets Redis
+│   ├── sonarqube/            # Secrets SonarQube
+│   └── whispr-prod/          # Secrets microservices
 ├── terraform/                 # Infrastructure as Code
 └── Justfile                   # Task automation
 ```
@@ -66,3 +72,25 @@ infrastructure/
 - PostgreSQL
 - Redis
 - SonarQube
+
+## Gestion des Secrets
+
+Les secrets Kubernetes sont déployés automatiquement via GitHub Actions.
+
+**Configuration :** Voir [secrets/SETUP.md](secrets/SETUP.md)
+
+**Quick commands :**
+```bash
+# Générer des secrets forts
+./secrets/generate-secrets.sh
+
+# Vérifier les secrets déployés
+./secrets/check-secrets.sh
+
+# Déployer manuellement
+gh workflow run deploy-secrets.yml
+```
+
+**Workflows disponibles :**
+- `deploy-secrets.yml` : Déploie les secrets sur le cluster
+- `validate-secrets.yml` : Valide les manifestes de secrets
