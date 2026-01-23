@@ -4,6 +4,12 @@ metadata:
   name: observability
 ---
 apiVersion: v1
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: observability
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-datasources
@@ -21,7 +27,6 @@ data:
         isDefault: true
         editable: true
 ---
-# Optional: a simple provisioner config (not required if chart already picks /etc/grafana/provisioning/datasources)
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -38,5 +43,3 @@ data:
         disableDeletion: false
         options:
           path: /etc/grafana/provisioning/datasources
----
-# Patch helper note: we'll mount the grafana-datasources ConfigMap into the grafana Deployment at /etc/grafana/provisioning/datasources
