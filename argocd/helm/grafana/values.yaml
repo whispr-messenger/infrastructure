@@ -10,6 +10,12 @@ grafana:
     size: 10Gi
     storageClassName: standard-rwo
 
+  securityContext:
+    # Ensure Grafana process can access hostPath volumes when running with persistent storage.
+    # fsGroup 472 is the Grafana runtime group used by the official image.
+    enabled: true
+    fsGroup: 472
+
   ingress:
     enabled: true
     ingressClassName: nginx
