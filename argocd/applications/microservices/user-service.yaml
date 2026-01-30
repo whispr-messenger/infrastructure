@@ -2,12 +2,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: messaging-service
+  name: user-service
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/whispr-messenger/messaging-service
+    repoURL: https://github.com/whispr-messenger/user-service
     targetRevision: main
     path: k8s
   destination:
