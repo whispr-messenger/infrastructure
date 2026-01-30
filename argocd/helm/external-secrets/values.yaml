@@ -1,0 +1,49 @@
+# External Secrets Operator Configuration
+
+# Install CRDs
+installCRDs: true
+
+# Replicas for high availability
+replicaCount: 2
+
+# Resources
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# Service account
+serviceAccount:
+  create: true
+  name: external-secrets
+
+# Webhook configuration
+webhook:
+  create: true
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+# Cert controller
+certController:
+  create: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+# Metrics
+metrics:
+  service:
+    enabled: true

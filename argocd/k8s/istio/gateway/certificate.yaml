@@ -19,8 +19,8 @@ spec:
   - istio-gateway.whispr-prod.svc.cluster.local
   - istio-gateway.whispr-prod.svc
   - istio-gateway
-  - whispr.epitech-msc2026.me
-  - www.whispr.epitech-msc2026.me
+  - whispr.fr
+  - www.whispr.fr
   #- api.whispr.app
   
   duration: 2160h

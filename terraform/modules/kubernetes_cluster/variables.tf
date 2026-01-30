@@ -17,6 +17,6 @@ variable "argocd_admin_password" {
 
 variable "argocd_domain" {
   description = "Domain for accessing ArgoCD"
-  default     = "argocd.whispr.epitech-msc2026.me"
+  default     = "argocd.whispr.fr"
   type        = string
 }

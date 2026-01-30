@@ -1,0 +1,112 @@
+# HashiCorp Vault Configuration for Kubernetes
+
+# Server configuration
+server:
+  # Run Vault in HA mode with Raft storage
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+      setNodeId: true
+      config: |
+        ui = true
+        
+        listener "tcp" {
+          tls_disable = 1
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+        
+        storage "raft" {
+          path = "/vault/data"
+          
+          retry_join {
+            leader_api_addr = "http://vault-0.vault-internal:8200"
+          }
+          
+          retry_join {
+            leader_api_addr = "http://vault-1.vault-internal:8200"
+          }
+          
+          retry_join {
+            leader_api_addr = "http://vault-2.vault-internal:8200"
+          }
+        }
+        
+        service_registration "kubernetes" {}
+
+  # Resources for Vault pods
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  # Data storage
+  dataStorage:
+    enabled: true
+    size: 10Gi
+    storageClass: standard-rwo
+    accessMode: ReadWriteOnce
+
+  # Audit storage
+  auditStorage:
+    enabled: true
+    size: 10Gi
+    storageClass: standard-rwo
+    accessMode: ReadWriteOnce
+
+  # Service account
+  serviceAccount:
+    create: true
+    name: vault
+
+  # Ingress configuration (optional - for Vault UI)
+  ingress:
+    enabled: false
+    # Uncomment to enable Vault UI via ingress
+    # enabled: true
+    # ingressClassName: nginx
+    # hosts:
+    #   - host: vault.whispr.fr
+    #     paths:
+    #       - /
+    # tls:
+    #   - secretName: vault-tls
+    #     hosts:
+    #       - vault.whispr.fr
+
+  # Standalone mode disabled (using HA)
+  standalone:
+    enabled: false
+
+# UI enabled
+ui:
+  enabled: true
+  serviceType: "ClusterIP"
+
+# Injector configuration (for automatic secret injection)
+injector:
+  enabled: true
+  replicas: 2
+  
+  # Resources for injector
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+      cpu: 200m
+
+  # Metrics
+  metrics:
+    enabled: true
+
+# Global settings
+global:
+  enabled: true
+  tlsDisable: true  # TLS will be handled by ingress

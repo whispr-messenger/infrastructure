@@ -12,9 +12,9 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - whispr.epitech-msc2026.me
-        - www.whispr.epitech-msc2026.me
-        #- api.whispr.epitech-msc2026.me
+        - whispr.fr
+        - www.whispr.fr
+        #- api.whispr.fr
       tls:
         httpsRedirect: true
 
@@ -23,9 +23,9 @@ spec:
         name: https
         protocol: HTTPS
       hosts:
-        - whispr.epitech-msc2026.me
-        - www.whispr.epitech-msc2026.me
-        #- api.whispr.epitech-msc2026.me
+        - whispr.fr
+        - www.whispr.fr
+        #- api.whispr.fr
       tls:
         mode: SIMPLE
         credentialName: istio-gateway-tls
@@ -40,9 +40,9 @@ metadata:
 spec:
   hosts:
     #- "test.local"
-    - whispr.epitech-msc2026.me
-    - www.whispr.epitech-msc2026.me
-    # - api.whispr.epitech-msc2026.me
+    - whispr.fr
+    - www.whispr.fr
+    # - api.whispr.fr
   gateways:
     - gateway # VirtualService is attached to the test-gateway without that the traffic will only apply to the mesh (internal traffic)
   http:
@@ -52,7 +52,7 @@ spec:
         - uri:
             prefix: "/auth"
           authority:
-            exact: whispr.epitech-msc2026.me
+            exact: whispr.fr
       route:
         - destination:
             host: auth-service.whispr-prod.svc.cluster.local # by FQDN
@@ -65,9 +65,9 @@ spec:
       - uri:
           prefix: /
         authority:
-          exact: www.whispr.epitech-msc2026.me
+          exact: www.whispr.fr
       redirect:
-        authority: whispr.epitech-msc2026.me
+        authority: whispr.fr
         redirectCode: 301
 
     # Catch all
