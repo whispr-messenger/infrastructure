@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/part-of: argocd
 data:
   # Argo CD's externally facing base URL (optional). Required when configuring SSO
-  url: https://argocd.whispr.epitech-msc2026.me
+  url: https://argocd.whispr.fr
   # Enables application status badge feature
   statusbadge.enabled: "true"
   # Enable insecure mode for server (will be terminated by ingress)
@@ -28,7 +28,7 @@ data:
         baseURL: https://github.com
         clientID: $dex.github.clientId
         clientSecret: $dex.github.clientSecret
-        redirectURI: https://argocd.whispr.epitech-msc2026.me/api/dex/callback
+        redirectURI: https://argocd.whispr.fr/api/dex/callback
         orgs:
         - name: whispr-messenger
           # Remove teams restriction to allow all org members

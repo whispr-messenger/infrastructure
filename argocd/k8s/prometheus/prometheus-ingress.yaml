@@ -13,7 +13,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: prometheus.whispr.epitech-msc2026.me
+  - host: prometheus.whispr.fr
     http:
       paths:
       - path: /
@@ -25,5 +25,5 @@ spec:
               number: 80
   tls:
   - hosts:
-    - prometheus.whispr.epitech-msc2026.me
+    - prometheus.whispr.fr
     secretName: prometheus-tls

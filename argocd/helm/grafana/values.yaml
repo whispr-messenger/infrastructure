@@ -14,9 +14,9 @@ grafana:
     enabled: true
     ingressClassName: nginx
     hosts:
-      - grafana.whispr.epitech-msc2026.me
+      - grafana.whispr.fr
     path: /
     tls:
       - secretName: grafana-tls
         hosts:
-          - grafana.whispr.epitech-msc2026.me
+          - grafana.whispr.fr

@@ -12,4 +12,4 @@ gcloud compute addresses create argocd-ip \
 echo "IP statique créée avec succès:"
 gcloud compute addresses describe argocd-ip --global --format="value(address)"
 
-echo "Veuillez configurer votre DNS pour pointer argocd.whispr.epitech-msc2026.me vers cette IP"
+echo "Veuillez configurer votre DNS pour pointer argocd.whispr.fr vers cette IP"

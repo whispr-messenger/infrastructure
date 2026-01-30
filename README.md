@@ -56,7 +56,8 @@ infrastructure/
 
 ## Infrastructure
 
-**Cluster GKE :** `whispr-messenger` (europe-west1-b, projet magnetic-racer-476808-v4)
+**Cluster GKE :** `whispr-messenger` (europe-west1, projet tranquil-harbor-480911-k9)  
+**Domaine :** whispr.fr ([Configuration DNS](DNS-CONFIGURATION.md))
 
 **Composants :**
 - ArgoCD (GitOps)
@@ -66,3 +67,24 @@ infrastructure/
 - PostgreSQL
 - Redis
 - SonarQube
+- **HashiCorp Vault** (Secrets management)
+- **External Secrets Operator** (Kubernetes secrets sync)
+
+## Gestion des Secrets
+
+Les secrets sont gérés automatiquement via **HashiCorp Vault** et **External Secrets Operator**.
+
+**Guide complet** : [scripts/vault/README-vault-setup.md](scripts/vault/README-vault-setup.md)
+
+**Quick start** :
+```bash
+# Initialiser Vault (première fois uniquement)
+cd scripts/vault
+./init-vault.sh
+
+# Peupler les secrets
+./populate-secrets.sh
+
+# Déployer le SecretStore
+kubectl apply -f argocd/k8s/vault/vault-secret-store.yaml
+```
