@@ -1,36 +1,28 @@
 ---
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: auth-service
-#   name: scheduling-service
-#   namespace: argocd
-#   labels:
-#     app.kubernetes.io/name: scheduling-service
-#     app.kubernetes.io/part-of: whispr
-#   finalizers:
-#     - resources-finalizer.argocd.argoproj.io/finalizer
-# spec:
-#   project: default
-#   source:
-#     repoURL: https://github.com/whispr-messenger/infrastructure
-#     targetRevision: HEAD
-#     path: argocd/infrastructure/microservices/auth-service
-#     targetRevision: main
-#     path: argocd/infrastructure/microservices/scheduling-service
-#   destination:
-#     server: https://kubernetes.default.svc
-#     namespace: whispr-prod
-#   syncPolicy:
-#     automated:
-#       prune: true
-#       selfHeal: true
-#     syncOptions:
-#       - CreateNamespace=true
-#       - ServerSideApply=true
-#     retry:
-#       limit: 5
-#       backoff:
-#         duration: 5s
-#         factor: 2
-#         maxDuration: 3m
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: scheduling-service
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/whispr-messenger/notification-service
+    targetRevision: main
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: whispr-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
