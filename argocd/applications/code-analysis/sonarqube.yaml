@@ -9,15 +9,18 @@ metadata:
 spec:
   project: default
   sources:
+  # Helm chart
   - repoURL: https://SonarSource.github.io/helm-chart-sonarqube
     chart: sonarqube
     targetRevision: 2025.5.0
     helm:
       valueFiles:
         - $values/argocd/helm/sonarqube/values.yaml
+  # Values file
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: HEAD
     ref: values
+
   destination:
     server: https://kubernetes.default.svc
     namespace: sonarqube
