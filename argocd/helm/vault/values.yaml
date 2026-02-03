@@ -73,18 +73,16 @@ server:
 
   # Ingress configuration (optional - for Vault UI)
   ingress:
-    enabled: false
-    # Uncomment to enable Vault UI via ingress
-    # enabled: true
-    # ingressClassName: nginx
-    # hosts:
-    #   - host: vault.whispr.fr
-    #     paths:
-    #       - /
-    # tls:
-    #   - secretName: vault-tls
-    #     hosts:
-    #       - vault.whispr.fr
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - host: vault.whispr.fr
+        paths:
+          - /
+    tls:
+      - secretName: vault-tls
+        hosts:
+          - vault.whispr.fr
 
   # Standalone mode disabled (using HA)
   standalone:
