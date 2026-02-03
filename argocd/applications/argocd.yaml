@@ -8,13 +8,17 @@ metadata:
     argocd.argoproj.io/sync-wave: "3" # Deployed after nginx-ingress
 spec:
   project: default
+
+  # Path to the kubernetes manifests to further configure the ArgoCD application
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure
     targetRevision: HEAD
     path: argocd/k8s/argocd-config
+
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
+
   syncPolicy:
     automated:
       prune: false # Important : Do not delete the existing config
