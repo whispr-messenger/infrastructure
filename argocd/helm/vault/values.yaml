@@ -52,6 +52,13 @@ server:
     storageClass: standard-rwo
     accessMode: ReadWriteOnce
 
+  # Custom readiness probe - accept sealed Vault as ready
+  # This allows PostSync hooks (vault-init) to run and unseal Vault
+  readinessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+
+
   # Audit storage
   auditStorage:
     enabled: true
