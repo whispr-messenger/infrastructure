@@ -1,0 +1,92 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-init
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: vault-init
+      restartPolicy: OnFailure
+      containers:
+        - name: vault-init
+          image: hashicorp/vault:1.15.2
+          env:
+            - name: VAULT_ADDR
+              value: http://vault.vault.svc:8200
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+
+              echo "Waiting for Vault to be ready..."
+              until vault status 2>/dev/null; do
+                echo "Vault not ready, waiting..."
+                sleep 5
+              done
+
+              echo "Checking if Vault is already initialized..."
+              if vault status | grep -q "Initialized.*true"; then
+                echo "Vault is already initialized"
+
+                # Check if Secret exists
+                if kubectl get secret vault-init-keys -n vault >/dev/null 2>&1; then
+                  echo "Unseal keys Secret exists, attempting to unseal..."
+
+                  # Get unseal keys from Secret
+                  UNSEAL_KEY_1=$(kubectl get secret vault-init-keys -n vault -o jsonpath='{.data.unseal-key-1}' | base64 -d)
+                  UNSEAL_KEY_2=$(kubectl get secret vault-init-keys -n vault -o jsonpath='{.data.unseal-key-2}' | base64 -d)
+                  UNSEAL_KEY_3=$(kubectl get secret vault-init-keys -n vault -o jsonpath='{.data.unseal-key-3}' | base64 -d)
+
+                  # Unseal Vault
+                  vault operator unseal "$UNSEAL_KEY_1" || true
+                  vault operator unseal "$UNSEAL_KEY_2" || true
+                  vault operator unseal "$UNSEAL_KEY_3" || true
+
+                  echo "Vault unsealed successfully"
+                else
+                  echo "WARNING: Vault is initialized but Secret not found. Manual intervention required."
+                  exit 1
+                fi
+              else
+                echo "Initializing Vault..."
+
+                # Initialize Vault with 5 key shares and 3 key threshold
+                vault operator init -key-shares=5 -key-threshold=3 -format=json > /tmp/vault-init.json
+
+                # Extract keys and root token
+                UNSEAL_KEY_1=$(cat /tmp/vault-init.json | jq -r '.unseal_keys_b64[0]')
+                UNSEAL_KEY_2=$(cat /tmp/vault-init.json | jq -r '.unseal_keys_b64[1]')
+                UNSEAL_KEY_3=$(cat /tmp/vault-init.json | jq -r '.unseal_keys_b64[2]')
+                UNSEAL_KEY_4=$(cat /tmp/vault-init.json | jq -r '.unseal_keys_b64[3]')
+                UNSEAL_KEY_5=$(cat /tmp/vault-init.json | jq -r '.unseal_keys_b64[4]')
+                ROOT_TOKEN=$(cat /tmp/vault-init.json | jq -r '.root_token')
+
+                # Create Kubernetes Secret with init data
+                kubectl create secret generic vault-init-keys -n vault \
+                  --from-literal=unseal-key-1="$UNSEAL_KEY_1" \
+                  --from-literal=unseal-key-2="$UNSEAL_KEY_2" \
+                  --from-literal=unseal-key-3="$UNSEAL_KEY_3" \
+                  --from-literal=unseal-key-4="$UNSEAL_KEY_4" \
+                  --from-literal=unseal-key-5="$UNSEAL_KEY_5" \
+                  --from-literal=root-token="$ROOT_TOKEN"
+
+                echo "Vault initialized and keys stored in Secret"
+
+                # Unseal Vault
+                vault operator unseal "$UNSEAL_KEY_1"
+                vault operator unseal "$UNSEAL_KEY_2"
+                vault operator unseal "$UNSEAL_KEY_3"
+
+                echo "Vault unsealed successfully"
+
+                # Clean up sensitive file
+                rm -f /tmp/vault-init.json
+              fi
+
+              echo "Vault initialization complete"

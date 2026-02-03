@@ -1,0 +1,125 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-config-job
+  namespace: vault
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: vault-config
+      restartPolicy: OnFailure
+      containers:
+        - name: vault-config
+          image: hashicorp/vault:1.15.2
+          env:
+            - name: VAULT_ADDR
+              value: http://vault.vault.svc:8200
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault-init-keys
+                  key: root-token
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+
+              echo "Waiting for Vault to be ready and unsealed..."
+              until vault status | grep -q "Sealed.*false"; do
+                echo "Vault not ready or still sealed, waiting..."
+                sleep 5
+              done
+
+              echo "Vault is ready, starting configuration..."
+
+              ####################################################################################################
+              # Activate the required engines
+              ####################################################################################################
+              echo "Enabling auth engines..."
+              vault auth enable kubernetes 2>/dev/null || echo "Kubernetes auth already enabled"
+              vault secrets enable database 2>/dev/null || echo "Database secrets engine already enabled"
+              vault secrets enable -path=kv kv-v2 2>/dev/null || echo "KV secrets engine already enabled"
+
+              ####################################################################################################
+              # Trust configuration :
+              # "To verify a Pod identity contact the Kubernetes API at this address using this certificate"
+              ####################################################################################################
+              echo "Configuring Kubernetes auth..."
+              vault write auth/kubernetes/config \
+                kubernetes_host=https://kubernetes.default.svc:443 \
+                kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+              ####################################################################################################
+              # Create the authentication role
+              ####################################################################################################
+              echo "Creating vault-admin role..."
+              vault write auth/kubernetes/role/vault-admin \
+                bound_service_account_names=default \
+                bound_service_account_namespaces=default \
+                policies=vault-admin \
+                ttl=1h
+
+              ####################################################################################################
+              # Define the policy for the "vault-admin" role
+              ####################################################################################################
+              echo "Creating vault-admin policy..."
+              vault policy write vault-admin - <<EOF
+                path "/*" {
+                  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+                }
+              EOF
+
+              ####################################################################################################
+              # Configure PostgreSQL database connection
+              ####################################################################################################
+              echo "Configuring PostgreSQL database connection..."
+              
+              # Get PostgreSQL password from the postgresql secret
+              PGPASSWORD=$(kubectl get secret postgresql -n postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)
+              
+              # Configure the database connection
+              vault write database/config/postgres \
+                plugin_name=postgresql-database-plugin \
+                allowed_roles="role-*" \
+                connection_url="postgresql://{{username}}:{{password}}@postgresql.postgresql.svc.cluster.local:5432/postgres?sslmode=disable" \
+                username="postgres" \
+                password="$PGPASSWORD"
+              
+              echo "PostgreSQL connection configured successfully"
+
+              ####################################################################################################
+              # Microservices DB credentials: roles, policies, k8s auth
+              ####################################################################################################
+              echo "Configuring microservices..."
+              for svc in auth-service user-service messaging-service notification-service media-service scheduling-service; do
+                echo "Configuring ${svc}..."
+ 
+                # Database role for the microservice
+                vault write database/roles/role-${svc} \
+                  db_name=postgres \
+                  creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT CONNECT ON DATABASE ${svc}_db TO \"{{name}}\";" \
+                  default_ttl="1h" \
+                  max_ttl="24h"
+
+                # Policy for the microservice (access only to its credentials path)
+                vault policy write ${svc}-policy - <<EOF
+                  path "database/creds/role-${svc}" {
+                    capabilities = ["read"]
+                  }
+              EOF
+
+                # Kubernetes authentication role for the microservice
+                vault write auth/kubernetes/role/${svc} \
+                  bound_service_account_names=${svc}-sa \
+                  bound_service_account_namespaces=whispr-prod \
+                  policies=${svc}-policy \
+                  ttl=1h
+              done
+
+              echo "Vault configuration completed successfully!"
