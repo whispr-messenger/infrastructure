@@ -1,0 +1,88 @@
+---
+# ServiceAccount for vault-init Job
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-init
+  namespace: vault
+
+---
+# ServiceAccount for vault-config Job
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-config
+  namespace: vault
+
+---
+# Role with permissions to manage Secrets
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vault-init-role
+  namespace: vault
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create", "get", "update", "patch"]
+
+---
+# RoleBinding for vault-init ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vault-init-binding
+  namespace: vault
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vault-init-role
+subjects:
+  - kind: ServiceAccount
+    name: vault-init
+    namespace: vault
+
+---
+# RoleBinding for vault-config ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vault-config-binding
+  namespace: vault
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vault-init-role
+subjects:
+  - kind: ServiceAccount
+    name: vault-config
+    namespace: vault
+
+---
+# Role in postgresql namespace to read secrets
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vault-config-postgresql-reader
+  namespace: postgresql
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["postgresql"]
+    verbs: ["get"]
+
+---
+# RoleBinding in postgresql namespace for vault-config
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vault-config-postgresql-reader
+  namespace: postgresql
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vault-config-postgresql-reader
+subjects:
+  - kind: ServiceAccount
+    name: vault-config
+    namespace: vault
