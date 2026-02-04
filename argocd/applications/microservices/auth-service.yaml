@@ -5,7 +5,7 @@ metadata:
   name: auth-service
   namespace: argocd
 spec:
-  project: default
+  project: whispr-messenger
   source:
     repoURL: https://github.com/whispr-messenger/auth-service
     targetRevision: main

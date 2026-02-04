@@ -1,0 +1,19 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: whispr-messenger
+  namespace: argocd
+spec:
+  description: Whispr messenger microservices
+  sourceRepos:
+    - https://github.com/whispr-messenger/*
+  destinations:
+    - namespace: whispr-prod
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'

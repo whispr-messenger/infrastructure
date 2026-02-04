@@ -5,7 +5,7 @@ metadata:
   name: notification-service
   namespace: argocd
 spec:
-  project: default
+  project: whispr-messenger
   source:
     repoURL: https://github.com/whispr-messenger/notification-service
     targetRevision: main

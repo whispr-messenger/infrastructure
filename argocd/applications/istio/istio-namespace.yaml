@@ -7,7 +7,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-1" # Before all
 spec:
-  project: default
+  project: infrastructure
   source:
     repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: HEAD
