@@ -58,11 +58,13 @@ spec:
                 secretKeyRef:
                   name: user-service-db-secret
                   key: password
+            - name: DATA_SOURCE_URL
+              value: "jdbc:postgresql://$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+            - name: DATABASE_URL
+              value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
           envFrom:
             - configMapRef:
                 name: user-service-config
-            - secretRef:
-                name: user-service-secret
             - secretRef:
                 name: user-service-db-secret
           # Resources limits and requests
