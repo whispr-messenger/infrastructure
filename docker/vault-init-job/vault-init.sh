@@ -5,9 +5,10 @@ echo "=== Vault Initialization Script ==="
 echo "Vault Address: $VAULT_ADDR"
 
 # Wait for Vault to be reachable (accepts both 200 and 204 status codes)
+# We use query params to ensure Vault returns 204 even if sealed or uninitialized
 echo "Waiting for Vault to be ready..."
-until curl -s -f -o /dev/null http://vault.vault.svc:8200/v1/sys/health; do
-  echo "Vault not ready, waiting..."
+until curl -s -f -o /dev/null "http://vault.vault.svc:8200/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"; do
+  echo "Vault not ready (status code implies not reachable or error), waiting..."
   sleep 5
 done
 echo "✓ Vault is reachable"
