@@ -5,7 +5,7 @@ metadata:
   name: media-service
   namespace: argocd
 spec:
-  project: default
+  project: whispr-messenger
   source:
     repoURL: https://github.com/whispr-messenger/media-service
     targetRevision: main
