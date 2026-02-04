@@ -6,7 +6,7 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
+  sources:
     # Enable the Atlas Helm OCI repository
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: main
