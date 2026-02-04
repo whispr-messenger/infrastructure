@@ -28,12 +28,16 @@ if vault status | grep -q "Initialized.*true"; then
     UNSEAL_KEY_2=$(kubectl get secret vault-init-keys -n vault -o jsonpath='{.data.unseal-key-2}' | base64 -d)
     UNSEAL_KEY_3=$(kubectl get secret vault-init-keys -n vault -o jsonpath='{.data.unseal-key-3}' | base64 -d)
 
-    # Unseal Vault (ignore errors if already unsealed)
-    vault operator unseal "$UNSEAL_KEY_1" || true
-    vault operator unseal "$UNSEAL_KEY_2" || true
-    vault operator unseal "$UNSEAL_KEY_3" || true
+    # Unseal all pods in the HL cluster
+    for pod in vault-0 vault-1 vault-2; do
+      echo "Unsealing $pod..."
+      ADDR="http://$pod.vault-internal:8200"
+      VAULT_ADDR=$ADDR vault operator unseal "$UNSEAL_KEY_1" || true
+      VAULT_ADDR=$ADDR vault operator unseal "$UNSEAL_KEY_2" || true
+      VAULT_ADDR=$ADDR vault operator unseal "$UNSEAL_KEY_3" || true
+    done
 
-    echo "✓ Vault unsealed successfully"
+    echo "✓ Vault unseal commands sent to all pods"
   else
     echo "⚠ WARNING: Vault is initialized but Secret not found. Manual intervention required."
     exit 1
@@ -64,10 +68,14 @@ else
 
   echo "✓ Vault initialized and keys stored in Secret"
 
-  # Unseal Vault
-  vault operator unseal "$UNSEAL_KEY_1"
-  vault operator unseal "$UNSEAL_KEY_2"
-  vault operator unseal "$UNSEAL_KEY_3"
+  # Unseal all pods
+  for pod in vault-0 vault-1 vault-2; do
+    echo "Unsealing $pod..."
+    ADDR="http://$pod.vault-internal:8200"
+    VAULT_ADDR=$ADDR vault operator unseal "$UNSEAL_KEY_1"
+    VAULT_ADDR=$ADDR vault operator unseal "$UNSEAL_KEY_2"
+    VAULT_ADDR=$ADDR vault operator unseal "$UNSEAL_KEY_3"
+  done
 
   echo "✓ Vault unsealed successfully"
 
