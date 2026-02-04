@@ -12,9 +12,9 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - whispr.fr
-        - www.whispr.fr
-        #- api.whispr.fr
+        - whispr.epitech.beer
+        - www.whispr.epitech.beer
+        #- api.whispr.epitech.beer
       tls:
         httpsRedirect: true
 
@@ -23,9 +23,9 @@ spec:
         name: https
         protocol: HTTPS
       hosts:
-        - whispr.fr
-        - www.whispr.fr
-        #- api.whispr.fr
+        - whispr.epitech.beer
+        - www.whispr.epitech.beer
+        #- api.whispr.epitech.beer
       tls:
         mode: SIMPLE
         credentialName: istio-gateway-tls
@@ -40,9 +40,9 @@ metadata:
 spec:
   hosts:
     #- "test.local"
-    - whispr.fr
-    - www.whispr.fr
-    # - api.whispr.fr
+    - whispr.epitech.beer
+    - www.whispr.epitech.beer
+    # - api.whispr.epitech.beer
   gateways:
     - gateway # VirtualService is attached to the test-gateway without that the traffic will only apply to the mesh (internal traffic)
   http:
@@ -52,7 +52,7 @@ spec:
         - uri:
             prefix: "/auth"
           authority:
-            exact: whispr.fr
+            exact: whispr.epitech.beer
       route:
         - destination:
             host: auth-service.whispr-prod.svc.cluster.local # by FQDN
@@ -65,9 +65,9 @@ spec:
       - uri:
           prefix: /
         authority:
-          exact: www.whispr.fr
+          exact: www.whispr.epitech.beer
       redirect:
-        authority: whispr.fr
+        authority: whispr.epitech.beer
         redirectCode: 301
 
     # Catch all

@@ -14,9 +14,9 @@ grafana:
     enabled: true
     ingressClassName: nginx
     hosts:
-      - grafana.whispr.fr
+      - grafana.whispr.epitech.beer
     path: /
     tls:
       - secretName: grafana-tls
         hosts:
-          - grafana.whispr.fr
+          - grafana.whispr.epitech.beer
