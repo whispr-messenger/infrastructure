@@ -1,7 +1,7 @@
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultConnection
 metadata:
-  name: vault-connection
+  name: default
   namespace: whispr-prod
 spec:
   address: http://vault.vault.svc:8200
