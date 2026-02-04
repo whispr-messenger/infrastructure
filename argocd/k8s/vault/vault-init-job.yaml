@@ -13,7 +13,7 @@ spec:
         - name: vault-init
           # Image is built and pushed by GitHub Action on changes to docker/vault-init-job/
           # Tag format: sha-{commit-hash} for version tracking and ArgoCD change detection
-          image: ghcr.io/whispr-messenger/vault-init-job:sha-fab7ca1
+          image: ghcr.io/whispr-messenger/vault-init-job:sha-f86d916
           env:
             - name: VAULT_ADDR
               value: http://vault.vault.svc:8200
