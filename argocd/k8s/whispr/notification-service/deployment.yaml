@@ -29,6 +29,19 @@ spec:
             - name: http
               containerPort: 4000
               protocol: TCP
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-db-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-db-secret
+                  key: password
+            - name: DATABASE_URL
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
           envFrom:
             - configMapRef:
                 name: notification-service-config

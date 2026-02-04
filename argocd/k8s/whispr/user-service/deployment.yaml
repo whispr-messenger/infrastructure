@@ -47,10 +47,20 @@ spec:
               containerPort: 50051
               protocol: TCP
           # Environment variables
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-db-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-db-secret
+                  key: password
           envFrom:
             - configMapRef:
                 name: user-service-config
-            # Not created automatically for the moment
             - secretRef:
                 name: user-service-secret
             - secretRef:

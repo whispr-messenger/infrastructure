@@ -13,3 +13,6 @@ data:
   GRPC_PORT: "4001"
   LOG_LEVEL: "info"
   POOL_SIZE: "10"
+  DB_HOST: "postgresql.postgresql.svc.cluster.local"
+  DB_PORT: "5432"
+  DB_NAME: "messaging_service_db"

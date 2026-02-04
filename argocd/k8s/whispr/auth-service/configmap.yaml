@@ -22,7 +22,7 @@ data:
   DB_TYPE: "postgres"
   DB_HOST: "postgresql.postgresql.svc.cluster.local"
   DB_PORT: "5432"
-  DB_NAME: "auth-service"
+  DB_NAME: auth_service_db
   DB_MIGRATIONS_RUN: "true"
   DB_SYNCHRONIZE: "false"  # Should be false in production
   DB_LOGGING: "false"
