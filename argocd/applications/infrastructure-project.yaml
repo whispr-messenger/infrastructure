@@ -11,9 +11,7 @@ spec:
     - https://charts.bitnami.com/bitnami
     - https://charts.external-secrets.io
     - https://charts.jetstack.io
-    - https://github.com/whispr-messenger/infrastructure
     - https://github.com/whispr-messenger/infrastructure.git
-    - https://github.com/whispr-messenger/infrastructure/
     - https://helm.releases.hashicorp.com
     - https://istio-release.storage.googleapis.com/charts
     - https://kubernetes.github.io/ingress-nginx
