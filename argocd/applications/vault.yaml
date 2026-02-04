@@ -43,7 +43,7 @@ spec:
         - /webhooks/0/clientConfig/caBundle
   retry:
     limit: 5
-      backoff:
-        duration: 5s
-        factor: 2
-        maxDuration: 3m
+    backoff:
+      duration: 5s
+      factor: 2
+      maxDuration: 3m
