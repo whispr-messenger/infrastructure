@@ -114,6 +114,10 @@ spec:
                 
                 echo "Creating database ${DB_NAME} if it doesn't exist..."
                 psql -h postgresql.postgresql.svc.cluster.local -U postgres -c "CREATE DATABASE \"${DB_NAME}\";" || echo "Database ${DB_NAME} already exists or error creating it"
+                
+                # Grant permissions on public schema so dynamic roles can create tables (Postgres 15+)
+                echo "Granting permissions on public schema in ${DB_NAME}..."
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres -d "${DB_NAME}" -c "GRANT ALL ON SCHEMA public TO PUBLIC;"
 
                 # Database role for the microservice
                 vault write database/roles/${ROLE_NAME} \
