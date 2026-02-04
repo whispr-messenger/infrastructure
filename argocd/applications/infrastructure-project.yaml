@@ -45,8 +45,6 @@ spec:
       server: https://kubernetes.default.svc
     - namespace: vault-secrets-operator-system
       server: https://kubernetes.default.svc
-    - namespace: whispr-prod
-      server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
