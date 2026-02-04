@@ -6,7 +6,7 @@ echo "Vault Address: $VAULT_ADDR"
 
 # Wait for Vault to be reachable (accepts both 200 and 204 status codes)
 echo "Waiting for Vault to be ready..."
-until wget --spider -q http://vault.vault.svc:8200/v1/sys/health 2>&1 | grep -qE "HTTP.*20[04]"; do
+until curl -s -f -o /dev/null http://vault.vault.svc:8200/v1/sys/health; do
   echo "Vault not ready, waiting..."
   sleep 5
 done
@@ -42,13 +42,13 @@ else
   # Initialize Vault with 5 key shares and 3 key threshold
   vault operator init -key-shares=5 -key-threshold=3 -format=json > /tmp/vault-init.json
 
-  # Extract keys and root token using yq
-  UNSEAL_KEY_1=$(yq -r '.unseal_keys_b64[0]' /tmp/vault-init.json)
-  UNSEAL_KEY_2=$(yq -r '.unseal_keys_b64[1]' /tmp/vault-init.json)
-  UNSEAL_KEY_3=$(yq -r '.unseal_keys_b64[2]' /tmp/vault-init.json)
-  UNSEAL_KEY_4=$(yq -r '.unseal_keys_b64[3]' /tmp/vault-init.json)
-  UNSEAL_KEY_5=$(yq -r '.unseal_keys_b64[4]' /tmp/vault-init.json)
-  ROOT_TOKEN=$(yq -r '.root_token' /tmp/vault-init.json)
+  # Extract keys and root token using yq (raw output)
+  UNSEAL_KEY_1=$(yq '.unseal_keys_b64[0]' /tmp/vault-init.json)
+  UNSEAL_KEY_2=$(yq '.unseal_keys_b64[1]' /tmp/vault-init.json)
+  UNSEAL_KEY_3=$(yq '.unseal_keys_b64[2]' /tmp/vault-init.json)
+  UNSEAL_KEY_4=$(yq '.unseal_keys_b64[3]' /tmp/vault-init.json)
+  UNSEAL_KEY_5=$(yq '.unseal_keys_b64[4]' /tmp/vault-init.json)
+  ROOT_TOKEN=$(yq '.root_token' /tmp/vault-init.json)
 
   # Create Kubernetes Secret with init data
   kubectl create secret generic vault-init-keys \
