@@ -7,5 +7,5 @@ platform-engineers-key.json
 .mcp.json
 auth
 
-# Ignore secret files in microservice directories
-argocd/k8s/whispr/*/secret.yaml
+# Ignore secret files
+**/secret*.y*ml

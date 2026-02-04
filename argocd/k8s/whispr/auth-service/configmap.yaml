@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-service-config
+  namespace: whispr-prod
+  labels:
+    app: auth-service
+    tier: backend
+    environment: production
+  annotations:
+    description: "Non-sensitive configuration for Auth Service"
+
+data:
+  # Node Environment
+  NODE_ENV: "production"
+
+  # Server Ports
+  HTTP_PORT: "3001"
+  GRPC_PORT: "50051"
+
+  # Database Configuration (non-sensitive)
+  DB_TYPE: "postgres"
+  DB_HOST: "postgresql.postgresql.svc.cluster.local"
+  DB_PORT: "5432"
+  DB_NAME: "auth-service"
+  DB_MIGRATIONS_RUN: "true"
+  DB_SYNCHRONIZE: "false"  # Should be false in production
+  DB_LOGGING: "false"
+
+  # Redis Configuration (non-sensitive)
+  REDIS_HOST: "redis.redis.svc.cluster.local"
+  REDIS_PORT: "6379"
+
+
+  # gRPC Services URLs
+  USER_SERVICE_GRPC_URL: "user-service:50052"
+  MEDIA_SERVICE_GRPC_URL: "media-service:50053"
+
+  # Swagger Configuration
+  SWAGGER_ENABLED: "true"
+
+  # Feature Flags
+  ENABLE_CORS: "true"
+  HOT_RELOAD: "false"  # Should be false in production
+

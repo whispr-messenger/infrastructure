@@ -11,29 +11,29 @@ server:
       setNodeId: true
       config: |
         ui = true
-        
+
         listener "tcp" {
           tls_disable = 1
           address = "[::]:8200"
           cluster_address = "[::]:8201"
         }
-        
+
         storage "raft" {
           path = "/vault/data"
-          
+
           retry_join {
             leader_api_addr = "http://vault-0.vault-internal:8200"
           }
-          
+
           retry_join {
             leader_api_addr = "http://vault-1.vault-internal:8200"
           }
-          
+
           retry_join {
             leader_api_addr = "http://vault-2.vault-internal:8200"
           }
         }
-        
+
         service_registration "kubernetes" {}
 
   # Resources for Vault pods
@@ -88,6 +88,13 @@ server:
   standalone:
     enabled: false
 
+enableMonitoring: false
+enableCertManager: true
+
+env:
+  - name: VAULT_ADDR
+    value: http://vault.vault:8200
+
 # UI enabled
 ui:
   enabled: true
@@ -97,7 +104,7 @@ ui:
 injector:
   enabled: true
   replicas: 2
-  
+
   # Resources for injector
   resources:
     requests:
@@ -114,4 +121,4 @@ injector:
 # Global settings
 global:
   enabled: true
-  tlsDisable: true  # TLS will be handled by ingress
+  tlsDisable: true # TLS will be handled by ingress

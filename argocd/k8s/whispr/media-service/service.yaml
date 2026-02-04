@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: whispr-prod
+  labels:
+    app: auth-service
+    tier: backend
+    environment: production
+  annotations:
+    description: "Service for Auth microservice"
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: auth-service # --> Service route toward pods with label
+
+  ports:
+
+  - name: http # --> Name port (required by Istio --> protocol detection)
+    port: 3001
+    targetPort: http
+    protocol: TCP
+
+  - name: grpc # --> gRPC port
+    port: 50051
+    targetPort: grpc
+    protocol: TCP
+
+  sessionAffinity: None

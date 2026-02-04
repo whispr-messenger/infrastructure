@@ -1,0 +1,15 @@
+---
+# VaultAuth configures how the service authenticates to Vault using Kubernetes auth
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: scheduling-service-vault-auth
+  namespace: whispr-prod
+spec:
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: scheduling-service
+    serviceAccount: scheduling-service-sa
+    audiences:
+      - vault

@@ -4,12 +4,14 @@ kind: Application
 metadata:
   name: media-service
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
 spec:
   project: default
   source:
-    repoURL: https://github.com/whispr-messenger/media-service
+    repoURL: https://github.com/whispr-messenger/infrastructure.git
     targetRevision: main
-    path: k8s
+    path: argocd/k8s/whispr/media-service
   destination:
     server: https://kubernetes.default.svc
     namespace: whispr-prod
