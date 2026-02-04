@@ -9,7 +9,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "6"
 
 spec:
-  project: default
+  project: infrastructure
   sources:
     - repoURL: https://prometheus-community.github.io/helm-charts
       chart: prometheus

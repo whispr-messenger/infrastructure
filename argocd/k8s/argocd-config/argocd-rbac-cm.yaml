@@ -17,7 +17,6 @@ data:
     # Admin access for whispr-messenger org members in whispr-team
     g, whispr-messenger:whispr-team, role:admin
     g, whispr-messenger, role:developer
-    
     # Custom developer role with specific permissions
     p, role:developer, applications, *, */*, allow
     p, role:developer, applicationsets, *, */*, allow

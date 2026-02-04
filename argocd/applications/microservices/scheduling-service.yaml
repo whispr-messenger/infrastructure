@@ -5,9 +5,9 @@ metadata:
   name: scheduling-service
   namespace: argocd
 spec:
-  project: default
+  project: whispr-messenger
   source:
-    repoURL: https://github.com/whispr-messenger/notification-service
+    repoURL: https://github.com/whispr-messenger/scheduling-service
     targetRevision: main
     path: k8s
   destination:

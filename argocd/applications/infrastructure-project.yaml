@@ -1,0 +1,91 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infrastructure
+  namespace: argocd
+spec:
+  description: Infrastructure applications
+  sourceRepos:
+    - https://SonarSource.github.io/helm-chart-sonarqube
+    - https://charts.bitnami.com/bitnami
+    - https://charts.external-secrets.io
+    - https://charts.jetstack.io
+    - https://github.com/whispr-messenger/infrastructure.git
+    - https://helm.releases.hashicorp.com
+    - https://istio-release.storage.googleapis.com/charts
+    - https://kubernetes.github.io/ingress-nginx
+    - https://prometheus-community.github.io/helm-charts
+  destinations:
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+    - namespace: cert-manager
+      server: https://kubernetes.default.svc
+    - namespace: external-secrets-system
+      server: https://kubernetes.default.svc
+    - namespace: ingress-nginx
+      server: https://kubernetes.default.svc
+    - namespace: istio-system
+      server: https://kubernetes.default.svc
+    - namespace: minio
+      server: https://kubernetes.default.svc
+    - namespace: monitoring
+      server: https://kubernetes.default.svc
+    - namespace: observability
+      server: https://kubernetes.default.svc
+    - namespace: postgresql
+      server: https://kubernetes.default.svc
+    - namespace: redis
+      server: https://kubernetes.default.svc
+    - namespace: sonarqube
+      server: https://kubernetes.default.svc
+    - namespace: vault
+      server: https://kubernetes.default.svc
+    - namespace: vault-secrets-operator-system
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+    - group: cert-manager.io
+      kind: ClusterIssuer
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: secrets.hashicorp.com
+      kind: ClusterSecretStore
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Service
+    - group: ""
+      kind: ServiceAccount
+    - group: apps
+      kind: Deployment
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+    - group: batch
+      kind: Job
+    - group: cert-manager.io
+      kind: Certificate
+    - group: external-secrets.io
+      kind: ExternalSecret
+    - group: networking.istio.io
+      kind: DestinationRule
+    - group: networking.istio.io
+      kind: Gateway
+    - group: networking.istio.io
+      kind: VirtualService
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: policy
+      kind: PodDisruptionBudget
+    - group: rbac.authorization.k8s.io
+      kind: Role
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+    - group: security.istio.io
+      kind: AuthorizationPolicy
+    - group: security.istio.io
+      kind: PeerAuthentication

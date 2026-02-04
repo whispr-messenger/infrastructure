@@ -1,0 +1,40 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: whispr-messenger
+  namespace: argocd
+spec:
+  description: Whispr messenger microservices
+  sourceRepos:
+    - https://github.com/whispr-messenger/auth-service
+    - https://github.com/whispr-messenger/media-service
+    - https://github.com/whispr-messenger/messaging-service
+    - https://github.com/whispr-messenger/notification-service
+    - https://github.com/whispr-messenger/scheduling-service
+    - https://github.com/whispr-messenger/user-service
+  destinations:
+    - namespace: whispr-prod
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Service
+    - group: ""
+      kind: ServiceAccount
+    - group: apps
+      kind: Deployment
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+    - group: external-secrets.io
+      kind: ExternalSecret
+    - group: networking.istio.io
+      kind: DestinationRule
+    - group: networking.istio.io
+      kind: VirtualService
+    - group: policy
+      kind: PodDisruptionBudget
