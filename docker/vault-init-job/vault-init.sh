@@ -22,7 +22,8 @@ if vault status | grep -q "Initialized.*true"; then
   if kubectl get secret vault-init-keys -n vault >/dev/null 2>&1; then
     echo "✓ Unseal keys Secret exists, attempting to unseal..."
 
-    # Extract unseal keys from Secret
+    # Extract unseal keys from Secret (they are stored as raw strings in the secret, but Kubernetes base64-encodes the entire value)
+    # When using kubectl get secret -o jsonpath='{.data.key}' | base64 -d, we get the exact string stored.
     UNSEAL_KEY_1=$(kubectl get secret vault-init-keys -n vault -o jsonpath='{.data.unseal-key-1}' | base64 -d)
     UNSEAL_KEY_2=$(kubectl get secret vault-init-keys -n vault -o jsonpath='{.data.unseal-key-2}' | base64 -d)
     UNSEAL_KEY_3=$(kubectl get secret vault-init-keys -n vault -o jsonpath='{.data.unseal-key-3}' | base64 -d)
@@ -43,13 +44,13 @@ else
   # Initialize Vault with 5 key shares and 3 key threshold
   vault operator init -key-shares=5 -key-threshold=3 -format=json > /tmp/vault-init.json
 
-  # Extract keys and root token using yq (raw output)
-  UNSEAL_KEY_1=$(yq '.unseal_keys_b64[0]' /tmp/vault-init.json)
-  UNSEAL_KEY_2=$(yq '.unseal_keys_b64[1]' /tmp/vault-init.json)
-  UNSEAL_KEY_3=$(yq '.unseal_keys_b64[2]' /tmp/vault-init.json)
-  UNSEAL_KEY_4=$(yq '.unseal_keys_b64[3]' /tmp/vault-init.json)
-  UNSEAL_KEY_5=$(yq '.unseal_keys_b64[4]' /tmp/vault-init.json)
-  ROOT_TOKEN=$(yq '.root_token' /tmp/vault-init.json)
+  # Extract keys and root token using yq (RAW output)
+  UNSEAL_KEY_1=$(yq -r '.unseal_keys_b64[0]' /tmp/vault-init.json)
+  UNSEAL_KEY_2=$(yq -r '.unseal_keys_b64[1]' /tmp/vault-init.json)
+  UNSEAL_KEY_3=$(yq -r '.unseal_keys_b64[2]' /tmp/vault-init.json)
+  UNSEAL_KEY_4=$(yq -r '.unseal_keys_b64[3]' /tmp/vault-init.json)
+  UNSEAL_KEY_5=$(yq -r '.unseal_keys_b64[4]' /tmp/vault-init.json)
+  ROOT_TOKEN=$(yq -r '.root_token' /tmp/vault-init.json)
 
   # Create Kubernetes Secret with init data
   kubectl create secret generic vault-init-keys \
