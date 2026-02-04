@@ -31,6 +31,12 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
       - IgnoreExtraneous=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
   ignoreDifferences:
     - group: apps
       kind: StatefulSet
@@ -42,9 +48,3 @@ spec:
       name: vault-agent-injector-cfg
       jsonPointers:
         - /webhooks/0/clientConfig/caBundle
-  retry:
-    limit: 5
-    backoff:
-      duration: 5s
-      factor: 2
-      maxDuration: 3m
