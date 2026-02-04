@@ -30,8 +30,19 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-    retry:
-      limit: 5
+  ignoreDifferences:
+    - group: apps
+      kind: StatefulSet
+      name: vault
+      jsonPointers:
+        - /spec/volumeClaimTemplates
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+      name: vault-agent-injector-cfg
+      jsonPointers:
+        - /webhooks/0/clientConfig/caBundle
+  retry:
+    limit: 5
       backoff:
         duration: 5s
         factor: 2
