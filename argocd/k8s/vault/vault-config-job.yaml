@@ -35,6 +35,9 @@ spec:
             - |
               set -e
 
+              # Install postgresql-client for psql
+              apk add --no-cache postgresql-client
+
               echo "Waiting for Vault to be ready and unsealed..."
               until vault status | grep -q "Sealed.*false"; do
                 echo "Vault not ready or still sealed, waiting..."
@@ -90,7 +93,7 @@ spec:
               # Configure the database connection
               vault write database/config/postgres \
                 plugin_name=postgresql-database-plugin \
-                allowed_roles="role-*" \
+                allowed_roles="*" \
                 connection_url="postgresql://{{username}}:{{password}}@postgresql.postgresql.svc.cluster.local:5432/postgres?sslmode=disable" \
                 username="postgres" \
                 password="$POSTGRES_PASSWORD"
@@ -104,23 +107,24 @@ spec:
               for svc in auth-service user-service messaging-service notification-service media-service scheduling-service; do
                 echo "Configuring ${svc}..."
                 
-                # Ensure the database exists
-                # Replace hyphens with underscores for database name consistency if needed, 
-                # but here we use quoted names to match the svc name exactly.
-                DB_NAME="${svc}_db"
+                # Replace hyphens with underscores for database and role names to avoid SQL syntax issues
+                svc_underscore=$(echo $svc | tr '-' '_')
+                DB_NAME="${svc_underscore}_db"
+                ROLE_NAME="role_${svc_underscore}"
+                
                 echo "Creating database ${DB_NAME} if it doesn't exist..."
-                PGPASSWORD=$PGPASSWORD psql -h postgresql.postgresql.svc.cluster.local -U postgres -c "CREATE DATABASE \"${DB_NAME}\";" || echo "Database ${DB_NAME} already exists or error creating it"
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres -c "CREATE DATABASE \"${DB_NAME}\";" || echo "Database ${DB_NAME} already exists or error creating it"
 
                 # Database role for the microservice
-                vault write database/roles/role-${svc} \
+                vault write database/roles/${ROLE_NAME} \
                   db_name=postgres \
-                  creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT CONNECT ON DATABASE \"${DB_NAME}\" TO \"{{name}}\";" \
+                  creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT CONNECT ON DATABASE \"${DB_NAME}\" TO \"{{name}}\"; GRANT ALL PRIVILEGES ON DATABASE \"${DB_NAME}\" TO \"{{name}}\";" \
                   default_ttl="1h" \
                   max_ttl="24h"
 
                 # Policy for the microservice (access only to its credentials path)
                 vault policy write ${svc}-policy - <<EOF
-                  path "database/creds/role-${svc}" {
+                  path "database/creds/${ROLE_NAME}" {
                     capabilities = ["read"]
                   }
               EOF
