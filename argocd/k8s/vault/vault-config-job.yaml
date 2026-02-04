@@ -6,7 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "5"
 spec:
   ttlSecondsAfterFinished: 300
   template:
@@ -15,15 +15,15 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: vault-config
-          image: hashicorp/vault:1.15.2
+          image: ghcr.io/whispr-messenger/vault-config-job:latest
           env:
             - name: VAULT_ADDR
               value: http://vault.vault.svc:8200
             - name: VAULT_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: vault-init-keys
-                  key: root-token
+                  name: vault-root-token
+                  key: root_token
           command:
             - /bin/sh
             - -c
@@ -47,8 +47,7 @@ spec:
               vault secrets enable -path=kv kv-v2 2>/dev/null || echo "KV secrets engine already enabled"
 
               ####################################################################################################
-              # Trust configuration :
-              # "To verify a Pod identity contact the Kubernetes API at this address using this certificate"
+              # Trust configuration
               ####################################################################################################
               echo "Configuring Kubernetes auth..."
               vault write auth/kubernetes/config \

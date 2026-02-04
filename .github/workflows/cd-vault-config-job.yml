@@ -1,0 +1,101 @@
+name: "🚀 CD: Vault Config Job"
+
+on:
+  workflow_run:
+    workflows: ["🚀 CI: Vault Config Job"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'Commit SHA to deploy (leave empty for latest)'
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: whispr-messenger/vault-config-job
+  MANIFEST_PATH: argocd/k8s/vault/vault-config-job.yaml
+
+jobs:
+  update-deployment:
+    if: ${{ (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    name: Update Vault Config Job Manifest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Generate GitHub App Token
+        id: generate_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.ACTIONS_CD }}
+          private_key: ${{ secrets.ACTIONS_CD_PRIVATE_KEY }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ steps.generate_token.outputs.token }}
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Validate and determine commit SHA
+        id: validate_commit
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ -n "${{ inputs.commit_sha }}" ]; then
+              COMMIT_SHA="${{ inputs.commit_sha }}"
+              echo "Validating manually provided commit SHA: $COMMIT_SHA"
+              if ! echo "$COMMIT_SHA" | grep -qE '^[a-fA-F0-9]{7,40}$'; then
+                echo "❌ Error: Invalid commit SHA format."
+                exit 1
+              fi
+              if ! git rev-parse --verify "${COMMIT_SHA}^{commit}" >/dev/null 2>&1; then
+                echo "❌ Error: Commit SHA does not exist."
+                exit 1
+              fi
+              COMMIT_SHA=$(git rev-parse --verify "${COMMIT_SHA}^{commit}")
+            else
+              COMMIT_SHA="${{ github.sha }}"
+            fi
+          else
+            COMMIT_SHA="${{ github.event.workflow_run.head_sha }}"
+            if [ -z "$COMMIT_SHA" ]; then
+              COMMIT_SHA="${{ github.sha }}"
+            fi
+          fi
+          echo "commit_sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Update image tag in deployment
+        run: |
+          COMMIT_SHA="${{ steps.validate_commit.outputs.commit_sha }}"
+          SHORT_SHA=$(printf "%.7s" "$COMMIT_SHA")
+          IMAGE_TAG="sha-${SHORT_SHA}"
+          FULL_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}"
+          FULL_IMAGE=$(echo "${FULL_IMAGE}" | tr '[:upper:]' '[:lower:]')
+
+          echo "Updating deployment image to: ${FULL_IMAGE}"
+          yq -i ".spec.template.spec.containers[0].image = \"${FULL_IMAGE}\"" ${{ env.MANIFEST_PATH }}
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          if git diff --quiet ${{ env.MANIFEST_PATH }}; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          COMMIT_SHA="${{ steps.validate_commit.outputs.commit_sha }}"
+          COMMIT_MSG="🔧 chore(vault): update config job image to ${COMMIT_SHA:0:7}"
+
+          git add ${{ env.MANIFEST_PATH }}
+          git commit -m "${COMMIT_MSG}"
+          git push https://x-access-token:${{ steps.generate_token.outputs.token }}@github.com/${{ github.repository }}.git main
