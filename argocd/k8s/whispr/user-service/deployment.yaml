@@ -27,6 +27,7 @@ spec:
 
     spec:
       serviceAccountName: user-service-sa
+      # Image pull secrets for GHCR
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532
