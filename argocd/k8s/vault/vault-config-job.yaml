@@ -24,6 +24,11 @@ spec:
                 secretKeyRef:
                   name: vault-root-token
                   key: root_token
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql
+                  key: postgres-password
           command:
             - /bin/sh
             - -c
@@ -79,8 +84,8 @@ spec:
               ####################################################################################################
               echo "Configuring PostgreSQL database connection..."
               
-              # Get PostgreSQL password from the postgresql secret
-              PGPASSWORD=$(kubectl get secret postgresql -n postgresql -o jsonpath='{.data.postgres-password}' | base64 -d)
+              # Use the injected password
+              export PGPASSWORD="$POSTGRES_PASSWORD"
               
               # Configure the database connection
               vault write database/config/postgres \
@@ -88,7 +93,7 @@ spec:
                 allowed_roles="role-*" \
                 connection_url="postgresql://{{username}}:{{password}}@postgresql.postgresql.svc.cluster.local:5432/postgres?sslmode=disable" \
                 username="postgres" \
-                password="$PGPASSWORD"
+                password="$POSTGRES_PASSWORD"
               
               echo "PostgreSQL connection configured successfully"
 
