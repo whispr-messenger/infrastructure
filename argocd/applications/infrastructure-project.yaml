@@ -44,8 +44,48 @@ spec:
     - namespace: vault-secrets-operator-system
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    - group: ""
+      kind: Namespace
+    - group: cert-manager.io
+      kind: ClusterIssuer
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: secrets.hashicorp.com
+      kind: ClusterSecretStore
   namespaceResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Service
+    - group: ""
+      kind: ServiceAccount
+    - group: apps
+      kind: Deployment
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+    - group: batch
+      kind: Job
+    - group: cert-manager.io
+      kind: Certificate
+    - group: external-secrets.io
+      kind: ExternalSecret
+    - group: networking.istio.io
+      kind: DestinationRule
+    - group: networking.istio.io
+      kind: Gateway
+    - group: networking.istio.io
+      kind: VirtualService
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: policy
+      kind: PodDisruptionBudget
+    - group: rbac.authorization.k8s.io
+      kind: Role
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+    - group: security.istio.io
+      kind: AuthorizationPolicy
+    - group: security.istio.io
+      kind: PeerAuthentication
