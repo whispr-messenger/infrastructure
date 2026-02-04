@@ -93,16 +93,23 @@ spec:
               echo "PostgreSQL connection configured successfully"
 
               ####################################################################################################
-              # Microservices DB credentials: roles, policies, k8s auth
+              # Microservices DB credentials: databases, roles, policies, k8s auth
               ####################################################################################################
               echo "Configuring microservices..."
               for svc in auth-service user-service messaging-service notification-service media-service scheduling-service; do
                 echo "Configuring ${svc}..."
- 
+                
+                # Ensure the database exists
+                # Replace hyphens with underscores for database name consistency if needed, 
+                # but here we use quoted names to match the svc name exactly.
+                DB_NAME="${svc}_db"
+                echo "Creating database ${DB_NAME} if it doesn't exist..."
+                PGPASSWORD=$PGPASSWORD psql -h postgresql.postgresql.svc.cluster.local -U postgres -c "CREATE DATABASE \"${DB_NAME}\";" || echo "Database ${DB_NAME} already exists or error creating it"
+
                 # Database role for the microservice
                 vault write database/roles/role-${svc} \
                   db_name=postgres \
-                  creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT CONNECT ON DATABASE ${svc}_db TO \"{{name}}\";" \
+                  creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT CONNECT ON DATABASE \"${DB_NAME}\" TO \"{{name}}\";" \
                   default_ttl="1h" \
                   max_ttl="24h"
 
