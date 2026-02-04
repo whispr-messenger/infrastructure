@@ -1,0 +1,15 @@
+---
+# VaultAuth configures how the service authenticates to Vault using Kubernetes auth
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: notification-service-vault-auth
+  namespace: whispr-prod
+spec:
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: notification-service
+    serviceAccount: notification-service-sa
+    audiences:
+      - vault

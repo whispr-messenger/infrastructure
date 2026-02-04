@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scheduling-service-config
+  namespace: whispr-prod
+  labels:
+    app.kubernetes.io/name: scheduling-service
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  GRPC_PORT: "3001"
+  LOG_LEVEL: "info"
+  DB_POOL_SIZE: "10"
+  MESSAGING_SERVICE_HOST: "messaging-service.whispr-prod.svc.cluster.local"
+  MESSAGING_SERVICE_GRPC_PORT: "4001"

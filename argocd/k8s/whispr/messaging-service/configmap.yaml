@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: messaging-service-config
+  namespace: whispr-prod
+  labels:
+    app.kubernetes.io/name: messaging-service
+data:
+  MIX_ENV: "prod"
+  PHX_SERVER: "true"
+  PHX_HOST: "whispr.fr"
+  PORT: "4000"
+  GRPC_PORT: "4001"
+  LOG_LEVEL: "info"
+  POOL_SIZE: "10"

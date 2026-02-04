@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-service
+  namespace: whispr-prod
+  labels:
+    app: media-service
+    tier: backend
+    environment: production
+  annotations:
+    description: "Media management microservice for Whispr Messenger"
+    maintainer: "gabriel.lopez@epitech.eu"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: media-service
+  template:
+    metadata:
+      labels:
+        app: media-service
+    # Pod template specification
+    spec:
+      serviceAccountName: media-service-sa
+      # Security context for the pod
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: whispr-media-api
+          # The image is automatically updated by the CD pipeline with yq
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-6c3f461 # Placeholder, replaced by CD pipeline
+          ports:
+            - name: http
+              containerPort: 3001
+              protocol: TCP
+            - name: grpc
+              containerPort: 50051
+              protocol: TCP
+          # Environment variables from ConfigMap
+          envFrom:
+            - configMapRef:
+                name: media-service-config
+            - secretRef:
+                name: media-service-secret
+            - secretRef:
+                name: media-service-db-secret
+          # Resource limits and requests
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          # Security context for the container
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532
+            capabilities:
+              drop:
+                - ALL
+          # Liveness probe - checks if the container is alive
+          livenessProbe:
+            httpGet:
+              path: /media/v1/health/live
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+          # Readiness probe - checks if the container is ready to serve traffic
+          readinessProbe:
+            httpGet:
+              path: /media/v1/health/ready
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          # Startup probe - gives more time for initial startup
+          startupProbe:
+            httpGet:
+              path: /media/v1/health/live
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12 # 120 seconds total
+            successThreshold: 1
+          # Volume mounts for writable paths (distroless needs specific writable dirs)
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: logs
+              mountPath: /app/logs
+      # Volumes
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: logs
+          emptyDir: {}
+      # Restart policy
+      restartPolicy: Always
+      # DNS policy
+      dnsPolicy: ClusterFirst
+      # Termination grace period
+      terminationGracePeriodSeconds: 30
