@@ -76,13 +76,13 @@ server:
     enabled: true
     ingressClassName: nginx
     hosts:
-      - host: vault.whispr.fr
+      - host: vault.whispr.epitech.beer
         paths:
           - /
     tls:
       - secretName: vault-tls
         hosts:
-          - vault.whispr.fr
+          - vault.whispr.epitech.beer
 
   # Standalone mode disabled (using HA)
   standalone:

@@ -12,7 +12,7 @@ monitoringPasscode: "whispr-monitoring-2025"
 ingress:
   enabled: true
   hosts:
-    - name: sonarqube.whispr.fr
+    - name: sonarqube.whispr.epitech.beer
       path: /
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -22,7 +22,7 @@ ingress:
   tls:
     - secretName: sonarqube-tls
       hosts:
-        - sonarqube.whispr.fr
+        - sonarqube.whispr.epitech.beer
 
 # GitHub OAuth configuration
 sonarProperties:
@@ -33,7 +33,7 @@ sonarProperties:
   sonar.auth.github.organizations: "whispr-messenger"
   sonar.auth.github.allowUsersToSignUp: "true"
   sonar.auth.github.loginStrategy: "Unique"
-  sonar.core.serverBaseURL: "https://sonarqube.whispr.fr"
+  sonar.core.serverBaseURL: "https://sonarqube.whispr.epitech.beer"
   # Allow GitHub organization members to have admin rights
   sonar.auth.github.groupsSync: "true"
 

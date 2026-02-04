@@ -117,7 +117,7 @@ redis-ha:
 
 # Keep existing configuration
 global:
-  domain: argocd.whispr.fr
+  domain: argocd.whispr.epitech.beer
 
 controller:
   replicas: 1
