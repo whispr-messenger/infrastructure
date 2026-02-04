@@ -43,6 +43,17 @@ spec:
               containerPort: 50051
               protocol: TCP
           # Environment variables from ConfigMap
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: media-service-db-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-service-db-secret
+                  key: password
           envFrom:
             - configMapRef:
                 name: media-service-config

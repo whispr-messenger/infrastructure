@@ -41,6 +41,17 @@ spec:
             - name: grpc
               containerPort: 3001
               protocol: TCP
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: scheduling-service-db-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: scheduling-service-db-secret
+                  key: password
           envFrom:
             - configMapRef:
                 name: scheduling-service-config
