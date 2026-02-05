@@ -58,6 +58,16 @@ spec:
             host: auth-service.whispr-prod.svc.cluster.local # by FQDN
             port:
               number: 3001
+    - match:
+        - uri:
+            prefix: "/user"
+          authority:
+            exact: whispr.epitech.beer
+      route:
+        - destination:
+            host: user-service.whispr-prod.svc.cluster.local
+            port:
+              number: 3001
     # -> Exemple: http://test.local/api/users → App B
 
     # WWW redirect --> whispr.epitech-msc2026.me
