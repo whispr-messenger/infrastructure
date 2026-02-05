@@ -35,7 +35,7 @@ data:
   
   API_PREFIX: "/api/v1"
   ENABLE_CORS: "false"
-  ENABLE_SWAGGER: "false"
+  SWAGGER_ENABLED: "true"
   LOG_LEVEL: "info"
   METRICS_ENABLED: "true"
   HEALTH_CHECK_TIMEOUT: "5000"
