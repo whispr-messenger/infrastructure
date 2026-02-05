@@ -67,7 +67,7 @@ spec:
         - destination:
             host: user-service.whispr-prod.svc.cluster.local
             port:
-              number: 3001
+              number: 80
     # -> Exemple: http://test.local/api/users → App B
 
     # WWW redirect --> whispr.epitech-msc2026.me
