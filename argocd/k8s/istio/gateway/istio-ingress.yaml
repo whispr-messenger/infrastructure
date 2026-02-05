@@ -51,6 +51,13 @@ spec:
             name: istio-gateway
             port:
               number: 443
+      - path: /user
+        pathType: Prefix
+        backend:
+          service:
+            name: istio-gateway
+            port:
+              number: 443
 
       # Root
       - path: /
