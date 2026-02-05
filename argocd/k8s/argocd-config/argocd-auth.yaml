@@ -1,0 +1,16 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: argocd-auth
+  namespace: argocd
+spec:
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: vault-admin
+    serviceAccount: default
+    audiences:
+      - https://kubernetes.default.svc.cluster.local
+  vaultConnectionRef:
+    name: default
+    namespace: vault-secrets-operator-system

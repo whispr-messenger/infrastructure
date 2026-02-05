@@ -71,8 +71,8 @@ spec:
               ####################################################################################################
               echo "Creating vault-admin role..."
               vault write auth/kubernetes/role/vault-admin \
-                bound_service_account_names=default \
-                bound_service_account_namespaces=default \
+                bound_service_account_names=default,argocd-server \
+                bound_service_account_namespaces=default,argocd \
                 policies=vault-admin \
                 ttl=1h
 
