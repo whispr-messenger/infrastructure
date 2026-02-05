@@ -1,6 +1,5 @@
 apiVersion: apps/v1
 kind: Deployment
-
 metadata:
   name: user-service
   namespace: whispr-prod
@@ -11,20 +10,16 @@ metadata:
   annotations:
     description: "User management microservice for Whispr Messenger"
     maintainer: "maia.bazerji@epitech.eu"
-
 spec:
   replicas: 1
   revisionHistoryLimit: 3
-
   selector:
     matchLabels:
       app: user-service
-
   template:
     metadata:
       labels:
         app: user-service
-
     spec:
       serviceAccountName: user-service-sa
       # Image pull secrets for GHCR
@@ -38,7 +33,7 @@ spec:
       containers:
         - name: whispr-user-api
           # the image is automatically updated by the CD pipeline with yq
-          image: ghcr.io/whispr-messenger/user-service/user-service:sha-796c754
+          image: ghcr.io/whispr-messenger/user-service/user-service:sha-a83fc68
           ports:
             - name: http
               containerPort: 3000
