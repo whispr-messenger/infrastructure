@@ -53,6 +53,10 @@ spec:
               vault auth enable kubernetes 2>/dev/null || echo "Kubernetes auth already enabled"
               vault secrets enable database 2>/dev/null || echo "Database secrets engine already enabled"
               vault secrets enable -path=kv kv-v2 2>/dev/null || echo "KV secrets engine already enabled"
+              
+              echo "Enabling GitHub auth..."
+              vault auth enable github 2>/dev/null || echo "GitHub auth already enabled"
+              vault write auth/github/config organization=whispr-messenger
 
               ####################################################################################################
               # Trust configuration
