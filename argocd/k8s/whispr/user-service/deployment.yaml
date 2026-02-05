@@ -33,12 +33,12 @@ spec:
       containers:
         - name: whispr-user-api
           # the image is automatically updated by the CD pipeline with yq
-          image: ghcr.io/whispr-messenger/user-service/user-service:sha-a83fc68
+          image: ghcr.io/whispr-messenger/user-service/user-service:sha256-b6faf783e1ba33c29b9dfbe36ffff3139aab4ec56be3210e9f0b2867be341c26
           ports:
             - name: http
               containerPort: 3001
               protocol: TCP
-            - name: grpc
+            - name: grpc-port
               containerPort: 50051
               protocol: TCP
           # Environment variables
