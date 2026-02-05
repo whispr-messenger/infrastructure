@@ -18,7 +18,7 @@ data:
   DB_HOST: "postgresql.postgresql.svc.cluster.local"
   DB_PORT: "5432"
   DB_NAME: "user_service_db"
-  DB_MIGRATIONS_RUN: "true"
+  DB_MIGRATIONS_RUN: "false"
   DB_SYNCHRONIZE: "false"
   DB_LOGGING: "false"
   DB_SSL: "false"
