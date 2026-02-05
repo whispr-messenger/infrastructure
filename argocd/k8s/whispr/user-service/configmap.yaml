@@ -15,14 +15,14 @@ data:
   GRPC_PORT: "50051"
 
   # Database Configuration
-  DB_TYPE: "postgres"
-  DB_HOST: "postgres"
-  DB_PORT: "5432"
-  DB_NAME: "production"
-  DB_MIGRATIONS_RUN: "true"
-  DB_SYNCHRONIZE: "false"
-  DB_LOGGING: "false"
-  DB_SSL: "false"
+  DATABASE_TYPE: "postgres"
+  DATABASE_HOST: "postgres"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "production"
+  DATABASE_MIGRATIONS_RUN: "true"
+  DATABASE_SYNCHRONIZE: "false"
+  DATABASE_LOGGING: "false"
+  DATABASE_SSL: "false"
 
   # Redis Configuration
   REDIS_HOST: "redis"
