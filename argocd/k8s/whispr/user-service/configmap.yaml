@@ -10,32 +10,34 @@ metadata:
 data:
   # Node environment
   NODE_ENV: "production"
-  PORT: "3000"
+  PORT: "3001"
+  HTTP_PORT: "3001"
   GRPC_PORT: "50051"
 
   # Database Configuration
-  DB_TYPE: "postgres"
-  DB_HOST: "postgresql.postgresql.svc.cluster.local"
-  DB_PORT: "5432"
-  DB_NAME: "user_service_db"
-  DB_MIGRATIONS_RUN: "false"
-  DB_SYNCHRONIZE: "false"
-  DB_LOGGING: "false"
-  DB_SSL: "false"
+  DATABASE_TYPE: "postgres"
+  DATABASE_HOST: "postgres"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "production"
+  DATABASE_MIGRATIONS_RUN: "true"
+  DATABASE_SYNCHRONIZE: "false"
+  DATABASE_LOGGING: "false"
+  DATABASE_SSL: "false"
 
   # Redis Configuration
-  REDIS_HOST: "redis.redis.svc.cluster.local"
+  REDIS_HOST: "redis"
   REDIS_PORT: "6379"
   REDIS_DB: "0"
 
-  # Service URLs
-  AUTH_SERVICE_URL: "auth-service.whispr-prod.svc.cluster.local:50051"
-  MESSAGING_SERVICE_URL: "messaging-service.whispr-prod.svc.cluster.local:50052"
-  MEDIA_SERVICE_URL: "media-service.whispr-prod.svc.cluster.local:50053"
-  NOTIFICATION_SERVICE_URL: "notification-service.whispr-prod.svc.cluster.local:50054"
+  # gRPC Services
+  USER_SERVICE_GRPC_URL: "user-service:50052"
+  MEDIA_SERVICE_GRPC_URL: "media-service:50053"
   
   API_PREFIX: "/api/v1"
-  CORS_ORIGIN: "*"
+  ENABLE_CORS: "false"
+  ENABLE_SWAGGER: "false"
   LOG_LEVEL: "info"
+  METRICS_ENABLED: "true"
+  HEALTH_CHECK_TIMEOUT: "5000"
   SERVICE_NAME: "user-service"
   SERVICE_VERSION: "1.0.0"
