@@ -72,8 +72,6 @@ spec:
             - configMapRef:
                 name: media-service-config
             - secretRef:
-                name: media-service-secret
-            - secretRef:
                 name: media-service-db-secret
             - secretRef:
                 name: media-service-public-jwt-secret

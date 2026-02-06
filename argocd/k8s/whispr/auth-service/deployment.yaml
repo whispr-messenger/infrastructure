@@ -72,8 +72,6 @@ spec:
             - configMapRef:
                 name: auth-service-config
             - secretRef:
-                name: auth-service-secret
-            - secretRef:
                 name: auth-service-db-secret
             - secretRef:
                 name: auth-service-redis-secret

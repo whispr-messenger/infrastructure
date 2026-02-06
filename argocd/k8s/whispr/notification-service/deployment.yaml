@@ -44,8 +44,6 @@ spec:
             - configMapRef:
                 name: notification-service-config
             - secretRef:
-                name: notification-service-secret
-            - secretRef:
                 name: notification-service-db-secret
             - secretRef:
                 name: notification-service-public-jwt-secret
