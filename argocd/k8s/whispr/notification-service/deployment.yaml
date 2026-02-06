@@ -19,8 +19,6 @@ spec:
         app.kubernetes.io/name: notification-service
     spec:
       serviceAccountName: notification-service-sa
-      imagePullSecrets:
-        - name: ghcr-secret
       containers:
         - name: notification-service
           image: ghcr.io/whispr-messenger/notification-service:latest
@@ -45,6 +43,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: notification-service-config
+            - secretRef:
+                name: notification-service-secret
             - secretRef:
                 name: notification-service-db-secret
           resources:
