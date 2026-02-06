@@ -54,11 +54,23 @@ spec:
                   key: password
             - name: DATABASE_URL
               value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: messaging-service-redis-secret
+                  key: username
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: messaging-service-redis-secret
+                  key: password
           envFrom:
             - configMapRef:
                 name: messaging-service-config
             - secretRef:
                 name: messaging-service-db-secret
+            - secretRef:
+                name: messaging-service-redis-secret
           resources:
             requests:
               cpu: "100m"

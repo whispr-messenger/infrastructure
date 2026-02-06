@@ -156,20 +156,20 @@ spec:
 
                 # Redis role for the microservice (isolation using Redis ACLs for specific DB)
                 # We grant access to all keys in the specific DB only
-                vault write database/roles/${REDIS_ROLE_NAME} \
-                  db_name=redis \
-                  creation_statements="ACL SETUSER {{username}} on >{{password}} ~* &* +@all -select +select|${REDIS_DB}" \
-                  default_ttl="1h" \
-                  max_ttl="24h"
+                if [ "${svc}" != "notification-service" ]; then
+                  vault write database/roles/${REDIS_ROLE_NAME} \
+                    db_name=redis \
+                    creation_statements="ACL SETUSER {{username}} on >{{password}} ~* &* +@all -select +select|${REDIS_DB}" \
+                    default_ttl="1h" \
+                    max_ttl="24h"
+                fi
 
                 # Policy for the microservice (access only to its credentials path)
                 vault policy write ${svc}-policy - <<EOF
                   path "database/creds/${ROLE_NAME}" {
                     capabilities = ["read"]
                   }
-                  path "database/creds/${REDIS_ROLE_NAME}" {
-                    capabilities = ["read"]
-                  }
+                  $( [ "${svc}" != "notification-service" ] && echo "path \"database/creds/${REDIS_ROLE_NAME}\" { capabilities = [\"read\"] }" )
               EOF
 
                 # Kubernetes authentication role for the microservice
