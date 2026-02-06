@@ -86,7 +86,14 @@ spec:
               echo "Configuring Redis database connection..."
               
               # Get Redis password if not already available
+              echo "Retrieving Redis password..."
               REDIS_PASSWORD=$(kubectl get secret -n redis redis -o jsonpath='{.data.redis-password}' | base64 -d)
+              
+              if [ -z "$REDIS_PASSWORD" ]; then
+                echo "ERROR: Redis password retrieved is empty!"
+                exit 1
+              fi
+              echo "Redis password retrieved (length: ${#REDIS_PASSWORD})"
 
               vault write database/config/redis \
                 plugin_name=redis-database-plugin \
