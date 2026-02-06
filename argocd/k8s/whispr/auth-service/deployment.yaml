@@ -58,11 +58,19 @@ spec:
               value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
             - name: DATABASE_URL
               value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: auth-service-redis-secret
+                  key: username
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth-service-redis-secret
+                  key: password
           envFrom:
             - configMapRef:
                 name: auth-service-config
-            - secretRef:
-                name: auth-service-secret
             - secretRef:
                 name: auth-service-db-secret
           # Resource limits and requests

@@ -59,6 +59,23 @@ spec:
               vault write auth/github/config organization=whispr-messenger
 
               ####################################################################################################
+              # Redis configuration
+              ####################################################################################################
+              echo "Configuring Redis database connection..."
+              
+              # Get Redis password if not already available
+              REDIS_PASSWORD=$(kubectl get secret -n redis redis -o jsonpath='{.data.redis-password}' | base64 -d)
+
+              vault write database/config/redis \
+                plugin_name=redis-database-plugin \
+                allowed_roles="*" \
+                host=redis.redis.svc.cluster.local \
+                port=6379 \
+                password="$REDIS_PASSWORD"
+
+              echo "Redis connection configured successfully"
+
+              ####################################################################################################
               # Trust configuration
               ####################################################################################################
               echo "Configuring Kubernetes auth..."
@@ -105,9 +122,14 @@ spec:
               echo "PostgreSQL connection configured successfully"
 
               ####################################################################################################
-              # Microservices DB credentials: databases, roles, policies, k8s auth
+              # Microservices DB & Redis credentials: databases, roles, policies, k8s auth
               ####################################################################################################
               echo "Configuring microservices..."
+              
+              # Define Redis DB mapping
+              # auth: 0, user: 1, messaging: 2, notification: 3, media: 4, scheduling: 5
+              index=0
+              
               for svc in auth-service user-service messaging-service notification-service media-service scheduling-service; do
                 echo "Configuring ${svc}..."
                 
@@ -115,6 +137,8 @@ spec:
                 svc_underscore=$(echo $svc | tr '-' '_')
                 DB_NAME="${svc_underscore}_db"
                 ROLE_NAME="role_${svc_underscore}"
+                REDIS_ROLE_NAME="redis_role_${svc_underscore}"
+                REDIS_DB=$index
                 
                 echo "Creating database ${DB_NAME} if it doesn't exist..."
                 psql -h postgresql.postgresql.svc.cluster.local -U postgres -c "CREATE DATABASE \"${DB_NAME}\";" || echo "Database ${DB_NAME} already exists or error creating it"
@@ -130,11 +154,22 @@ spec:
                   default_ttl="1h" \
                   max_ttl="24h"
 
+                # Redis role for the microservice (isolation using Redis ACLs for specific DB)
+                # We grant access to all keys in the specific DB only
+                if [ "${svc}" != "notification-service" ]; then
+                  vault write database/roles/${REDIS_ROLE_NAME} \
+                    db_name=redis \
+                    creation_statements="ACL SETUSER {{username}} on >{{password}} ~* &* +@all -select +select|${REDIS_DB}" \
+                    default_ttl="1h" \
+                    max_ttl="24h"
+                fi
+
                 # Policy for the microservice (access only to its credentials path)
                 vault policy write ${svc}-policy - <<EOF
                   path "database/creds/${ROLE_NAME}" {
                     capabilities = ["read"]
                   }
+                  $( [ "${svc}" != "notification-service" ] && echo "path \"database/creds/${REDIS_ROLE_NAME}\" { capabilities = [\"read\"] }" )
               EOF
 
                 # Kubernetes authentication role for the microservice
@@ -143,6 +178,8 @@ spec:
                   bound_service_account_namespaces=whispr-prod \
                   policies=${svc}-policy \
                   ttl=1h
+                  
+                index=$((index + 1))
               done
 
               echo "Vault configuration completed successfully!"

@@ -30,6 +30,7 @@ data:
   # Redis Configuration (non-sensitive)
   REDIS_HOST: "redis.redis.svc.cluster.local"
   REDIS_PORT: "6379"
+  REDIS_DB: "0"
 
 
   # gRPC Services URLs

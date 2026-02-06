@@ -14,3 +14,6 @@ data:
   DB_PORT: "5432"
   DB_NAME: "scheduling_service_db"
   DB_TYPE: "postgres"
+  REDIS_HOST: "redis.redis.svc.cluster.local"
+  REDIS_PORT: "6379"
+  REDIS_DB: "5"
