@@ -76,6 +76,8 @@ spec:
                 name: user-service-secret
             - secretRef:
                 name: user-service-db-secret
+            - secretRef:
+                name: whispr-shared-jwt-secret
           # Resources limits and requests
           resources:
             requests:

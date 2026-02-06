@@ -35,8 +35,8 @@ spec:
             - |
               set -e
 
-              # Install postgresql-client for psql
-              apk add --no-cache postgresql-client
+              # Install required tools
+              apk add --no-cache postgresql-client openssl
 
               echo "Waiting for Vault to be ready and unsealed..."
               until vault status | grep -q "Sealed.*false"; do
@@ -57,6 +57,23 @@ spec:
               echo "Enabling GitHub auth..."
               vault auth enable github 2>/dev/null || echo "GitHub auth already enabled"
               vault write auth/github/config organization=whispr-messenger
+
+              ####################################################################################################
+              # JWT Key Generation
+              ####################################################################################################
+              if ! vault kv get kv/whispr/shared/jwt >/dev/null 2>&1; then
+                echo "Generating JWT RSA keys..."
+                openssl genrsa -out /tmp/jwt_private.pem 2048
+                openssl rsa -in /tmp/jwt_private.pem -pubout -out /tmp/jwt_public.pem
+                
+                vault kv put kv/whispr/shared/jwt JWT_PUBLIC_KEY="$(cat /tmp/jwt_public.pem)"
+                vault kv put kv/whispr/auth-service/jwt JWT_PRIVATE_KEY="$(cat /tmp/jwt_private.pem)"
+                
+                rm /tmp/jwt_private.pem /tmp/jwt_public.pem
+                echo "JWT keys generated and stored successfully"
+              else
+                echo "JWT keys already exist in Vault"
+              fi
 
               ####################################################################################################
               # Redis configuration
@@ -165,13 +182,21 @@ spec:
                 fi
                 
 
-                # Policy for the microservice (access only to its credentials path)
+                # Policy for the microservice
                 vault policy write ${svc}-policy - <<EOF
                   path "database/creds/${ROLE_NAME}" {
                     capabilities = ["read"]
                   }
                   $( [ "${svc}" != "notification-service" ] && echo "path \"database/creds/${REDIS_ROLE_NAME}\" { capabilities = [\"read\"] }" )
-              EOF
+                  
+                  # Access to shared JWT public key for all services
+                  path "kv/data/whispr/shared/jwt" {
+                    capabilities = ["read"]
+                  }
+                  
+                  # Specific secrets for auth-service (Twilio and JWT private key)
+                  $( [ "${svc}" == "auth-service" ] && echo 'path "kv/data/whispr/auth-service/*" { capabilities = ["read"] }' )
+                EOF
 
                 # Kubernetes authentication role for the microservice
                 vault write auth/kubernetes/role/${svc} \
