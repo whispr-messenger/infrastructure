@@ -58,6 +58,16 @@ spec:
               value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
             - name: DATABASE_URL
               value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: media-service-redis-secret
+                  key: username
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: media-service-redis-secret
+                  key: password
           envFrom:
             - configMapRef:
                 name: media-service-config
