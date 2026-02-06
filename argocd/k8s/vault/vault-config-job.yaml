@@ -160,7 +160,7 @@ spec:
                 if [ "${svc}" != "notification-service" ]; then
                   vault write database/roles/${REDIS_ROLE_NAME} \
                     db_name=redis \
-                    creation_statements="[\"ACL SETUSER {{name}} on >{{password}} allkeys allchannels +@all\"]" \
+                    creation_statements="[\"ACL SETUSER {{username}} on >{{password}} ~* &* +@all\"]" \
                     default_ttl="1h" \
                     max_ttl="24h"
                 fi
