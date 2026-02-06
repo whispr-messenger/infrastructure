@@ -82,7 +82,7 @@ spec:
             - secretRef:
                 name: auth-service-jwt-private-secret
             - secretRef:
-                name: whispr-shared-jwt-secret
+                name: auth-service-public-jwt-secret
           # Resource limits and requests
           resources:
             requests:

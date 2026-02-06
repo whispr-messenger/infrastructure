@@ -72,7 +72,7 @@ spec:
             - secretRef:
                 name: scheduling-service-db-secret
             - secretRef:
-                name: whispr-shared-jwt-secret
+                name: scheduling-service-public-jwt-secret
           resources:
             requests:
               cpu: "100m"

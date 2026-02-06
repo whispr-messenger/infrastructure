@@ -48,7 +48,7 @@ spec:
             - secretRef:
                 name: notification-service-db-secret
             - secretRef:
-                name: whispr-shared-jwt-secret
+                name: notification-service-public-jwt-secret
           resources:
             requests:
               cpu: "100m"

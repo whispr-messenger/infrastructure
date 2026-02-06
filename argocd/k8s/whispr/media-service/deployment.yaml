@@ -76,7 +76,7 @@ spec:
             - secretRef:
                 name: media-service-db-secret
             - secretRef:
-                name: whispr-shared-jwt-secret
+                name: media-service-public-jwt-secret
           # Resource limits and requests
           resources:
             requests:
