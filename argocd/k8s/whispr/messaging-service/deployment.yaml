@@ -70,7 +70,7 @@ spec:
             - secretRef:
                 name: messaging-service-db-secret
             - secretRef:
-                name: whispr-shared-jwt-secret
+                name: messaging-service-public-jwt-secret
           resources:
             requests:
               cpu: "100m"
