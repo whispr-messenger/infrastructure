@@ -184,19 +184,19 @@ spec:
 
                 # Policy for the microservice
                 vault policy write ${svc}-policy - <<EOF
-path "database/creds/${ROLE_NAME}" {
-  capabilities = ["read"]
-}
-$( [ "${svc}" != "notification-service" ] && echo "path \"database/creds/${REDIS_ROLE_NAME}\" { capabilities = [\"read\"] }" )
-
-# Access to shared JWT public key for all services
-path "kv/data/whispr/shared/jwt" {
-  capabilities = ["read"]
-}
-
-# Specific secrets for auth-service (Twilio and JWT private key)
-$( [ "${svc}" == "auth-service" ] && echo 'path "kv/data/whispr/auth-service/*" { capabilities = ["read"] }' )
-EOF
+                  path "database/creds/${ROLE_NAME}" {
+                    capabilities = ["read"]
+                  }
+                  $( [ "${svc}" != "notification-service" ] && echo "path \"database/creds/${REDIS_ROLE_NAME}\" { capabilities = [\"read\"] }" )
+                  
+                  # Access to shared JWT public key for all services
+                  path "kv/data/whispr/shared/jwt" {
+                    capabilities = ["read"]
+                  }
+                  
+                  # Specific secrets for auth-service (Twilio and JWT private key)
+                  $( [ "${svc}" == "auth-service" ] && echo 'path "kv/data/whispr/auth-service/*" { capabilities = ["read"] }' )
+                EOF
 
                 # Kubernetes authentication role for the microservice
                 vault write auth/kubernetes/role/${svc} \
