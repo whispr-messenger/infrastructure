@@ -73,6 +73,8 @@ spec:
             - configMapRef:
                 name: user-service-config
             - secretRef:
+                name: user-service-secret
+            - secretRef:
                 name: user-service-db-secret
           # Resources limits and requests
           resources:
