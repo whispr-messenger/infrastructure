@@ -4,9 +4,9 @@ kind: VaultStaticSecret
 metadata:
   name: whispr-shared-jwt
   namespace: whispr-prod
-spec:
   vaultAuthRef: auth-service-vault-auth
   mount: kv
+  type: kv-v2
   path: whispr/shared/jwt
   destination:
     name: whispr-shared-jwt-secret
