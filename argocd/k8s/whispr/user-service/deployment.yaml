@@ -74,8 +74,6 @@ spec:
                 name: user-service-config
             - secretRef:
                 name: user-service-db-secret
-            - secretRef:
-                name: user-service-redis-secret
           # Resources limits and requests
           resources:
             requests:

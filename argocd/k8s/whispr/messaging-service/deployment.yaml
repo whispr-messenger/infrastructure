@@ -69,8 +69,6 @@ spec:
                 name: messaging-service-config
             - secretRef:
                 name: messaging-service-db-secret
-            - secretRef:
-                name: messaging-service-redis-secret
           resources:
             requests:
               cpu: "100m"

@@ -71,8 +71,6 @@ spec:
                 name: scheduling-service-config
             - secretRef:
                 name: scheduling-service-db-secret
-            - secretRef:
-                name: scheduling-service-redis-secret
           resources:
             requests:
               cpu: "100m"
