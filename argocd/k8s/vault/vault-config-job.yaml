@@ -36,7 +36,12 @@ spec:
               set -e
 
               # Install required tools
-              apk add --no-cache postgresql-client openssl kubectl
+              apk add --no-cache postgresql-client openssl curl
+
+              # Install kubectl manually
+              curl -LO "https://dl.k8s.io/release/v1.28.3/bin/linux/amd64/kubectl"
+              chmod +x kubectl
+              mv kubectl /usr/local/bin/
 
               echo "Waiting for Vault to be ready and unsealed..."
               until vault status | grep -q "Sealed.*false"; do
