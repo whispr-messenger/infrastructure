@@ -65,11 +65,13 @@ spec:
               
               # Get Redis password if not already available
               REDIS_PASSWORD=$(kubectl get secret -n redis redis -o jsonpath='{.data.redis-password}' | base64 -d)
+              echo "Redis password character count: $(echo -n "$REDIS_PASSWORD" | wc -c)"
 
+              # Use redis-node-1 which we identified as current master
               vault write database/config/redis \
                 plugin_name=redis-database-plugin \
                 allowed_roles="*" \
-                host=redis.redis.svc.cluster.local \
+                host=redis-node-1.redis-headless.redis.svc.cluster.local \
                 port=6379 \
                 username="default" \
                 password="$REDIS_PASSWORD"
