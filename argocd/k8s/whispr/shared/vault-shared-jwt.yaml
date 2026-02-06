@@ -1,0 +1,14 @@
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: whispr-shared-jwt
+  namespace: whispr-prod
+spec:
+  vaultAuthRef: auth-service-vault-auth
+  mount: kv
+  path: whispr/shared/jwt
+  destination:
+    name: whispr-shared-jwt-secret
+    create: true
+  refreshAfter: 1h

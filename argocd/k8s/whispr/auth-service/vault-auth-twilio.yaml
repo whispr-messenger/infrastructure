@@ -1,0 +1,14 @@
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: auth-service-twilio
+  namespace: whispr-prod
+spec:
+  vaultAuthRef: auth-service-vault-auth
+  mount: kv
+  path: whispr/auth-service/twilio
+  destination:
+    name: auth-service-twilio-secret
+    create: true
+  refreshAfter: 1h
