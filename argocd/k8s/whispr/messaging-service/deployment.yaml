@@ -66,8 +66,6 @@ spec:
             - configMapRef:
                 name: messaging-service-config
             - secretRef:
-                name: messaging-service-secret
-            - secretRef:
                 name: messaging-service-db-secret
             - secretRef:
                 name: messaging-service-public-jwt-secret
