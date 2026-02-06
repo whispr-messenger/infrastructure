@@ -208,7 +208,7 @@ spec:
                   
                   # Specific secrets for auth-service (Twilio and JWT private key)
                   $( [ "${svc}" == "auth-service" ] && echo 'path "kv/data/whispr/auth-service/*" { capabilities = ["read"] }' )
-                EOF
+              EOF
 
                 # Kubernetes authentication role for the microservice
                 vault write auth/kubernetes/role/${svc} \
