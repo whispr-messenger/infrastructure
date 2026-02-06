@@ -71,6 +71,7 @@ spec:
                 allowed_roles="*" \
                 host=redis.redis.svc.cluster.local \
                 port=6379 \
+                username="default" \
                 password="$REDIS_PASSWORD"
 
               echo "Redis connection configured successfully"
@@ -154,12 +155,12 @@ spec:
                   default_ttl="1h" \
                   max_ttl="24h"
 
-                # Redis role for the microservice (isolation using Redis ACLs for specific DB)
-                # We grant access to all keys in the specific DB only
+                # Redis role for the microservice (isolation using Redis ACLs for all keys and commands)
+                # Note: Redis ACLs don't support strict DB isolation by index, so we grant access to all.
                 if [ "${svc}" != "notification-service" ]; then
                   vault write database/roles/${REDIS_ROLE_NAME} \
                     db_name=redis \
-                    creation_statements="ACL SETUSER {{username}} on >{{password}} ~* &* +@all -select +select|${REDIS_DB}" \
+                    creation_statements="[\"ACL SETUSER {{username}} on >{{password}} ~* &* +@all\"]" \
                     default_ttl="1h" \
                     max_ttl="24h"
                 fi
