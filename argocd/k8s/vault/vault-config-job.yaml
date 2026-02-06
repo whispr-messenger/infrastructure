@@ -36,7 +36,7 @@ spec:
               set -e
 
               # Install required tools
-              apk add --no-cache postgresql-client openssl
+              apk add --no-cache postgresql-client openssl kubectl
 
               echo "Waiting for Vault to be ready and unsealed..."
               until vault status | grep -q "Sealed.*false"; do
