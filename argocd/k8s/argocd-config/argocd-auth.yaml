@@ -11,6 +11,4 @@ spec:
     serviceAccount: default
     audiences:
       - https://kubernetes.default.svc.cluster.local
-  vaultConnectionRef:
-    name: default
-    namespace: vault-secrets-operator-system
+  vaultConnectionRef: argocd-connection
