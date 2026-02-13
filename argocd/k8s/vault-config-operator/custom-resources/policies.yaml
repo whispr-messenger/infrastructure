@@ -1,0 +1,148 @@
+---
+# vault-admin - full administrative access
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: vault-admin
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "/*" {
+      capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+    }
+---
+# auth-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: auth-service-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_auth_service" {
+      capabilities = ["read"]
+    }
+    path "database/creds/redis_role_auth_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/auth-service/*" {
+      capabilities = ["read"]
+    }
+---
+# user-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: user-service-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_user_service" {
+      capabilities = ["read"]
+    }
+    path "database/creds/redis_role_user_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+---
+# messaging-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: messaging-service-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_messaging_service" {
+      capabilities = ["read"]
+    }
+    path "database/creds/redis_role_messaging_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+---
+# notification-service (no Redis)
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: notification-service-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_notification_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+---
+# media-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: media-service-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_media_service" {
+      capabilities = ["read"]
+    }
+    path "database/creds/redis_role_media_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+---
+# scheduling-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: scheduling-service-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_scheduling_service" {
+      capabilities = ["read"]
+    }
+    path "database/creds/redis_role_scheduling_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }

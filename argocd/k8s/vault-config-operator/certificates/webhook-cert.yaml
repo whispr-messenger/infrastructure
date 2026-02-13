@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: webhook-cert
+  namespace: vault-config-operator-system
+spec:
+  secretName: vault-config-operator-webhook-service-cert
+  duration: 2160h # 90 jours
+  renewBefore: 360h # 15 jours avant expiration
+  subject:
+    organizations:
+      - vault-config-operator
+  commonName: vault-config-operator-webhook-service.vault-config-operator-system.svc
+  dnsNames:
+    - vault-config-operator-webhook-service.vault-config-operator-system.svc
+    - vault-config-operator-webhook-service.vault-config-operator-system.svc.cluster.local
+  issuerRef:
+    name: selfsigning-issuer
+    kind: ClusterIssuer

@@ -1,0 +1,142 @@
+---
+# vault-admin - administrative access for ArgoCD
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: vault-admin
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: kubernetes
+  policies:
+    - vault-admin
+  targetServiceAccounts:
+    - default
+    - argocd-server
+  targetNamespaces:
+    targetNamespaces:
+      - default
+      - argocd
+  tokenTTL: 3600
+---
+# auth-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: auth-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: kubernetes
+  policies:
+    - auth-service-policy
+  targetServiceAccounts:
+    - auth-service-sa
+  targetNamespaces:
+    targetNamespaces:
+      - whispr-prod
+  tokenTTL: 3600
+---
+# user-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: user-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: kubernetes
+  policies:
+    - user-service-policy
+  targetServiceAccounts:
+    - user-service-sa
+  targetNamespaces:
+    targetNamespaces:
+      - whispr-prod
+  tokenTTL: 3600
+---
+# messaging-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: messaging-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: kubernetes
+  policies:
+    - messaging-service-policy
+  targetServiceAccounts:
+    - messaging-service-sa
+  targetNamespaces:
+    targetNamespaces:
+      - whispr-prod
+  tokenTTL: 3600
+---
+# notification-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: notification-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: kubernetes
+  policies:
+    - notification-service-policy
+  targetServiceAccounts:
+    - notification-service-sa
+  targetNamespaces:
+    targetNamespaces:
+      - whispr-prod
+  tokenTTL: 3600
+---
+# media-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: media-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: kubernetes
+  policies:
+    - media-service-policy
+  targetServiceAccounts:
+    - media-service-sa
+  targetNamespaces:
+    targetNamespaces:
+      - whispr-prod
+  tokenTTL: 3600
+---
+# scheduling-service
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: scheduling-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: kubernetes
+  policies:
+    - scheduling-service-policy
+  targetServiceAccounts:
+    - scheduling-service-sa
+  targetNamespaces:
+    targetNamespaces:
+      - whispr-prod
+  tokenTTL: 3600
