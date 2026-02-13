@@ -20,6 +20,12 @@ spec:
     targetRevision: main
     ref: values
 
+  # Internal CA
+  - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+    targetRevision: main
+    path: argocd/k8s/cert-manager
+
+
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
