@@ -35,10 +35,8 @@ spec:
             - |
               set -e
 
-              # Install required tools
               apk add --no-cache postgresql-client openssl curl
 
-              # Install kubectl manually
               curl -LO "https://dl.k8s.io/release/v1.28.3/bin/linux/amd64/kubectl"
               chmod +x kubectl
               mv kubectl /usr/local/bin/
@@ -49,46 +47,63 @@ spec:
                 sleep 5
               done
 
-              echo "Vault is ready, starting configuration..."
+              echo "Vault is ready, starting bootstrap..."
 
               ####################################################################################################
-              # Activate the required engines
+              # Enable engines
               ####################################################################################################
-              echo "Enabling auth engines..."
               vault auth enable kubernetes 2>/dev/null || echo "Kubernetes auth already enabled"
               vault secrets enable database 2>/dev/null || echo "Database secrets engine already enabled"
               vault secrets enable -path=kv kv-v2 2>/dev/null || echo "KV secrets engine already enabled"
-              
-              echo "Enabling GitHub auth..."
               vault auth enable github 2>/dev/null || echo "GitHub auth already enabled"
               vault write auth/github/config organization=whispr-messenger
 
               ####################################################################################################
-              # JWT Key Generation
+              # Kubernetes auth configuration
+              ####################################################################################################
+              vault write auth/kubernetes/config \
+                kubernetes_host=https://kubernetes.default.svc:443 \
+                kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+              ####################################################################################################
+              # Vault Config Operator bootstrap (policy + role for VCO service account)
+              ####################################################################################################
+              vault policy write vco-admin - <<EOF
+              path "/*" {
+                capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+              }
+              EOF
+
+              vault write auth/kubernetes/role/vco-admin \
+                bound_service_account_names=vault-config-operator-controller-manager \
+                bound_service_account_namespaces=vault-config-operator-system \
+                policies=vco-admin \
+                ttl=1h
+
+              ####################################################################################################
+              # JWT key generation (one-time)
               ####################################################################################################
               if ! vault kv get kv/whispr/shared/jwt >/dev/null 2>&1; then
                 echo "Generating JWT RSA keys..."
                 openssl genrsa -out /tmp/jwt_private.pem 2048
                 openssl rsa -in /tmp/jwt_private.pem -pubout -out /tmp/jwt_public.pem
-                
+
                 vault kv put kv/whispr/shared/jwt JWT_PUBLIC_KEY="$(cat /tmp/jwt_public.pem)"
                 vault kv put kv/whispr/auth-service/jwt JWT_PRIVATE_KEY="$(cat /tmp/jwt_private.pem)"
-                
+
                 rm /tmp/jwt_private.pem /tmp/jwt_public.pem
-                echo "JWT keys generated and stored successfully"
+                echo "JWT keys generated and stored"
               else
                 echo "JWT keys already exist in Vault"
               fi
 
               ####################################################################################################
-              # Redis configuration (re-syncs password from K8s secret on every run to handle rotations)
+              # Redis database connection (re-syncs password on every run)
               ####################################################################################################
-              echo "Configuring Redis database connection..."
-              
               REDIS_PASSWORD=$(kubectl get secret -n redis redis -o jsonpath='{.data.redis-password}' | base64 -d)
-              
+
               if [ -z "$REDIS_PASSWORD" ]; then
-                echo "ERROR: Redis password retrieved is empty!"
+                echo "ERROR: Redis password is empty"
                 exit 1
               fi
 
@@ -101,123 +116,34 @@ spec:
                 password="$REDIS_PASSWORD" \
                 verify_connection=true
 
-              echo "Redis connection configured successfully"
-
               ####################################################################################################
-              # Trust configuration
-              ####################################################################################################
-              echo "Configuring Kubernetes auth..."
-              vault write auth/kubernetes/config \
-                kubernetes_host=https://kubernetes.default.svc:443 \
-                kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-
-              ####################################################################################################
-              # Create the authentication role
-              ####################################################################################################
-              echo "Creating vault-admin role..."
-              vault write auth/kubernetes/role/vault-admin \
-                bound_service_account_names=default,argocd-server \
-                bound_service_account_namespaces=default,argocd \
-                policies=vault-admin \
-                ttl=1h
-
-              ####################################################################################################
-              # Define the policy for the "vault-admin" role
-              ####################################################################################################
-              echo "Creating vault-admin policy..."
-              vault policy write vault-admin - <<EOF
-                path "/*" {
-                  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-                }
-              EOF
-
-              ####################################################################################################
-              # Configure PostgreSQL database connection (only on first setup)
+              # PostgreSQL database connection (first time only)
               ####################################################################################################
               export PGPASSWORD="$POSTGRES_PASSWORD"
 
               if vault read database/config/postgres >/dev/null 2>&1; then
-                echo "PostgreSQL database connection already configured, skipping"
+                echo "PostgreSQL connection already configured, skipping"
               else
-                echo "Configuring PostgreSQL database connection (first time setup)..."
-                
                 vault write database/config/postgres \
                   plugin_name=postgresql-database-plugin \
                   allowed_roles="*" \
                   connection_url="postgresql://{{username}}:{{password}}@postgresql.postgresql.svc.cluster.local:5432/postgres?sslmode=disable" \
                   username="postgres" \
                   password="$POSTGRES_PASSWORD"
-                
-                echo "PostgreSQL connection configured successfully"
               fi
 
               ####################################################################################################
-              # Microservices DB & Redis credentials: databases, roles, policies, k8s auth
+              # PostgreSQL databases and schema grants
               ####################################################################################################
-              echo "Configuring microservices..."
-              
-              # Define Redis DB mapping
-              # auth: 0, user: 1, messaging: 2, notification: 3, media: 4, scheduling: 5
-              index=0
-              
               for svc in auth-service user-service messaging-service notification-service media-service scheduling-service; do
-                echo "Configuring ${svc}..."
-                
-                # Replace hyphens with underscores for database and role names to avoid SQL syntax issues
                 svc_underscore=$(echo $svc | tr '-' '_')
                 DB_NAME="${svc_underscore}_db"
-                ROLE_NAME="role_${svc_underscore}"
-                REDIS_ROLE_NAME="redis_role_${svc_underscore}"
-                REDIS_DB=$index
-                
-                echo "Creating database ${DB_NAME} if it doesn't exist..."
-                psql -h postgresql.postgresql.svc.cluster.local -U postgres -c "CREATE DATABASE \"${DB_NAME}\";" || echo "Database ${DB_NAME} already exists or error creating it"
-                
-                # Grant permissions on public schema so dynamic roles can create tables (Postgres 15+)
-                echo "Granting permissions on public schema in ${DB_NAME}..."
-                psql -h postgresql.postgresql.svc.cluster.local -U postgres -d "${DB_NAME}" -c "GRANT ALL ON SCHEMA public TO PUBLIC;"
 
-                # Database role for the microservice
-                vault write database/roles/${ROLE_NAME} \
-                  db_name=postgres \
-                  creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT CONNECT ON DATABASE \"${DB_NAME}\" TO \"{{name}}\"; GRANT ALL PRIVILEGES ON DATABASE \"${DB_NAME}\" TO \"{{name}}\";" \
-                  default_ttl="1h" \
-                  max_ttl="24h"
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres \
+                  -c "CREATE DATABASE \"${DB_NAME}\";" || echo "Database ${DB_NAME} already exists"
 
-                # Redis role for the microservice (isolation using Redis ACLs for specific DB since Redis 7.0)
-                if [ "${svc}" != "notification-service" ]; then
-                  vault write database/roles/${REDIS_ROLE_NAME} \
-                    db_name=redis \
-                    creation_statements="[\"on\", \">{{password}}\", \"~*\", \"&*\", \"+@all\", \"-select\", \"+select|${REDIS_DB}\"]" \
-                    default_ttl="1h" \
-                    max_ttl="24h"
-                fi
-                
-
-                # Policy for the microservice
-                vault policy write ${svc}-policy - <<EOF
-                  path "database/creds/${ROLE_NAME}" {
-                    capabilities = ["read"]
-                  }
-                  $( [ "${svc}" != "notification-service" ] && echo "path \"database/creds/${REDIS_ROLE_NAME}\" { capabilities = [\"read\"] }" )
-                  
-                  # Access to shared JWT public key for all services
-                  path "kv/data/whispr/shared/jwt" {
-                    capabilities = ["read"]
-                  }
-                  
-                  # Specific secrets for auth-service (Twilio and JWT private key)
-                  $( [ "${svc}" == "auth-service" ] && echo 'path "kv/data/whispr/auth-service/*" { capabilities = ["read"] }' )
-              EOF
-
-                # Kubernetes authentication role for the microservice
-                vault write auth/kubernetes/role/${svc} \
-                  bound_service_account_names=${svc}-sa \
-                  bound_service_account_namespaces=whispr-prod \
-                  policies=${svc}-policy \
-                  ttl=1h
-                  
-                index=$((index + 1))
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres -d "${DB_NAME}" \
+                  -c "GRANT ALL ON SCHEMA public TO PUBLIC;"
               done
 
-              echo "Vault configuration completed successfully!"
+              echo "Vault bootstrap completed. Microservice roles, policies and auth roles are managed by Vault Config Operator CRs."
