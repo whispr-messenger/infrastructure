@@ -1,0 +1,211 @@
+---
+# PostgreSQL dynamic roles
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: role-auth-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: postgres
+  name: role_auth_service
+  creationStatements:
+    - |
+      CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
+      GRANT CONNECT ON DATABASE "auth_service_db" TO "{{name}}";
+      GRANT ALL PRIVILEGES ON DATABASE "auth_service_db" TO "{{name}}";
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: role-user-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: postgres
+  name: role_user_service
+  creationStatements:
+    - |
+      CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
+      GRANT CONNECT ON DATABASE "user_service_db" TO "{{name}}";
+      GRANT ALL PRIVILEGES ON DATABASE "user_service_db" TO "{{name}}";
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: role-messaging-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: postgres
+  name: role_messaging_service
+  creationStatements:
+    - |
+      CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
+      GRANT CONNECT ON DATABASE "messaging_service_db" TO "{{name}}";
+      GRANT ALL PRIVILEGES ON DATABASE "messaging_service_db" TO "{{name}}";
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: role-notification-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: postgres
+  name: role_notification_service
+  creationStatements:
+    - |
+      CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
+      GRANT CONNECT ON DATABASE "notification_service_db" TO "{{name}}";
+      GRANT ALL PRIVILEGES ON DATABASE "notification_service_db" TO "{{name}}";
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: role-media-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: postgres
+  name: role_media_service
+  creationStatements:
+    - |
+      CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
+      GRANT CONNECT ON DATABASE "media_service_db" TO "{{name}}";
+      GRANT ALL PRIVILEGES ON DATABASE "media_service_db" TO "{{name}}";
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: role-scheduling-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: postgres
+  name: role_scheduling_service
+  creationStatements:
+    - |
+      CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
+      GRANT CONNECT ON DATABASE "scheduling_service_db" TO "{{name}}";
+      GRANT ALL PRIVILEGES ON DATABASE "scheduling_service_db" TO "{{name}}";
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+# Redis dynamic roles (ACL-based isolation per DB index)
+# DB mapping: auth=0, user=1, messaging=2, media=4, scheduling=5
+# notification-service has no Redis role
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: redis-role-auth-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: redis
+  name: redis_role_auth_service
+  creationStatements:
+    - '["on", ">{{password}}", "~*", "&*", "+@all", "-select", "+select|0"]'
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: redis-role-user-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: redis
+  name: redis_role_user_service
+  creationStatements:
+    - '["on", ">{{password}}", "~*", "&*", "+@all", "-select", "+select|1"]'
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: redis-role-messaging-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: redis
+  name: redis_role_messaging_service
+  creationStatements:
+    - '["on", ">{{password}}", "~*", "&*", "+@all", "-select", "+select|2"]'
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: redis-role-media-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: redis
+  name: redis_role_media_service
+  creationStatements:
+    - '["on", ">{{password}}", "~*", "&*", "+@all", "-select", "+select|4"]'
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: redis-role-scheduling-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: redis
+  name: redis_role_scheduling_service
+  creationStatements:
+    - '["on", ">{{password}}", "~*", "&*", "+@all", "-select", "+select|5"]'
+  defaultTTL: "1h"
+  maxTTL: "24h"
