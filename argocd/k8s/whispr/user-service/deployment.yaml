@@ -53,6 +53,10 @@ spec:
                 secretKeyRef:
                   name: user-service-db-secret
                   key: password
+            - name: DB_URL
+              value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)"
+            - name: DATABASE_URL
+              value: "postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)"
             - name: REDIS_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -63,6 +67,8 @@ spec:
                 secretKeyRef:
                   name: user-service-redis-secret
                   key: password
+            - name: REDIS_URL
+              value: "redis://$(REDIS_USERNAME):$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)/$(REDIS_DB)"
           envFrom:
             - configMapRef:
                 name: user-service-config
