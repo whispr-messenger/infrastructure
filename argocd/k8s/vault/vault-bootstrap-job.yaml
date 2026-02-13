@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: vault-config-job
+  name: vault-bootstrap-job
   namespace: vault
   annotations:
     argocd.argoproj.io/hook: PostSync
