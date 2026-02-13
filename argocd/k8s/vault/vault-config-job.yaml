@@ -81,33 +81,27 @@ spec:
               fi
 
               ####################################################################################################
-              # Redis configuration (only on first setup, then Vault manages the root password)
+              # Redis configuration (re-syncs password from K8s secret on every run to handle rotations)
               ####################################################################################################
-              if vault read database/config/redis >/dev/null 2>&1; then
-                echo "Redis database connection already configured, skipping (root password managed by Vault)"
-              else
-                echo "Configuring Redis database connection (first time setup)..."
-                
-                REDIS_PASSWORD=$(kubectl get secret -n redis redis -o jsonpath='{.data.redis-password}' | base64 -d)
-                
-                if [ -z "$REDIS_PASSWORD" ]; then
-                  echo "ERROR: Redis password retrieved is empty!"
-                  exit 1
-                fi
-
-                vault write database/config/redis \
-                  plugin_name=redis-database-plugin \
-                  allowed_roles="*" \
-                  host=redis.redis.svc.cluster.local \
-                  port=6379 \
-                  username="default" \
-                  password="$REDIS_PASSWORD"
-
-                echo "Rotating Redis root credentials so Vault manages them..."
-                vault write -f database/rotate-root/redis
-
-                echo "Redis connection configured and root password rotated successfully"
+              echo "Configuring Redis database connection..."
+              
+              REDIS_PASSWORD=$(kubectl get secret -n redis redis -o jsonpath='{.data.redis-password}' | base64 -d)
+              
+              if [ -z "$REDIS_PASSWORD" ]; then
+                echo "ERROR: Redis password retrieved is empty!"
+                exit 1
               fi
+
+              vault write database/config/redis \
+                plugin_name=redis-database-plugin \
+                allowed_roles="*" \
+                host=redis.redis.svc.cluster.local \
+                port=6379 \
+                username="default" \
+                password="$REDIS_PASSWORD" \
+                verify_connection=true
+
+              echo "Redis connection configured successfully"
 
               ####################################################################################################
               # Trust configuration
