@@ -78,11 +78,11 @@ spec:
           # Resource limits and requests
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: "128Mi"
+              cpu: "10m"
             limits:
               memory: "512Mi"
-              cpu: "500m"
+              cpu: "200m"
           # Security context for the container
           securityContext:
             allowPrivilegeEscalation: false

@@ -53,6 +53,16 @@ spec:
                 secretKeyRef:
                   name: user-service-db-secret
                   key: password
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-redis-secret
+                  key: username
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-redis-secret
+                  key: password
 
           envFrom:
             - configMapRef:
@@ -64,11 +74,11 @@ spec:
           # Resources limits and requests
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: "128Mi"
+              cpu: "10m"
             limits:
               memory: "512Mi"
-              cpu: "500m"
+              cpu: "200m"
           # Security context for the container
           securityContext:
             allowPrivilegeEscalation: false
