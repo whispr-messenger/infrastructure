@@ -36,6 +36,9 @@ spec:
     path "kv/data/whispr/shared/jwt" {
       capabilities = ["read"]
     }
+    path "kv/data/whispr/shared/redis" {
+      capabilities = ["read"]
+    }
     path "kv/data/whispr/auth-service/*" {
       capabilities = ["read"]
     }
@@ -61,6 +64,9 @@ spec:
     path "kv/data/whispr/shared/jwt" {
       capabilities = ["read"]
     }
+    path "kv/data/whispr/shared/redis" {
+      capabilities = ["read"]
+    }
 ---
 # messaging-service
 apiVersion: redhatcop.redhat.io/v1alpha1
@@ -81,6 +87,9 @@ spec:
       capabilities = ["read"]
     }
     path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/redis" {
       capabilities = ["read"]
     }
 ---
@@ -124,6 +133,9 @@ spec:
     path "kv/data/whispr/shared/jwt" {
       capabilities = ["read"]
     }
+    path "kv/data/whispr/shared/redis" {
+      capabilities = ["read"]
+    }
 ---
 # scheduling-service
 apiVersion: redhatcop.redhat.io/v1alpha1
@@ -144,5 +156,8 @@ spec:
       capabilities = ["read"]
     }
     path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/redis" {
       capabilities = ["read"]
     }

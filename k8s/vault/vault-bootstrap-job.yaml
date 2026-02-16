@@ -128,6 +128,9 @@ spec:
                 password="$REDIS_PASSWORD" \
                 verify_connection=true
 
+              echo "Storing Redis Sentinel password in Vault KV..."
+              vault kv put kv/whispr/shared/redis REDIS_SENTINEL_PASSWORD="$REDIS_PASSWORD"
+
               ####################################################################################################
               # PostgreSQL database connection (first time only)
               ####################################################################################################

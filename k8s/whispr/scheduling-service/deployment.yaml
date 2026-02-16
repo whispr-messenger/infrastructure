@@ -70,6 +70,8 @@ spec:
             - secretRef:
                 name: scheduling-service-db-secret
             - secretRef:
+                name: scheduling-service-redis-sentinel-secret
+            - secretRef:
                 name: scheduling-service-public-jwt-secret
           resources:
             requests:

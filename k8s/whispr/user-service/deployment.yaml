@@ -75,6 +75,8 @@ spec:
             - secretRef:
                 name: user-service-db-secret
             - secretRef:
+                name: user-service-redis-sentinel-secret
+            - secretRef:
                 name: user-service-public-jwt-secret
           # Resources limits and requests
           resources:

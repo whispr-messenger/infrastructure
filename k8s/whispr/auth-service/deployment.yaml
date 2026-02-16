@@ -76,6 +76,8 @@ spec:
             - secretRef:
                 name: auth-service-redis-secret
             - secretRef:
+                name: auth-service-redis-sentinel-secret
+            - secretRef:
                 name: auth-service-twilio-secret
             - secretRef:
                 name: auth-service-jwt-private-secret
