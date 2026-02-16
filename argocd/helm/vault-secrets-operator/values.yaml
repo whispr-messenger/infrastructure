@@ -1,0 +1,4 @@
+defaultVaultConnection:
+  enabled: true
+  address: http://vault.vault.svc:8200
+  skipTLSVerify: false
