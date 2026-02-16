@@ -75,7 +75,7 @@ spec:
               EOF
 
               vault write auth/kubernetes/role/vco-admin \
-                bound_service_account_names=vault-config-operator-controller-manager \
+                bound_service_account_names=default,controller-manager \
                 bound_service_account_namespaces=vault-config-operator-system \
                 policies=vco-admin \
                 ttl=1h
