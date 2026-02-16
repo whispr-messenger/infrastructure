@@ -10,7 +10,7 @@ spec:
   subject:
     organizations:
       - vault-config-operator
-  commonName: vault-config-operator-webhook-service.vault-config-operator-system.svc
+  commonName: vco-webhook-service.vault-config-operator-system.svc
   dnsNames:
     - vault-config-operator-webhook-service.vault-config-operator-system.svc
     - vault-config-operator-webhook-service.vault-config-operator-system.svc.cluster.local
