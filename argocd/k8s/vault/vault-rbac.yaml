@@ -15,7 +15,7 @@ metadata:
   namespace: vault
 
 ---
-# Role with permissions to manage Secrets
+# Role with permissions to manage Secrets (used by vault-init)
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -43,7 +43,20 @@ subjects:
     namespace: vault
 
 ---
-# RoleBinding for vault-config ServiceAccount
+# Role for vault-config to read specific secrets in vault namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vault-config-role
+  namespace: vault
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["vault-root-token", "vault-unseal-keys"]
+    verbs: ["get"]
+
+---
+# RoleBinding for vault-config ServiceAccount in vault namespace
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -52,14 +65,14 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: vault-init-role
+  name: vault-config-role
 subjects:
   - kind: ServiceAccount
     name: vault-config
     namespace: vault
 
 ---
-# Role in postgresql namespace to read secrets
+# Role in postgresql namespace to read the postgresql secret
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -82,6 +95,35 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: vault-config-postgresql-reader
+subjects:
+  - kind: ServiceAccount
+    name: vault-config
+    namespace: vault
+
+---
+# Role in redis namespace to read the redis secret
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vault-config-redis-reader
+  namespace: redis
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["redis"]
+    verbs: ["get"]
+
+---
+# RoleBinding in redis namespace for vault-config
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vault-config-redis-reader
+  namespace: redis
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vault-config-redis-reader
 subjects:
   - kind: ServiceAccount
     name: vault-config
