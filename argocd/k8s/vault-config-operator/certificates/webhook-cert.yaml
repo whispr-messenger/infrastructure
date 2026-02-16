@@ -15,5 +15,5 @@ spec:
     - vault-config-operator-webhook-service.vault-config-operator-system.svc
     - vault-config-operator-webhook-service.vault-config-operator-system.svc.cluster.local
   issuerRef:
-    name: selfsigning-issuer
+    name: selfsigned-issuer
     kind: ClusterIssuer
