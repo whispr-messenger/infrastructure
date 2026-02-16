@@ -68,6 +68,8 @@ spec:
             - secretRef:
                 name: messaging-service-db-secret
             - secretRef:
+                name: messaging-service-redis-sentinel-secret
+            - secretRef:
                 name: messaging-service-public-jwt-secret
           resources:
             requests:

@@ -32,6 +32,10 @@ data:
   REDIS_PORT: "6379"
   REDIS_DB: "4"
 
+  # Redis Sentinel Configuration
+  REDIS_MODE: "sentinel"
+  REDIS_SENTINELS: "redis.redis.svc.cluster.local:26379"
+  REDIS_MASTER_NAME: "mymaster"
 
   # gRPC Services URLs
   USER_SERVICE_GRPC_URL: "user-service:50052"
