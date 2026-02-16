@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure/
     targetRevision: main
-    path: argocd/helm/grafana
+    path: helm/grafana
 
   syncPolicy:
     automated:

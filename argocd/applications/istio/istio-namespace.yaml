@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: HEAD
-    path: argocd/k8s/istio
+    path: k8s/istio
     directory:
       include: namespace.yaml
   destination:

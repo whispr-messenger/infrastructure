@@ -14,7 +14,7 @@ spec:
     targetRevision: v1.18.2
     helm:
       valueFiles:
-        - $values/argocd/helm/cert-manager/values.yaml
+        - $values/helm/cert-manager/values.yaml
 
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: main
@@ -23,7 +23,7 @@ spec:
   # Internal CA
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: main
-    path: argocd/k8s/cert-manager
+    path: k8s/cert-manager
 
 
   destination:

@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure
     targetRevision: HEAD
-    path: argocd/k8s/argocd-config
+    path: k8s/argocd-config
 
   destination:
     server: https://kubernetes.default.svc

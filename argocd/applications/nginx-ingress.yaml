@@ -14,7 +14,7 @@ spec:
     targetRevision: 4.11.2
     helm:
       valueFiles:
-        - $values/argocd/helm/nginx-ingress/values.yaml
+        - $values/helm/nginx-ingress/values.yaml
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: HEAD
     ref: values

@@ -15,7 +15,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: whispr-messenger/vault-config-job
-  MANIFEST_PATH: argocd/k8s/vault/vault-config-job.yaml
+  MANIFEST_PATH: k8s/vault/vault-config-job.yaml
 
 jobs:
   update-deployment:

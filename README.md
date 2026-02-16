@@ -86,5 +86,5 @@ cd scripts/vault
 ./populate-secrets.sh
 
 # Déployer le SecretStore
-kubectl apply -f argocd/k8s/vault/vault-secret-store.yaml
+kubectl apply -f k8s/vault/vault-secret-store.yaml
 ```

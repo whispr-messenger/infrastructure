@@ -15,7 +15,7 @@ spec:
     targetRevision: 2025.5.0
     helm:
       valueFiles:
-        - $values/argocd/helm/sonarqube/values.yaml
+        - $values/helm/sonarqube/values.yaml
   # Values file
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: HEAD
