@@ -10,14 +10,14 @@ spec:
     # Enable the Atlas Helm OCI repository
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: main
-    path: argocd/k8s/atlas
+    path: k8s/atlas
 
   - repoURL: ghcr.io/ariga
     chart: charts/atlas-operator
     targetRevision: 0.4.2
     helm:
       valueFiles:
-        - $values/argocd/helm/atlas/values.yaml
+        - $values/helm/atlas/values.yaml
 
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
     targetRevision: main

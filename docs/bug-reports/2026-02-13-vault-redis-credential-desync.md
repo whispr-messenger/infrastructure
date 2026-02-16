@@ -86,7 +86,7 @@ kubectl exec vault-0 -n vault -- sh -c \
 
 ### Fix Applied
 
-Modified `argocd/k8s/vault/vault-config-job.yaml` to:
+Modified `k8s/vault/vault-config-job.yaml` to:
 
 1. **Always re-sync** the Redis password from the Kubernetes secret on every config job run (no idempotent guard for Redis, unlike PostgreSQL).
 2. **Use `verify_connection=true`** to fail fast if the password is wrong.
@@ -157,5 +157,5 @@ kubectl get pods -n whispr-prod -l app=user-service
 
 ## Affected Files
 
-- `argocd/k8s/vault/vault-config-job.yaml`
-- `argocd/k8s/vault/vault-config-rbac.yaml`
+- `k8s/vault/vault-config-job.yaml`
+- `k8s/vault/vault-config-rbac.yaml`

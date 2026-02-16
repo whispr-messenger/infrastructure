@@ -16,7 +16,7 @@ spec:
       helm:
         releaseName: istio-base
         valueFiles:
-          - $values/argocd/helm/istio/base/values.yaml
+          - $values/helm/istio/base/values.yaml
 
     - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
       targetRevision: HEAD

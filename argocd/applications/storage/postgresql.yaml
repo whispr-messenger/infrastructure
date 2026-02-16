@@ -16,7 +16,7 @@ spec:
     targetRevision: 16.7.27
     helm:
       valueFiles:
-        - $values/argocd/helm/postgresql/values.yaml
+        - $values/helm/postgresql/values.yaml
 
   # Values file
   - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'

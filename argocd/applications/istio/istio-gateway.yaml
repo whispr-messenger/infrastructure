@@ -15,7 +15,7 @@ spec:
       helm:
         releaseName: istio-gateway
         valueFiles:
-          - $values/argocd/helm/istio/gateway/values.yaml
+          - $values/helm/istio/gateway/values.yaml
 
     - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
       targetRevision: HEAD
@@ -23,7 +23,7 @@ spec:
 
     - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
       targetRevision: HEAD
-      path: argocd/k8s/istio/gateway
+      path: k8s/istio/gateway
 
   destination:
     server: https://kubernetes.default.svc
