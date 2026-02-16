@@ -69,8 +69,11 @@ master:
       type: RuntimeDefault
 
 ## Redis Replica configuration
+## Minimum 3 nodes required for Sentinel HA:
+## With quorum=2, at least 2 Sentinels must agree to trigger failover.
+## With only 2 nodes, losing 1 leaves 1 Sentinel which cannot reach quorum.
 replica:
-  replicaCount: 2
+  replicaCount: 3
   
   ## Resource configuration
   resources:

@@ -99,6 +99,8 @@ spec:
 
               ####################################################################################################
               # Redis database connection (re-syncs password on every run)
+              # Uses Sentinel to discover the current master so ACL writes go to the
+              # master and are replicated to slaves automatically.
               ####################################################################################################
               REDIS_PASSWORD=$(kubectl get secret -n redis redis -o jsonpath='{.data.redis-password}' | base64 -d)
 
@@ -107,10 +109,20 @@ spec:
                 exit 1
               fi
 
+              echo "Discovering Redis master via Sentinel..."
+              MASTER_HOST=$(redis-cli -h redis.redis.svc.cluster.local -p 26379 -a "$REDIS_PASSWORD" --no-auth-warning SENTINEL get-master-addr-by-name mymaster 2>/dev/null | head -1)
+
+              if [ -z "$MASTER_HOST" ]; then
+                echo "ERROR: Could not discover Redis master via Sentinel, falling back to ClusterIP service"
+                MASTER_HOST="redis.redis.svc.cluster.local"
+              fi
+
+              echo "Redis master resolved to: $MASTER_HOST"
+
               vault write database/config/redis \
                 plugin_name=redis-database-plugin \
                 allowed_roles="*" \
-                host=redis.redis.svc.cluster.local \
+                host="$MASTER_HOST" \
                 port=6379 \
                 username="default" \
                 password="$REDIS_PASSWORD" \
