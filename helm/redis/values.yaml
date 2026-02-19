@@ -8,7 +8,8 @@ global:
   imagePullSecrets: []
   defaultStorageClass: ""
   redis:
-    password: "" # Will be auto-generated if empty
+    # password managed via auth.existingSecret below — do not set here
+    # password: ""
 
 ## Redis Architecture
 # Available options: standalone, replication
@@ -24,9 +25,10 @@ image:
 auth:
   enabled: true
   sentinel: true
-  # Password will be auto-generated and stored in secret
-  # existingSecret: "redis-secret"
-  # existingSecretPasswordKey: "redis-password"
+  # Secret 'redis' in namespace 'redis' created by Bitnami chart on first deploy
+  # Key: redis-password — synced to Vault KV kv/whispr/shared/redis
+  existingSecret: "redis"
+  existingSecretPasswordKey: "redis-password"
 
 ## Redis Master configuration
 master:
