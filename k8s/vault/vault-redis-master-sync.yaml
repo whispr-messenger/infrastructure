@@ -1,0 +1,111 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vault-redis-master-sync
+  namespace: vault
+  annotations:
+    # Not an ArgoCD hook — deployed as a regular resource and runs on its own schedule.
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  # Run every 5 minutes to keep Vault's DB config in sync with the current Redis master.
+  # A Sentinel failover promotes a new master pod; without this CronJob, Vault would
+  # retain the stale hostname and all VaultDynamicSecret renewals would fail with READONLY.
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 120
+      template:
+        spec:
+          serviceAccountName: vault-config
+          restartPolicy: OnFailure
+          containers:
+            - name: redis-master-sync
+              image: ghcr.io/whispr-messenger/vault-config-job:latest
+              env:
+                - name: VAULT_ADDR
+                  value: http://vault.vault.svc:8200
+                - name: VAULT_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: vault-root-token
+                      key: root_token
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+
+                  echo "=== vault-redis-master-sync ==="
+
+                  echo "Waiting for Vault to be ready and unsealed..."
+                  until vault status | grep -q "Sealed.*false"; do
+                    echo "Vault not ready or still sealed, waiting..."
+                    sleep 5
+                  done
+
+                  ####################################################################################################
+                  # Step 1: Read Redis password from Vault KV
+                  ####################################################################################################
+                  REDIS_PASSWORD=$(vault kv get -field=REDIS_SENTINEL_PASSWORD kv/whispr/shared/redis 2>/dev/null || true)
+
+                  if [ -z "$REDIS_PASSWORD" ]; then
+                    echo "ERROR: Redis password not found in Vault KV (kv/whispr/shared/redis). Bootstrap job must run first."
+                    exit 1
+                  fi
+
+                  ####################################################################################################
+                  # Step 2: Discover current Redis master via Sentinel
+                  ####################################################################################################
+                  echo "Querying Sentinel for current master..."
+                  MASTER_IP=$(redis-cli -h redis.redis.svc.cluster.local -p 26379 \
+                    -a "$REDIS_PASSWORD" --no-auth-warning \
+                    SENTINEL get-master-addr-by-name mymaster 2>/dev/null | head -1 || true)
+
+                  if [ -z "$MASTER_IP" ]; then
+                    echo "WARNING: Sentinel query returned no master, skipping update."
+                    exit 0
+                  fi
+
+                  ####################################################################################################
+                  # Step 3: Map IP → stable headless DNS hostname
+                  ####################################################################################################
+                  MASTER_POD=$(kubectl get pods -n redis -o wide --no-headers 2>/dev/null \
+                    | awk -v ip="$MASTER_IP" '$6 == ip {print $1}')
+
+                  if [ -n "$MASTER_POD" ]; then
+                    NEW_MASTER="${MASTER_POD}.redis-headless.redis.svc.cluster.local"
+                    echo "Master: pod=$MASTER_POD ip=$MASTER_IP dns=$NEW_MASTER"
+                  else
+                    echo "WARNING: Could not map IP $MASTER_IP to a pod. Using raw IP as fallback."
+                    NEW_MASTER="$MASTER_IP"
+                  fi
+
+                  ####################################################################################################
+                  # Step 4: Compare with currently stored host in Vault DB engine
+                  ####################################################################################################
+                  CURRENT_HOST=$(vault read -field=connection_details database/config/redis 2>/dev/null \
+                    | grep -o 'host:[^ ]*' | cut -d: -f2 || true)
+
+                  if [ "$CURRENT_HOST" = "$NEW_MASTER" ]; then
+                    echo "Master unchanged ($NEW_MASTER), no update needed."
+                    exit 0
+                  fi
+
+                  echo "Master changed: $CURRENT_HOST → $NEW_MASTER. Updating Vault DB config..."
+
+                  ####################################################################################################
+                  # Step 5: Update Vault DB engine with new master host
+                  ####################################################################################################
+                  vault write database/config/redis \
+                    plugin_name=redis-database-plugin \
+                    allowed_roles="*" \
+                    host="$NEW_MASTER" \
+                    port=6379 \
+                    username="default" \
+                    password="$REDIS_PASSWORD" \
+                    verify_connection=true
+
+                  echo "Vault DB config updated to $NEW_MASTER."
