@@ -101,17 +101,16 @@ subjects:
     namespace: vault
 
 ---
-# Role in redis namespace to read the redis secret and discover master pod
+# Role in redis namespace to manage the redis secret and discover master pod
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: vault-config-redis-reader
+  name: vault-config-redis-manager
   namespace: redis
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
-    resourceNames: ["redis"]
-    verbs: ["get"]
+    verbs: ["get", "create", "update", "patch"]
   - apiGroups: [""]
     resources: ["pods"]
     verbs: ["get", "list"]
@@ -121,12 +120,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: vault-config-redis-reader
+  name: vault-config-redis-manager
   namespace: redis
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: vault-config-redis-reader
+  name: vault-config-redis-manager
 subjects:
   - kind: ServiceAccount
     name: vault-config
