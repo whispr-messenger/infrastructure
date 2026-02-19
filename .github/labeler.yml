@@ -34,8 +34,8 @@ kubernetes:
     - any-glob-to-any-file:
       - '**/*.yaml'
       - '**/*.yml'
-      - 'kubernetes_cluster/**/*'
-      - 'google_kubernetes_engine/**/*'
+      - 'terraform/kubernetes_cluster/**/*'
+      - 'terraform/google_kubernetes_engine/**/*'
 
 # ArgoCD related files
 argocd:
@@ -47,7 +47,7 @@ argocd:
 gcp:
   - changed-files:
     - any-glob-to-any-file:
-      - 'google_kubernetes_engine/**/*'
+      - 'terraform/google_kubernetes_engine/**/*'
       - 'scripts/setup-gcp-project.sh'
 
 # Istio service mesh
@@ -81,15 +81,13 @@ infrastructure:
     - any-glob-to-any-file:
       - 'argocd/infrastructure/**/*'
       - 'terraform/**/*'
-      - 'kubernetes_cluster/**/*'
-      - 'google_kubernetes_engine/**/*'
 
 # Cloud topics
 cloud:
   - changed-files:
     - any-glob-to-any-file:
-      - 'google_kubernetes_engine/**/*'
-      - 'kubernetes_cluster/**/*'
+      - 'terraform/google_kubernetes_engine/**/*'
+      - 'terraform/kubernetes_cluster/**/*'
 
 # Automation & CI/CD
 automation:

@@ -18,8 +18,8 @@ jobs:
     strategy:
       matrix:
         tf-dir:
-          - google_kubernetes_engine
-          - kubernetes_cluster
+          - terraform/google_kubernetes_engine
+          - terraform/kubernetes_cluster
           - terraform/modules/google_kubernetes_engine
           - terraform/modules/kubernetes_cluster
 
