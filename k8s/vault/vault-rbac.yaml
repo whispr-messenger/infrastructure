@@ -130,3 +130,39 @@ subjects:
   - kind: ServiceAccount
     name: vault-config
     namespace: vault
+
+---
+# Role in whispr-prod namespace to delete stale Redis credential secrets.
+# Used by the vault-redis-master-sync CronJob (Step 6) to force VSO rotation
+# when a Redis restart wipes the in-memory ACL users created by Vault.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vault-config-whispr-redis-health
+  namespace: whispr-prod
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames:
+      - auth-service-redis-secret
+      - user-service-redis-secret
+      - media-service-redis-secret
+      - messaging-service-redis-secret
+      - scheduling-service-redis-secret
+    verbs: ["delete"]
+
+---
+# RoleBinding in whispr-prod namespace for vault-config
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vault-config-whispr-redis-health
+  namespace: whispr-prod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vault-config-whispr-redis-health
+subjects:
+  - kind: ServiceAccount
+    name: vault-config
+    namespace: vault
