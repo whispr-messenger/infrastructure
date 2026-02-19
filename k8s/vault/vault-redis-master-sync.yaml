@@ -89,23 +89,55 @@ spec:
                   CURRENT_HOST=$(vault read -field=connection_details database/config/redis 2>/dev/null \
                     | grep -o 'host:[^ ]*' | cut -d: -f2 || true)
 
-                  if [ "$CURRENT_HOST" = "$NEW_MASTER" ]; then
-                    echo "Master unchanged ($NEW_MASTER), no update needed."
-                    exit 0
+                  MASTER_CHANGED=false
+                  if [ "$CURRENT_HOST" != "$NEW_MASTER" ]; then
+                    MASTER_CHANGED=true
+                    echo "Master changed: $CURRENT_HOST → $NEW_MASTER. Updating Vault DB config..."
+                  else
+                    echo "Master unchanged ($NEW_MASTER), skipping Vault DB update."
                   fi
 
-                  echo "Master changed: $CURRENT_HOST → $NEW_MASTER. Updating Vault DB config..."
+                  ####################################################################################################
+                  # Step 5: Update Vault DB engine with new master host (only if changed)
+                  ####################################################################################################
+                  if [ "$MASTER_CHANGED" = "true" ]; then
+                    vault write database/config/redis \
+                      plugin_name=redis-database-plugin \
+                      allowed_roles="*" \
+                      host="$NEW_MASTER" \
+                      port=6379 \
+                      username="default" \
+                      password="$REDIS_PASSWORD" \
+                      verify_connection=true
+
+                    echo "Vault DB config updated to $NEW_MASTER."
+                  fi
 
                   ####################################################################################################
-                  # Step 5: Update Vault DB engine with new master host
+                  # Step 6: ACL health check — detect missing Vault ACL users and force VSO rotation.
+                  # When Redis restarts, all in-memory ACL users are wiped (no aclfile configured).
+                  # VSO only renews the Vault lease TTL; it does NOT re-create the Redis ACL user.
+                  # Deleting the K8s destination secret forces VSO to re-request credentials from
+                  # Vault, which then re-runs ACL SETUSER on the Redis master.
                   ####################################################################################################
-                  vault write database/config/redis \
-                    plugin_name=redis-database-plugin \
-                    allowed_roles="*" \
-                    host="$NEW_MASTER" \
-                    port=6379 \
-                    username="default" \
-                    password="$REDIS_PASSWORD" \
-                    verify_connection=true
+                  echo "=== Step 6: ACL health check ==="
+                  ACL_LIST=$(redis-cli -h "$NEW_MASTER" -p 6379 \
+                    -a "$REDIS_PASSWORD" --no-auth-warning ACL LIST 2>/dev/null || true)
 
-                  echo "Vault DB config updated to $NEW_MASTER."
+                  if [ -z "$ACL_LIST" ]; then
+                    echo "WARNING: Could not retrieve ACL list from Redis master — skipping health check."
+                  else
+                    for svc in auth-service user-service media-service messaging-service scheduling-service; do
+                      svc_upper=$(echo "$svc" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+                      if echo "$ACL_LIST" | grep -qi "V_.*REDIS_ROLE_${svc_upper}"; then
+                        echo "ACL user for $svc: OK"
+                      else
+                        SECRET_NAME="${svc}-redis-secret"
+                        echo "WARNING: No ACL user found for $svc. Deleting $SECRET_NAME to force VSO rotation..."
+                        kubectl delete secret "$SECRET_NAME" -n whispr-prod --ignore-not-found=true && \
+                          echo "Deleted $SECRET_NAME — VSO will regenerate and register a fresh ACL user." || \
+                          echo "Could not delete $SECRET_NAME (RBAC or not found) — skipping."
+                      fi
+                    done
+                  fi
+                  echo "=== vault-redis-master-sync completed ==="
