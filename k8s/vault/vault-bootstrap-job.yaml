@@ -15,7 +15,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: vault-config
-          image: ghcr.io/whispr-messenger/vault-config-job:latest
+          image: ghcr.io/whispr-messenger/vault-config-job:sha-4cea5de
           env:
             - name: VAULT_ADDR
               value: http://vault.vault.svc:8200
