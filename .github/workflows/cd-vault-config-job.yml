@@ -15,7 +15,8 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: whispr-messenger/vault-config-job
-  MANIFEST_PATH: k8s/vault/vault-config-job.yaml
+  BOOTSTRAP_JOB_PATH: k8s/vault/vault-bootstrap-job.yaml
+  MASTER_SYNC_PATH: k8s/vault/vault-redis-master-sync.yaml
 
 jobs:
   update-deployment:
@@ -81,14 +82,17 @@ jobs:
           FULL_IMAGE=$(echo "${FULL_IMAGE}" | tr '[:upper:]' '[:lower:]')
 
           echo "Updating deployment image to: ${FULL_IMAGE}"
-          yq -i ".spec.template.spec.containers[0].image = \"${FULL_IMAGE}\"" ${{ env.MANIFEST_PATH }}
+          # Bootstrap Job — .spec.template.spec.containers[0]
+          yq -i ".spec.template.spec.containers[0].image = \"${FULL_IMAGE}\"" ${{ env.BOOTSTRAP_JOB_PATH }}
+          # CronJob — .spec.jobTemplate.spec.template.spec.containers[0]
+          yq -i ".spec.jobTemplate.spec.template.spec.containers[0].image = \"${FULL_IMAGE}\"" ${{ env.MASTER_SYNC_PATH }}
 
       - name: Commit and push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          if git diff --quiet ${{ env.MANIFEST_PATH }}; then
+          if git diff --quiet ${{ env.BOOTSTRAP_JOB_PATH }} ${{ env.MASTER_SYNC_PATH }}; then
             echo "No changes to commit"
             exit 0
           fi
@@ -96,6 +100,6 @@ jobs:
           COMMIT_SHA="${{ steps.validate_commit.outputs.commit_sha }}"
           COMMIT_MSG="🔧 chore(vault): update config job image to ${COMMIT_SHA:0:7}"
 
-          git add ${{ env.MANIFEST_PATH }}
+          git add ${{ env.BOOTSTRAP_JOB_PATH }} ${{ env.MASTER_SYNC_PATH }}
           git commit -m "${COMMIT_MSG}"
           git push https://x-access-token:${{ steps.generate_token.outputs.token }}@github.com/${{ github.repository }}.git main
