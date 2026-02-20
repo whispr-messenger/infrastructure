@@ -164,3 +164,19 @@ spec:
     path "kv/data/whispr/shared/redis" {
       capabilities = ["read"]
     }
+---
+# arc-runner
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: arc-runner-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "kv/data/whispr/shared/github-arc" {
+      capabilities = ["read"]
+    }

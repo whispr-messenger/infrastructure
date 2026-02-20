@@ -1,0 +1,31 @@
+## Target GitHub organization
+githubConfigUrl: "https://github.com/whispr-messenger"
+
+## Secret created by Vault Secrets Operator (VaultStaticSecret arc-github-pat)
+## Must contain a key named: github_token
+githubConfigSecret: arc-github-pat-secret
+
+## Scale set name used as runs-on: value in GitHub Actions workflows
+## e.g.: runs-on: arc-runner-set
+runnerScaleSetName: arc-runner-set
+
+## Link to the controller deployed in arc-systems
+controllerServiceAccount:
+  namespace: arc-systems
+  name: arc-controller-gha-runner-scale-set-controller
+
+## Runner pod configuration
+template:
+  spec:
+    containers:
+      - name: runner
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
+minRunners: 0
+maxRunners: 5

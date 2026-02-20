@@ -201,4 +201,19 @@ spec:
                 echo "messaging-service app secrets already exist in Vault"
               fi
 
+              ####################################################################################################
+              # GitHub ARC — PAT placeholder (one-time)
+              # The actual value must be set manually:
+              #   vault kv put kv/whispr/shared/github-arc github_token="ghp_xxx"
+              ####################################################################################################
+              if ! vault kv get kv/whispr/shared/github-arc >/dev/null 2>&1; then
+                echo "Creating GitHub ARC secret placeholder in Vault..."
+                vault kv put kv/whispr/shared/github-arc github_token="REPLACE_ME"
+                echo "WARNING: kv/whispr/shared/github-arc has been seeded with a placeholder."
+                echo "         Replace it with a real GitHub PAT (scopes: repo, admin:org):"
+                echo "         vault kv put kv/whispr/shared/github-arc github_token='ghp_xxx'"
+              else
+                echo "GitHub ARC secret already exists in Vault"
+              fi
+
               echo "Vault bootstrap completed. Microservice roles, policies and auth roles are managed by Vault Config Operator CRs."
