@@ -70,9 +70,11 @@ spec:
               number: 80
     - match:
         - uri:
-            prefix: "/messaging"
+            regex: "^/messaging/(.*)"
           authority:
             exact: whispr.epitech.beer
+      rewrite:
+        uri: "/\\1"
       route:
         - destination:
             host: messaging-service.whispr-prod.svc.cluster.local
