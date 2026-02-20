@@ -21,6 +21,7 @@ template:
       - name: runner
         image: ghcr.io/actions/actions-runner:latest
         imagePullPolicy: IfNotPresent
+        command: ["/home/runner/run.sh"]
         resources:
           requests:
             cpu: 100m
