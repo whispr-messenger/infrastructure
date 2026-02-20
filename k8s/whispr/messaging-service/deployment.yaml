@@ -40,7 +40,7 @@ spec:
               containerPort: 4001
               protocol: TCP
           env:
-            - name: DB_USER
+            - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: messaging-service-db-secret
@@ -51,7 +51,12 @@ spec:
                   name: messaging-service-db-secret
                   key: password
             - name: DATABASE_URL
-              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+              value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: messaging-service-public-jwt-secret
+                  key: JWT_PUBLIC_KEY
             - name: REDIS_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -68,9 +73,13 @@ spec:
             - secretRef:
                 name: messaging-service-db-secret
             - secretRef:
+                name: messaging-service-redis-secret
+            - secretRef:
                 name: messaging-service-redis-sentinel-secret
             - secretRef:
                 name: messaging-service-public-jwt-secret
+            - secretRef:
+                name: messaging-service-app-secret
           resources:
             requests:
               cpu: "10m"

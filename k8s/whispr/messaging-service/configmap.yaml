@@ -24,3 +24,6 @@ data:
   REDIS_MODE: "sentinel"
   REDIS_SENTINELS: "redis.redis.svc.cluster.local:26379"
   REDIS_MASTER_NAME: "mymaster"
+
+  # gRPC Services URLs
+  SCHEDULING_SERVICE_GRPC_URL: "scheduling-service.whispr-prod.svc.cluster.local:3001"
