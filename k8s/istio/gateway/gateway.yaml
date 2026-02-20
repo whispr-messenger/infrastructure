@@ -70,11 +70,23 @@ spec:
               number: 80
     - match:
         - uri:
-            regex: "^/messaging/(.*)"
+            prefix: "/messaging/"
           authority:
             exact: whispr.epitech.beer
       rewrite:
-        uri: "/\\1"
+        uri: "/"
+      route:
+        - destination:
+            host: messaging-service.whispr-prod.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            exact: "/messaging"
+          authority:
+            exact: whispr.epitech.beer
+      rewrite:
+        uri: "/"
       route:
         - destination:
             host: messaging-service.whispr-prod.svc.cluster.local
@@ -104,3 +116,4 @@ spec:
 
   # --> Exemple: http://test.local/ → App A
   # --> Exemple: http://test.local/index.html → App A
+
