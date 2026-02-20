@@ -68,6 +68,16 @@ spec:
             host: user-service.whispr-prod.svc.cluster.local
             port:
               number: 80
+    - match:
+        - uri:
+            prefix: "/messaging"
+          authority:
+            exact: whispr.epitech.beer
+      route:
+        - destination:
+            host: messaging-service.whispr-prod.svc.cluster.local
+            port:
+              number: 80
     # -> Exemple: http://test.local/api/users → App B
 
     # WWW redirect --> whispr.epitech-msc2026.me
