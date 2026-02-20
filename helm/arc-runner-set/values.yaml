@@ -19,6 +19,7 @@ template:
   spec:
     containers:
       - name: runner
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 100m
@@ -27,5 +28,5 @@ template:
             cpu: 500m
             memory: 512Mi
 
-minRunners: 0
+minRunners: 1
 maxRunners: 5
