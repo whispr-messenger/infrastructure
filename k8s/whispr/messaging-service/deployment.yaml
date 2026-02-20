@@ -109,6 +109,16 @@ spec:
             capabilities:
               drop:
                 - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: priv-static
+              mountPath: /app/lib/whispr_messaging-1.0.0/priv/static
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: priv-static
+          emptyDir: {}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
