@@ -92,6 +92,9 @@ spec:
     path "kv/data/whispr/shared/redis" {
       capabilities = ["read"]
     }
+    path "kv/data/whispr/messaging-service/*" {
+      capabilities = ["read"]
+    }
 ---
 # notification-service (no Redis)
 apiVersion: redhatcop.redhat.io/v1alpha1
