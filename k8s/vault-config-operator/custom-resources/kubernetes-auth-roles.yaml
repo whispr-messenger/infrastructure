@@ -140,3 +140,23 @@ spec:
     targetNamespaces:
       - whispr-prod
   tokenTTL: 3600
+---
+# arc-runner
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: arc-runner
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: kubernetes
+  policies:
+    - arc-runner-policy
+  targetServiceAccounts:
+    - arc-runner-sa
+  targetNamespaces:
+    targetNamespaces:
+      - arc-runners
+  tokenTTL: 3600

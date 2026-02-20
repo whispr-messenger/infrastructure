@@ -1,0 +1,44 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: arc-runner-set
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+spec:
+  project: default
+  sources:
+  - repoURL: ghcr.io/actions/actions-runner-controller-charts
+    chart: gha-runner-scale-set
+    targetRevision: 0.10.1
+    helm:
+      releaseName: arc-runner-set
+      valueFiles:
+        - $values/helm/arc-runner-set/values.yaml
+
+  - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+    targetRevision: main
+    ref: values
+
+  # VaultConnection, VaultAuth, VaultStaticSecret for the GitHub PAT
+  - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+    targetRevision: main
+    path: k8s/arc
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: arc-runners
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

@@ -1,0 +1,20 @@
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+# Metrics
+metrics:
+  controllerManagerAddr: ":8080"
+  listenerAddr: ":8080"
+  listenerEndpoint: "/metrics"
+
+# Flags
+flags:
+  logLevel: info
+  watchSingleNamespace: ""
