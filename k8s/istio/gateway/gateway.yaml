@@ -75,6 +75,10 @@ spec:
             exact: whispr.epitech.beer
       rewrite:
         uri: "/"
+      headers:
+        request:
+          set:
+            x-forwarded-prefix: "/messaging"
       route:
         - destination:
             host: messaging-service.whispr-prod.svc.cluster.local
@@ -87,6 +91,10 @@ spec:
             exact: whispr.epitech.beer
       rewrite:
         uri: "/"
+      headers:
+        request:
+          set:
+            x-forwarded-prefix: "/messaging"
       route:
         - destination:
             host: messaging-service.whispr-prod.svc.cluster.local
