@@ -16,8 +16,8 @@ spec:
   creationStatements:
     - |
       CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
-      GRANT CONNECT ON DATABASE "auth_service_db" TO "{{name}}";
-      GRANT ALL PRIVILEGES ON DATABASE "auth_service_db" TO "{{name}}";
+      GRANT role_auth_service_group TO "{{name}}";
+      ALTER ROLE "{{name}}" SET ROLE role_auth_service_group;
   defaultTTL: "1h"
   maxTTL: "24h"
 ---
@@ -36,8 +36,8 @@ spec:
   creationStatements:
     - |
       CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
-      GRANT CONNECT ON DATABASE "user_service_db" TO "{{name}}";
-      GRANT ALL PRIVILEGES ON DATABASE "user_service_db" TO "{{name}}";
+      GRANT role_user_service_group TO "{{name}}";
+      ALTER ROLE "{{name}}" SET ROLE role_user_service_group;
   defaultTTL: "1h"
   maxTTL: "24h"
 ---
@@ -56,8 +56,8 @@ spec:
   creationStatements:
     - |
       CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
-      GRANT CONNECT ON DATABASE "messaging_service_db" TO "{{name}}";
-      GRANT ALL PRIVILEGES ON DATABASE "messaging_service_db" TO "{{name}}";
+      GRANT role_messaging_service_group TO "{{name}}";
+      ALTER ROLE "{{name}}" SET ROLE role_messaging_service_group;
   defaultTTL: "1h"
   maxTTL: "24h"
 ---
@@ -76,8 +76,8 @@ spec:
   creationStatements:
     - |
       CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
-      GRANT CONNECT ON DATABASE "notification_service_db" TO "{{name}}";
-      GRANT ALL PRIVILEGES ON DATABASE "notification_service_db" TO "{{name}}";
+      GRANT role_notification_service_group TO "{{name}}";
+      ALTER ROLE "{{name}}" SET ROLE role_notification_service_group;
   defaultTTL: "1h"
   maxTTL: "24h"
 ---
@@ -96,8 +96,8 @@ spec:
   creationStatements:
     - |
       CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
-      GRANT CONNECT ON DATABASE "media_service_db" TO "{{name}}";
-      GRANT ALL PRIVILEGES ON DATABASE "media_service_db" TO "{{name}}";
+      GRANT role_media_service_group TO "{{name}}";
+      ALTER ROLE "{{name}}" SET ROLE role_media_service_group;
   defaultTTL: "1h"
   maxTTL: "24h"
 ---
@@ -116,8 +116,8 @@ spec:
   creationStatements:
     - |
       CREATE ROLE "{{name}}" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';
-      GRANT CONNECT ON DATABASE "scheduling_service_db" TO "{{name}}";
-      GRANT ALL PRIVILEGES ON DATABASE "scheduling_service_db" TO "{{name}}";
+      GRANT role_scheduling_service_group TO "{{name}}";
+      ALTER ROLE "{{name}}" SET ROLE role_scheduling_service_group;
   defaultTTL: "1h"
   maxTTL: "24h"
 ---
