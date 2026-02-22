@@ -175,17 +175,39 @@ spec:
               fi
 
               ####################################################################################################
-              # PostgreSQL databases and schema grants
+              # PostgreSQL databases, group roles, and schema grants
               ####################################################################################################
               for svc in auth-service user-service messaging-service notification-service media-service scheduling-service; do
                 svc_underscore=$(echo $svc | tr '-' '_')
                 DB_NAME="${svc_underscore}_db"
+                GROUP_ROLE="role_${svc_underscore}_group"
+
+                echo "Configuring PostgreSQL for ${svc}..."
 
                 psql -h postgresql.postgresql.svc.cluster.local -U postgres \
-                  -c "CREATE DATABASE \"${DB_NAME}\";" || echo "Database ${DB_NAME} already exists"
+                  -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '${GROUP_ROLE}') THEN CREATE ROLE ${GROUP_ROLE} NOLOGIN; END IF; END \$\$;"
+
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres \
+                  -c "CREATE DATABASE \"${DB_NAME}\" OWNER ${GROUP_ROLE};" || \
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres \
+                  -c "ALTER DATABASE \"${DB_NAME}\" OWNER TO ${GROUP_ROLE};"
 
                 psql -h postgresql.postgresql.svc.cluster.local -U postgres -d "${DB_NAME}" \
+                  -c "ALTER SCHEMA public OWNER TO ${GROUP_ROLE};" \
                   -c "GRANT ALL ON SCHEMA public TO PUBLIC;"
+
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres -d "${DB_NAME}" -c "
+                DO \$\$
+                  DECLARE r RECORD;
+                BEGIN
+                  FOR r IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' LOOP
+                    EXECUTE 'ALTER TABLE public.' || quote_ident(r.tablename) || ' OWNER TO ${GROUP_ROLE}';
+                  END LOOP;
+                  FOR r IN SELECT sequencename FROM pg_sequences WHERE schemaname = 'public' LOOP
+                    EXECUTE 'ALTER SEQUENCE public.' || quote_ident(r.sequencename) || ' OWNER TO ${GROUP_ROLE}';
+                  END LOOP;
+                END \$\$;
+                "
               done
 
               ####################################################################################################
