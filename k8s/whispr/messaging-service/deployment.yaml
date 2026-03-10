@@ -30,7 +30,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: messaging-service
-          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-48750f4
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-7f0a50a
           imagePullPolicy: Always
           ports:
             - name: http
