@@ -12,10 +12,10 @@ spec:
     app: messaging-service
   ports:
     - name: http
-      port: 80
-      targetPort: 4000
+      port: 4010
+      targetPort: 4010
       protocol: TCP
     - name: grpc
-      port: 4001
-      targetPort: 4001
+      port: 40010
+      targetPort: 40010
       protocol: TCP

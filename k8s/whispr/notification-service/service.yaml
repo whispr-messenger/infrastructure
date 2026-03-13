@@ -11,6 +11,10 @@ spec:
     app: notification-service
   ports:
     - name: http
-      port: 80
-      targetPort: 4000
+      port: 4011
+      targetPort: 4011
+      protocol: TCP
+    - name: grpc
+      port: 40011
+      targetPort: 40011
       protocol: TCP

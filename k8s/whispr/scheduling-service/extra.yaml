@@ -47,7 +47,7 @@ spec:
         - destination:
             host: scheduling-service
             port:
-              number: 80
+              number: 3013
       timeout: 30s
       retries:
         attempts: 3

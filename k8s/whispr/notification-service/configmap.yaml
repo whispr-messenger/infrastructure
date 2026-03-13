@@ -6,7 +6,8 @@ metadata:
 data:
   MIX_ENV: "prod"
   PHX_SERVER: "true"
-  PORT: "4000"
+  PORT: "4011"
+  GRPC_PORT: "40011"
   LOG_LEVEL: "info"
   POOL_SIZE: "10"
   DB_HOST: "postgresql.postgresql.svc.cluster.local"

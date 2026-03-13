@@ -15,8 +15,8 @@ data:
   NODE_ENV: "production"
 
   # Server Ports
-  HTTP_PORT: "3001"
-  GRPC_PORT: "50051"
+  HTTP_PORT: "3012"
+  GRPC_PORT: "50012"
 
   # Database Configuration (non-sensitive)
   DB_TYPE: "postgres"
@@ -38,8 +38,8 @@ data:
   REDIS_MASTER_NAME: "mymaster"
 
   # gRPC Services URLs
-  USER_SERVICE_GRPC_URL: "user-service:50052"
-  MEDIA_SERVICE_GRPC_URL: "media-service:50053"
+  USER_SERVICE_GRPC_URL: "user-service:50011"
+  MEDIA_SERVICE_GRPC_URL: "media-service:50012"
 
   # Swagger Configuration
   SWAGGER_ENABLED: "true"

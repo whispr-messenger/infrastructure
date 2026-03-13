@@ -13,11 +13,11 @@ spec:
     app: user-service
   ports:
   - name: http
-    port: 80
-    targetPort: 3001
+    port: 3011
+    targetPort: 3011
     protocol: TCP
   - name: grpc
-    port: 50051
-    targetPort: 50051
+    port: 50011
+    targetPort: 50011
     protocol: TCP
   sessionAffinity: None

@@ -37,10 +37,10 @@ spec:
           image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-5bbb945 # Placeholder, replaced by CD pipeline
           ports:
             - name: http
-              containerPort: 3001
+              containerPort: 3010
               protocol: TCP
             - name: grpc
-              containerPort: 50051
+              containerPort: 50010
               protocol: TCP
           # Environment variables from ConfigMap
           env:

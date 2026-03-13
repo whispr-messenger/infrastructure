@@ -25,7 +25,10 @@ spec:
           imagePullPolicy: Always
           ports:
             - name: http
-              containerPort: 4000
+              containerPort: 4011
+              protocol: TCP
+            - name: grpc
+              containerPort: 40011
               protocol: TCP
           env:
             - name: DB_USER

@@ -36,10 +36,10 @@ spec:
           image: ghcr.io/whispr-messenger/user-service/user-service:sha-de28900
           ports:
             - name: http
-              containerPort: 3001
+              containerPort: 3011
               protocol: TCP
             - name: grpc-port
-              containerPort: 50051
+              containerPort: 50011
               protocol: TCP
           # Environment variables
           env:

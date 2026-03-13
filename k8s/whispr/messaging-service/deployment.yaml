@@ -19,7 +19,7 @@ spec:
         app.kubernetes.io/name: messaging-service
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "4000"
+        prometheus.io/port: "4010"
         prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: messaging-service-sa
@@ -34,10 +34,10 @@ spec:
           imagePullPolicy: Always
           ports:
             - name: http
-              containerPort: 4000
+              containerPort: 4010
               protocol: TCP
             - name: grpc
-              containerPort: 4001
+              containerPort: 40010
               protocol: TCP
           env:
             - name: DB_USERNAME

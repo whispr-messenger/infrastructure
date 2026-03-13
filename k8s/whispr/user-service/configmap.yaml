@@ -10,9 +10,9 @@ metadata:
 data:
   # Node environment
   NODE_ENV: "production"
-  PORT: "3001"
-  HTTP_PORT: "3001"
-  GRPC_PORT: "50051"
+  PORT: "3011"
+  HTTP_PORT: "3011"
+  GRPC_PORT: "50011"
 
   # Database Configuration
   DB_TYPE: "postgres"
@@ -35,8 +35,8 @@ data:
   REDIS_MASTER_NAME: "mymaster"
 
   # gRPC Services
-  USER_SERVICE_GRPC_URL: "user-service:50052"
-  MEDIA_SERVICE_GRPC_URL: "media-service:50053"
+  USER_SERVICE_GRPC_URL: "user-service:50011"
+  MEDIA_SERVICE_GRPC_URL: "media-service:50012"
   
   API_PREFIX: "/api/v1"
   ENABLE_CORS: "false"
