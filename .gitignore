@@ -9,3 +9,7 @@ auth
 
 # Ignore secret files
 **/secret*.y*ml
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db
