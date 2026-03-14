@@ -9,7 +9,14 @@
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
-REGISTRY = 'k3d-whispr-registry:5000'
+# Push images to localhost:5000 (reachable from host); pods pull from
+# k3d-whispr-registry:5000 (resolvable inside the k3d cluster network).
+default_registry(
+    'localhost:5000',
+    host_from_cluster='k3d-whispr-registry:5000',
+)
+
+REGISTRY = 'localhost:5000'
 
 # ---------------------------------------------------------------------------
 # Namespace and shared infrastructure
