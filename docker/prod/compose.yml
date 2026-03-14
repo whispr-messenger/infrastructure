@@ -93,8 +93,8 @@ services:
       REDIS_PORT: "6379"
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_DB: "0"
-      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
-      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JWT_PRIVATE_KEY_FILE: /run/secrets/jwt_private_key
+      JWT_PUBLIC_KEY_FILE: /run/secrets/jwt_public_key
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       JWT_VERIFICATION_SECRET: ${JWT_VERIFICATION_SECRET}
@@ -103,6 +103,9 @@ services:
       TWILIO_FROM_NUMBER: ${TWILIO_FROM_NUMBER}
       USER_SERVICE_GRPC_URL: user-service:50055
       MEDIA_SERVICE_GRPC_URL: media-service:50054
+    secrets:
+      - jwt_private_key
+      - jwt_public_key
     ports:
       - "3001:3001"
       - "50056:50056"
@@ -128,20 +131,20 @@ services:
       NODE_ENV: production
       HTTP_PORT: "3002"
       GRPC_PORT: "50055"
-      DATABASE_HOST: postgres
-      DATABASE_PORT: "5432"
-      DATABASE_USERNAME: ${POSTGRES_USER}
-      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
-      DATABASE_NAME: whispr_user
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/whispr_user"
-      DATABASE_MIGRATIONS_RUN: "true"
-      DATABASE_SYNCHRONIZE: "false"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: whispr_user
+      DB_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/whispr_user"
+      DB_MIGRATIONS_RUN: "true"
+      DB_SYNCHRONIZE: "false"
       REDIS_HOST: redis
       REDIS_PORT: "6379"
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_DB: "1"
       REDIS_URL: "redis://:${REDIS_PASSWORD}@redis:6379/1"
-      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
-      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JWT_JWKS_URL: http://auth-service:3001/auth/v1/.well-known/jwks.json
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       JWT_VERIFICATION_SECRET: ${JWT_VERIFICATION_SECRET}
@@ -154,6 +157,8 @@ services:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      auth-service:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3002/user/v1/health/ready"]
@@ -240,7 +245,7 @@ services:
       AUTH_SERVICE_URL: grpc://auth-service:50056
       USER_SERVICE_URL: grpc://user-service:50055
       MEDIA_SERVICE_URL: grpc://media-service:50054
-      NOTIFICATION_SERVICE_URL: grpc://notification-service:50053
+      NOTIFICATION_SERVICE_URL: grpc://notification-service:4003
       SCHEDULING_SERVICE_GRPC_URL: grpc://scheduling-service:50052
     ports:
       - "4000:4000"
@@ -268,14 +273,14 @@ services:
       start_period: 60s
 
   notification-service:
-    image: ghcr.io/whispr-messenger/notifications:latest
+    image: ghcr.io/whispr-messenger/notification-service:latest
     container_name: whispr-prod-notification
     restart: unless-stopped
     environment:
       MIX_ENV: prod
       PHX_HOST: "0.0.0.0"
-      HTTP_PORT: "4001"
-      GRPC_PORT: "50053"
+      PORT: "4002"
+      GRPC_PORT: "4003"
       DB_HOST: postgres
       DB_PORT: "5432"
       DB_USERNAME: ${POSTGRES_USER}
@@ -289,8 +294,8 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       SECRET_KEY_BASE: ${NOTIFICATION_SECRET_KEY_BASE}
     ports:
-      - "4001:4001"
-      - "50053:50053"
+      - "4002:4002"
+      - "4003:4003"
     networks:
       - whispr-network-prod
     depends_on:
@@ -299,7 +304,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4001/api/v1/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:4002/api/v1/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -334,6 +339,10 @@ services:
       TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
       TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
       TWILIO_FROM_NUMBER: ${TWILIO_FROM_NUMBER}
+      MESSAGING_SERVICE_HOST: messaging-service
+      MESSAGING_SERVICE_PORT: "4000"
+      NOTIFICATION_SERVICE_HOST: notification-service
+      NOTIFICATION_SERVICE_PORT: "4002"
     ports:
       - "3004:3004"
       - "50052:50052"
@@ -367,3 +376,9 @@ networks:
   whispr-network-prod:
     name: whispr-network-prod
     driver: bridge
+
+secrets:
+  jwt_private_key:
+    file: ./secrets/jwt_private_key.pem
+  jwt_public_key:
+    file: ./secrets/jwt_public_key.pem
