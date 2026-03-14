@@ -1,12 +1,10 @@
-# Tiltfile — Whispr local Kubernetes development environment
+# Tiltfile — Whispr Messenger local Kubernetes development environment
 #
 # Prerequisites:
 #   - k3d cluster running: ./scripts/dev-setup.sh
 #   - kubectl context set to k3d-whispr-dev
 #
 # Usage: tilt up
-
-load('ext://helm_resource', 'helm_resource', 'helm_repo')
 
 # ---------------------------------------------------------------------------
 # Registry
@@ -43,10 +41,10 @@ def nestjs_service(name, context, http_port, grpc_port, health_path):
     docker_build(
         image,
         context = context,
-        dockerfile = context + '/Dockerfile',
+        dockerfile = context + '/docker/dev/Dockerfile',
         live_update = [
-            sync(context + '/src', '/app/src'),
-            run('cd /app && npm run build', trigger = [context + '/src']),
+            sync(context + '/src', '/workspace/src'),
+            run('cd /workspace && npm run build', trigger = [context + '/src']),
         ],
     )
 
@@ -77,7 +75,7 @@ def phoenix_service(name, context, http_port, grpc_port):
     docker_build(
         image,
         context = context,
-        dockerfile = context + '/Dockerfile',
+        dockerfile = context + '/docker/dev/Dockerfile',
     )
 
     k8s_yaml([
