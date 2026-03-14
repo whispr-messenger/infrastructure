@@ -16,20 +16,20 @@ REGISTRY = 'k3d-whispr-registry:5000'
 # ---------------------------------------------------------------------------
 # Namespace and shared infrastructure
 # ---------------------------------------------------------------------------
-k8s_yaml('k8s/whispr-dev/namespace.yaml')
+k8s_yaml('k8s/whispr/development/namespace.yaml')
 
 k8s_yaml([
-    'k8s/whispr-dev/postgres/configmap.yaml',
-    'k8s/whispr-dev/postgres/secret.yaml',
-    'k8s/whispr-dev/postgres/deployment.yaml',
-    'k8s/whispr-dev/postgres/service.yaml',
+    'k8s/whispr/development/postgres/configmap.yaml',
+    'k8s/whispr/development/postgres/secret.yaml',
+    'k8s/whispr/development/postgres/deployment.yaml',
+    'k8s/whispr/development/postgres/service.yaml',
 ])
 
 k8s_resource('postgres', port_forwards=['5432:5432'], labels=['infrastructure'])
 
 k8s_yaml([
-    'k8s/whispr-dev/redis/deployment.yaml',
-    'k8s/whispr-dev/redis/service.yaml',
+    'k8s/whispr/development/redis/deployment.yaml',
+    'k8s/whispr/development/redis/service.yaml',
 ])
 
 k8s_resource('redis', port_forwards=['6379:6379'], labels=['infrastructure'])
@@ -51,10 +51,10 @@ def nestjs_service(name, context, http_port, grpc_port, health_path):
     )
 
     k8s_yaml([
-        'k8s/whispr-dev/' + name + '/configmap.yaml',
-        'k8s/whispr-dev/' + name + '/secret.yaml',
-        'k8s/whispr-dev/' + name + '/deployment.yaml',
-        'k8s/whispr-dev/' + name + '/service.yaml',
+        'k8s/whispr/development/' + name + '/configmap.yaml',
+        'k8s/whispr/development/' + name + '/secret.yaml',
+        'k8s/whispr/development/' + name + '/deployment.yaml',
+        'k8s/whispr/development/' + name + '/service.yaml',
     ])
 
     k8s_resource(
@@ -81,10 +81,10 @@ def phoenix_service(name, context, http_port, grpc_port):
     )
 
     k8s_yaml([
-        'k8s/whispr-dev/' + name + '/configmap.yaml',
-        'k8s/whispr-dev/' + name + '/secret.yaml',
-        'k8s/whispr-dev/' + name + '/deployment.yaml',
-        'k8s/whispr-dev/' + name + '/service.yaml',
+        'k8s/whispr/development/' + name + '/configmap.yaml',
+        'k8s/whispr/development/' + name + '/secret.yaml',
+        'k8s/whispr/development/' + name + '/deployment.yaml',
+        'k8s/whispr/development/' + name + '/service.yaml',
     ])
 
     k8s_resource(

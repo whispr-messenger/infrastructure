@@ -117,10 +117,10 @@ Adjust `port` and paths for each service.
 
 ## Manifests
 
-Dev-specific Kubernetes manifests live under `k8s/whispr-dev/`:
+Dev-specific Kubernetes manifests live under `k8s/whispr/development/`:
 
 ```
-k8s/whispr-dev/
+k8s/whispr/development/
 ├── namespace.yaml
 ├── postgres/
 │   ├── configmap.yaml   (init SQL — creates one DB per service)
