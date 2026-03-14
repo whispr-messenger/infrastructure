@@ -37,14 +37,15 @@ k8s_resource('redis', port_forwards=['6379:6379'], labels=['infrastructure'])
 # ---------------------------------------------------------------------------
 def nestjs_service(name, context, http_port, grpc_port, health_path):
     image = REGISTRY + '/' + name + ':dev'
+    abs_context = os.path.abspath(context)
 
     docker_build(
         image,
-        context = context,
-        dockerfile = context + '/docker/dev/Dockerfile',
+        context = abs_context,
+        dockerfile = abs_context + '/docker/dev/Dockerfile',
         live_update = [
-            sync(context + '/src', '/workspace/src'),
-            run('cd /workspace && npm run build', trigger = [context + '/src']),
+            sync(abs_context + '/src', '/workspace/src'),
+            run('cd /workspace && npm run build', trigger = [abs_context + '/src']),
         ],
     )
 
@@ -71,11 +72,12 @@ def nestjs_service(name, context, http_port, grpc_port, health_path):
 # ---------------------------------------------------------------------------
 def phoenix_service(name, context, http_port, grpc_port):
     image = REGISTRY + '/' + name + ':dev'
+    abs_context = os.path.abspath(context)
 
     docker_build(
         image,
-        context = context,
-        dockerfile = context + '/docker/dev/Dockerfile',
+        context = abs_context,
+        dockerfile = abs_context + '/docker/dev/Dockerfile',
     )
 
     k8s_yaml([
