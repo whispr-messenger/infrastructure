@@ -23,7 +23,7 @@ if k3d registry list 2>/dev/null | grep -q "${REGISTRY_NAME}"; then
   echo "[registry] ${REGISTRY_NAME} already exists — skipping"
 else
   echo "[registry] Creating local registry ${REGISTRY_NAME}:${REGISTRY_PORT}"
-  k3d registry create "${REGISTRY_NAME}" --port "0.0.0.0:${REGISTRY_PORT}:5000"
+  k3d registry create "${REGISTRY_NAME}" --port "${REGISTRY_PORT}"
 fi
 
 # ---------------------------------------------------------------------------
