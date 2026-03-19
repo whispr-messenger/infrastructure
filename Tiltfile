@@ -5,12 +5,17 @@
 #   - kubectl context set to k3d-whispr-dev
 #
 # Usage: tilt up
+#
+# Services are exposed via Ingress at localhost:8080:
+#   - /auth/*     → auth-service
+#   - /user/*     → user-service
+#   - /media/*    → media-service
+#   - /scheduling/* → scheduling-service
+#   - /messaging/* → messaging-service
+#   - /notification/* → notification-service
 
-# ---------------------------------------------------------------------------
-# Registry
-# ---------------------------------------------------------------------------
-# Tilt auto-detects the k3d registry and handles host↔cluster name mapping.
-REGISTRY = 'k3d-whispr-registry:5000'
+secret_settings(disable_scrub = True)
+default_registry(host = 'localhost:5000', host_from_cluster='k3d-whispr-dev-registry:5000')
 
 # ---------------------------------------------------------------------------
 # Namespace and shared infrastructure
@@ -34,10 +39,22 @@ k8s_yaml([
 k8s_resource('redis', port_forwards=['6379:6379'], labels=['infrastructure'])
 
 # ---------------------------------------------------------------------------
+# Ingress — single entry point, like production
+# ---------------------------------------------------------------------------
+k8s_yaml('k8s/whispr/development/ingress.yaml')
+
+k8s_resource(
+    objects = ['whispr-dev-ingress:ingress'],
+    new_name = 'ingress',
+    labels = ['infrastructure'],
+)
+
+# ---------------------------------------------------------------------------
 # Helper: build a NestJS service with live_update (TypeScript hot-reload)
 # ---------------------------------------------------------------------------
-def nestjs_service(name, context, http_port, grpc_port, health_path):
-    image = REGISTRY + '/' + name + ':dev'
+
+def nestjs_service(name, context, debug_port=9229):
+    image = name + ':latest'
     abs_context = os.path.abspath(context)
 
     docker_build(
@@ -60,25 +77,28 @@ def nestjs_service(name, context, http_port, grpc_port, health_path):
     k8s_resource(
         name,
         port_forwards = [
-            str(http_port) + ':' + str(http_port),
-            str(grpc_port) + ':' + str(grpc_port),
-            '9229:9229',
+            str(debug_port) + ':9229',
         ],
         resource_deps = ['postgres', 'redis'],
         labels = ['services'],
     )
 
 # ---------------------------------------------------------------------------
-# Helper: build an Elixir/Phoenix service
+# Helper: build an Elixir/Phoenix service with live_update
 # ---------------------------------------------------------------------------
-def phoenix_service(name, context, http_port, grpc_port):
-    image = REGISTRY + '/' + name + ':dev'
+def phoenix_service(name, context):
+    image = name + ':latest'
     abs_context = os.path.abspath(context)
 
     docker_build(
         image,
         context = abs_context,
         dockerfile = abs_context + '/docker/dev/Dockerfile',
+        live_update = [
+            sync(abs_context + '/lib', '/workspace/lib'),
+            sync(abs_context + '/priv', '/workspace/priv'),
+            run('cd /workspace && mix compile', trigger = [abs_context + '/lib']),
+        ],
     )
 
     k8s_yaml([
@@ -90,10 +110,6 @@ def phoenix_service(name, context, http_port, grpc_port):
 
     k8s_resource(
         name,
-        port_forwards = [
-            str(http_port) + ':' + str(http_port),
-            str(grpc_port) + ':' + str(grpc_port),
-        ],
         resource_deps = ['postgres', 'redis'],
         labels = ['services'],
     )
@@ -104,48 +120,36 @@ def phoenix_service(name, context, http_port, grpc_port):
 
 # NestJS services (TypeScript — support live_update)
 nestjs_service(
-    name        = 'auth-service',
-    context     = '../auth-service',
-    http_port   = 3001,
-    grpc_port   = 50056,
-    health_path = '/auth/v1/health/ready',
+    name       = 'auth-service',
+    context    = '../auth-service',
+    debug_port = 9229,
 )
 
 nestjs_service(
-    name        = 'user-service',
-    context     = '../user-service',
-    http_port   = 3002,
-    grpc_port   = 50055,
-    health_path = '/user/v1/health/ready',
+    name       = 'user-service',
+    context    = '../user-service',
+    debug_port = 9230,
 )
 
 nestjs_service(
-    name        = 'media-service',
-    context     = '../media-service',
-    http_port   = 3003,
-    grpc_port   = 50054,
-    health_path = '/media/v1/health/ready',
+    name       = 'media-service',
+    context    = '../media-service',
+    debug_port = 9231,
 )
 
 nestjs_service(
-    name        = 'scheduling-service',
-    context     = '../scheduling-service',
-    http_port   = 3004,
-    grpc_port   = 50052,
-    health_path = '/health/ready',
+    name       = 'scheduling-service',
+    context    = '../scheduling-service',
+    debug_port = 9232,
 )
 
 # Elixir/Phoenix services
 phoenix_service(
-    name      = 'notification-service',
-    context   = '../notification-service',
-    http_port = 4002,
-    grpc_port = 4003,
+    name    = 'notification-service',
+    context = '../notification-service',
 )
 
 phoenix_service(
-    name      = 'messaging-service',
-    context   = '../messaging-service',
-    http_port = 4000,
-    grpc_port = 50051,
+    name    = 'messaging-service',
+    context = '../messaging-service',
 )
