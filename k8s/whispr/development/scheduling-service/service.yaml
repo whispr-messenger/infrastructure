@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scheduling-service
+  namespace: whispr-dev
+  labels:
+    app: scheduling-service
+    tier: backend
+    environment: development
+spec:
+  type: ClusterIP
+  selector:
+    app: scheduling-service
+  ports:
+    - name: http
+      port: 3004
+      targetPort: http
+      protocol: TCP
+    - name: grpc
+      port: 50052
+      targetPort: grpc
+      protocol: TCP
