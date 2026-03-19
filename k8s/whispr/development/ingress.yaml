@@ -1,0 +1,62 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: whispr-dev-ingress
+  namespace: whispr-dev
+  labels:
+    environment: development
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          # Auth service — /auth/*
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  name: http
+          # User service — /user/*
+          - path: /user
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  name: http
+          # Media service — /media/*
+          - path: /media
+            pathType: Prefix
+            backend:
+              service:
+                name: media-service
+                port:
+                  name: http
+          # Scheduling service — /scheduling/*
+          - path: /scheduling
+            pathType: Prefix
+            backend:
+              service:
+                name: scheduling-service
+                port:
+                  name: http
+          # Messaging service — /messaging/*
+          - path: /messaging
+            pathType: Prefix
+            backend:
+              service:
+                name: messaging-service
+                port:
+                  name: http
+          # Notification service — /notification/*
+          - path: /notification
+            pathType: Prefix
+            backend:
+              service:
+                name: notification-service
+                port:
+                  name: http

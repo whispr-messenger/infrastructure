@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: whispr-dev
+  labels:
+    app: notification-service
+    tier: backend
+    environment: development
+spec:
+  type: ClusterIP
+  selector:
+    app: notification-service
+  ports:
+    - name: http
+      port: 4002
+      targetPort: http
+      protocol: TCP
+    - name: grpc
+      port: 4003
+      targetPort: grpc
+      protocol: TCP
