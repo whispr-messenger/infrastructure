@@ -81,7 +81,34 @@ fi
 kubectl get namespace whispr-dev &>/dev/null || kubectl create namespace whispr-dev
 
 # ---------------------------------------------------------------------------
-# 6. Done
+# 6. Provision JWT EC key pair into auth-service-secret (idempotent)
+# ---------------------------------------------------------------------------
+print_header "[secrets] Provisioning JWT EC key pair for auth-service"
+
+TMPDIR_JWT="$(mktemp -d)"
+trap 'rm -rf "${TMPDIR_JWT}"' EXIT
+
+openssl ecparam -name prime256v1 -genkey -noout -out "${TMPDIR_JWT}/jwt_private_key.pem"
+openssl ec -in "${TMPDIR_JWT}/jwt_private_key.pem" -pubout -out "${TMPDIR_JWT}/jwt_public_key.pem" 2>/dev/null
+
+if kubectl get secret auth-service-secret -n whispr-dev &>/dev/null; then
+  kubectl patch secret auth-service-secret -n whispr-dev \
+    --type='json' \
+    -p="[
+      {\"op\":\"add\",\"path\":\"/data/jwt_private_key.pem\",\"value\":\"$(base64 -w0 < "${TMPDIR_JWT}/jwt_private_key.pem")\"},
+      {\"op\":\"add\",\"path\":\"/data/jwt_public_key.pem\",\"value\":\"$(base64 -w0 < "${TMPDIR_JWT}/jwt_public_key.pem")\"}
+    ]"
+  echo "  ✓ patched existing auth-service-secret"
+else
+  kubectl create secret generic auth-service-secret \
+    -n whispr-dev \
+    --from-file=jwt_private_key.pem="${TMPDIR_JWT}/jwt_private_key.pem" \
+    --from-file=jwt_public_key.pem="${TMPDIR_JWT}/jwt_public_key.pem"
+  echo "  ✓ created auth-service-secret with JWT keys"
+fi
+
+# ---------------------------------------------------------------------------
+# 7. Done
 # ---------------------------------------------------------------------------
 echo ""
 print_header "[done] Cluster ready."
