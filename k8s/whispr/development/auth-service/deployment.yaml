@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: whispr-auth-api
-          image: k3d-whispr-registry:5000/auth-service:dev
+          image: auth-service:latest
           ports:
             - name: http
               containerPort: 3001
@@ -80,16 +80,20 @@ spec:
                 secretKeyRef:
                   name: auth-service-secret
                   key: TWILIO_FROM_NUMBER
+            - name: JWT_PRIVATE_KEY_FILE
+              value: /etc/jwt/jwt_private_key.pem
+            - name: JWT_PUBLIC_KEY_FILE
+              value: /etc/jwt/jwt_public_key.pem
           envFrom:
             - configMapRef:
                 name: auth-service-config
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "10m"
+              memory: "256Mi"
+              cpu: "50m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "1000m"
           livenessProbe:
             httpGet:
               path: /auth/v1/health/live
@@ -107,13 +111,20 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
+            - name: jwt-keys
+              mountPath: /etc/jwt
+              readOnly: true
             - name: logs
               mountPath: /app/logs
       volumes:
-        - name: tmp
-          emptyDir: {}
+        - name: jwt-keys
+          secret:
+            secretName: auth-service-secret
+            items:
+              - key: jwt_private_key.pem
+                path: jwt_private_key.pem
+              - key: jwt_public_key.pem
+                path: jwt_public_key.pem
         - name: logs
           emptyDir: {}
       restartPolicy: Always
