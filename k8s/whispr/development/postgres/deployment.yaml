@@ -44,7 +44,7 @@ spec:
               mountPath: /docker-entrypoint-initdb.d
           readinessProbe:
             exec:
-              command: ["pg_isready", "-U", "whispr"]
+              command: ["pg_isready", "-U", "whispr", "-d", "postgres"]
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
