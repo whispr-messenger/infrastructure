@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: whispr-media-api
-          image: k3d-whispr-registry:5000/media-service:dev
+          image: media-service:latest
           ports:
             - name: http
               containerPort: 3003
@@ -78,11 +78,11 @@ spec:
                 name: media-service-config
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "10m"
+              memory: "256Mi"
+              cpu: "50m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "1000m"
           livenessProbe:
             httpGet:
               path: /media/v1/health/live
@@ -100,13 +100,9 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 3
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
             - name: logs
               mountPath: /app/logs
       volumes:
-        - name: tmp
-          emptyDir: {}
         - name: logs
           emptyDir: {}
       restartPolicy: Always
