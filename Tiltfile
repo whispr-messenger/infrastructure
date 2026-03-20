@@ -38,6 +38,14 @@ k8s_yaml([
 
 k8s_resource('redis', port_forwards=['6379:6379'], labels=['infrastructure'])
 
+k8s_yaml([
+    'k8s/whispr/development/minio/secret.yaml',
+    'k8s/whispr/development/minio/deployment.yaml',
+    'k8s/whispr/development/minio/service.yaml',
+])
+
+k8s_resource('minio', port_forwards=['9000:9000', '9001:9001'], labels=['infrastructure'])
+
 # ---------------------------------------------------------------------------
 # Ingress — single entry point, like production
 # ---------------------------------------------------------------------------
@@ -136,6 +144,8 @@ nestjs_service(
     context    = '../media-service',
     debug_port = 9231,
 )
+
+k8s_resource('media-service', resource_deps=['postgres', 'redis', 'minio'])
 
 nestjs_service(
     name       = 'scheduling-service',
