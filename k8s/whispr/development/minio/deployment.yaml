@@ -17,14 +17,21 @@ spec:
       labels:
         app: minio
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: minio
-          image: bitnamilegacy/minio:latest
+          image: bitnamilegacy/minio:2025.7.23-debian-12-r0
           env:
             - name: MINIO_ROOT_USER
-              value: minioadmin
+              valueFrom:
+                secretKeyRef:
+                  name: minio-root-credentials
+                  key: MINIO_ROOT_USER
             - name: MINIO_ROOT_PASSWORD
-              value: minioadmin
+              valueFrom:
+                secretKeyRef:
+                  name: minio-root-credentials
+                  key: MINIO_ROOT_PASSWORD
           ports:
             - name: s3-api
               containerPort: 9000
@@ -32,13 +39,31 @@ spec:
             - name: console
               containerPort: 9001
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             requests:
               memory: "128Mi"
               cpu: "50m"
+              ephemeral-storage: "1Gi"
             limits:
               memory: "512Mi"
               cpu: "500m"
+              ephemeral-storage: "2Gi"
           volumeMounts:
             - name: minio-data
               mountPath: /data

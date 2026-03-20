@@ -39,6 +39,7 @@ k8s_yaml([
 k8s_resource('redis', port_forwards=['6379:6379'], labels=['infrastructure'])
 
 k8s_yaml([
+    'k8s/whispr/development/minio/secret.yaml',
     'k8s/whispr/development/minio/deployment.yaml',
     'k8s/whispr/development/minio/service.yaml',
 ])
