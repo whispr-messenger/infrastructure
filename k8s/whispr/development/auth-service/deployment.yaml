@@ -119,7 +119,7 @@ spec:
       volumes:
         - name: jwt-keys
           secret:
-            secretName: auth-service-secret
+            secretName: auth-service-jwt-secret
             items:
               - key: jwt_private_key.pem
                 path: jwt_private_key.pem
