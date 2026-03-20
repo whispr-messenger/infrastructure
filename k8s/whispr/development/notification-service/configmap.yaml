@@ -22,4 +22,4 @@ data:
   REDIS_PORT: "6379"
   REDIS_DB: "3"
   REDIS_MODE: "direct"
-  JWT_JWKS_URL: "http://auth-service.whispr-dev.svc.cluster.local:3001/auth/auth/.well-known/jwks.json"
+  JWT_JWKS_URL: "http://auth-service.whispr-dev.svc.cluster.local:3001/auth/.well-known/jwks.json"
