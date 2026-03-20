@@ -31,3 +31,4 @@ data:
   USER_SERVICE_URL: "grpc://user-service.whispr-prod.svc.cluster.local:50051"
   MEDIA_SERVICE_URL: "grpc://media-service.whispr-prod.svc.cluster.local:50052"
   NOTIFICATION_SERVICE_URL: "grpc://notification-service.whispr-prod.svc.cluster.local:50053"
+  JWT_JWKS_URL: "http://auth-service.whispr-prod.svc.cluster.local:3001/auth/.well-known/jwks.json"

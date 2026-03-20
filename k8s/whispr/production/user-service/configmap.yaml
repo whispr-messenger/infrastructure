@@ -46,3 +46,4 @@ data:
   HEALTH_CHECK_TIMEOUT: "5000"
   SERVICE_NAME: "user-service"
   SERVICE_VERSION: "1.0.0"
+  JWT_JWKS_URL: "http://auth-service.whispr-prod.svc.cluster.local:3001/auth/.well-known/jwks.json"

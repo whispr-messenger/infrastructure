@@ -12,3 +12,4 @@ data:
   DB_HOST: "postgresql.postgresql.svc.cluster.local"
   DB_PORT: "5432"
   DB_NAME: "notification_service_db"
+  JWT_JWKS_URL: "http://auth-service.whispr-prod.svc.cluster.local:3001/auth/.well-known/jwks.json"
