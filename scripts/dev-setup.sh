@@ -96,8 +96,8 @@ if kubectl get secret auth-service-jwt-secret -n whispr-dev &>/dev/null; then
   kubectl patch secret auth-service-jwt-secret -n whispr-dev \
     --type='json' \
     -p="[
-      {\"op\":\"add\",\"path\":\"/data/jwt_private_key.pem\",\"value\":\"$(base64 -w0 < "${TMPDIR_JWT}/jwt_private_key.pem")\"},
-      {\"op\":\"add\",\"path\":\"/data/jwt_public_key.pem\",\"value\":\"$(base64 -w0 < "${TMPDIR_JWT}/jwt_public_key.pem")\"}
+      {\"op\":\"add\",\"path\":\"/data/jwt_private_key.pem\",\"value\":\"$(base64 < "${TMPDIR_JWT}/jwt_private_key.pem" | tr -d '\n')\"},
+      {\"op\":\"add\",\"path\":\"/data/jwt_public_key.pem\",\"value\":\"$(base64 < "${TMPDIR_JWT}/jwt_public_key.pem" | tr -d '\n')\"}
     ]"
   echo "  ✓ patched existing auth-service-jwt-secret"
 else
