@@ -27,3 +27,4 @@ data:
   MEDIA_SERVICE_URL: "grpc://media-service.whispr-dev.svc.cluster.local:50054"
   NOTIFICATION_SERVICE_URL: "grpc://notification-service.whispr-dev.svc.cluster.local:4003"
   SCHEDULING_SERVICE_GRPC_URL: "scheduling-service.whispr-dev.svc.cluster.local:50052"
+  JWT_JWKS_URL: "http://auth-service.whispr-dev.svc.cluster.local:3001/auth/auth/.well-known/jwks.json"

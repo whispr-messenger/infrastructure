@@ -27,3 +27,4 @@ data:
   REDIS_MODE: "sentinel"
   REDIS_SENTINELS: "redis.redis.svc.cluster.local:26379"
   REDIS_MASTER_NAME: "mymaster"
+  JWT_JWKS_URL: "http://auth-service.whispr-prod.svc.cluster.local:3001/auth/auth/.well-known/jwks.json"
