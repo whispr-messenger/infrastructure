@@ -133,8 +133,6 @@ nestjs_service(
     debug_port = 9229,
 )
 
-k8s_yaml('k8s/whispr/development/auth-service/jwt-secret.yaml')
-
 nestjs_service(
     name       = 'user-service',
     context    = '../user-service',

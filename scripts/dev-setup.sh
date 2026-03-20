@@ -76,9 +76,10 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 5. Create dev namespace
+# 5. Create dev namespace and set it as default for the context
 # ---------------------------------------------------------------------------
 kubectl get namespace whispr-dev &>/dev/null || kubectl create namespace whispr-dev
+kubectl config set-context "k3d-${CLUSTER_NAME}" --namespace=whispr-dev
 
 # ---------------------------------------------------------------------------
 # 6. Provision JWT EC key pair into auth-service-secret (idempotent)
