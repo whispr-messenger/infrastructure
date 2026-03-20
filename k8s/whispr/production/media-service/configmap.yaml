@@ -46,6 +46,9 @@ data:
   S3_ENDPOINT: "http://minio.minio.svc.cluster.local:9000"
   S3_FORCE_PATH_STYLE: "true"
 
+  # Auth Configuration
+  JWT_JWKS_URL: "http://auth-service.whispr-prod.svc.cluster.local:3001/auth/.well-known/jwks.json"
+
   # Swagger Configuration
   SWAGGER_ENABLED: "true"
 
