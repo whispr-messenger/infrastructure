@@ -103,9 +103,9 @@ def phoenix_service(name, context):
         context = abs_context,
         dockerfile = abs_context + '/docker/dev/Dockerfile',
         live_update = [
-            sync(abs_context + '/lib', '/workspace/lib'),
-            sync(abs_context + '/priv', '/workspace/priv'),
-            run('cd /workspace && mix compile', trigger = [abs_context + '/lib']),
+            sync(abs_context + '/lib', '/app/lib'),
+            sync(abs_context + '/priv', '/app/priv'),
+            run('cd /app && mix compile', trigger = [abs_context + '/lib']),
         ],
     )
 
