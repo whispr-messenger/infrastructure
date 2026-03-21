@@ -47,6 +47,17 @@ k8s_yaml([
 k8s_resource('minio', port_forwards=['9000:9000', '9001:9001'], labels=['infrastructure'])
 
 # ---------------------------------------------------------------------------
+# Grafana — lightweight dev instance with Prometheus datasource
+# ---------------------------------------------------------------------------
+k8s_yaml([
+    'k8s/whispr/development/grafana/configmap.yaml',
+    'k8s/whispr/development/grafana/deployment.yaml',
+    'k8s/whispr/development/grafana/service.yaml',
+])
+
+k8s_resource('grafana', port_forwards=['3001:3000'], labels=['infrastructure'])
+
+# ---------------------------------------------------------------------------
 # Ingress — single entry point, like production
 # ---------------------------------------------------------------------------
 k8s_yaml('k8s/whispr/development/ingress.yaml')

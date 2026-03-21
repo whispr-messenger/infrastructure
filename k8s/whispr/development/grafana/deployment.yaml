@@ -1,0 +1,71 @@
+---
+# Grafana development deployment — lightweight, no persistence.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: whispr-dev
+  labels:
+    app: grafana
+    tier: infrastructure
+    environment: development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        runAsUser: 472
+        fsGroup: 472
+      containers:
+        - name: grafana
+          image: grafana/grafana:11.5.2
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: admin
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: admin
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              value: Admin
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          volumeMounts:
+            - name: grafana-data
+              mountPath: /var/lib/grafana
+            - name: datasources
+              mountPath: /etc/grafana/provisioning/datasources
+              readOnly: true
+      volumes:
+        - name: grafana-data
+          emptyDir: {}
+        - name: datasources
+          configMap:
+            name: grafana-datasources
