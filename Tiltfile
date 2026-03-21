@@ -109,8 +109,7 @@ def phoenix_service(name, context, http_port=None, grpc_port=None):
     # Recompile and send SIGUSR1 to the running beam.smp so Phoenix hot-reloads
     live_update_steps.append(
         run(
-            'cd /app && mix compile && '
-            'kill -USR1 $(pgrep -f "beam.smp" | head -1) 2>/dev/null || true',
+            'cd /app && mix compile && kill -USR1 $(pgrep -f "beam.smp" | head -1) 2>/dev/null || true',
             trigger = [abs_context + '/lib'],
         )
     )
