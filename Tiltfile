@@ -94,19 +94,32 @@ def nestjs_service(name, context, debug_port=9229):
 # ---------------------------------------------------------------------------
 # Helper: build an Elixir/Phoenix service with live_update
 # ---------------------------------------------------------------------------
-def phoenix_service(name, context):
+def phoenix_service(name, context, http_port=None, grpc_port=None):
     image = name + ':latest'
     abs_context = os.path.abspath(context)
+
+    # Build live_update syncs — only sync priv/ if the directory exists on the host
+    live_update_steps = [
+        sync(abs_context + '/lib', '/app/lib'),
+    ]
+
+    if os.path.exists(abs_context + '/priv'):
+        live_update_steps.append(sync(abs_context + '/priv', '/app/priv'))
+
+    # Recompile and send SIGUSR1 to the running beam.smp so Phoenix hot-reloads
+    live_update_steps.append(
+        run(
+            'cd /app && mix compile && '
+            'kill -USR1 $(pgrep -f "beam.smp" | head -1) 2>/dev/null || true',
+            trigger = [abs_context + '/lib'],
+        )
+    )
 
     docker_build(
         image,
         context = abs_context,
         dockerfile = abs_context + '/docker/dev/Dockerfile',
-        live_update = [
-            sync(abs_context + '/lib', '/app/lib'),
-            sync(abs_context + '/priv', '/app/priv'),
-            run('cd /app && mix compile', trigger = [abs_context + '/lib']),
-        ],
+        live_update = live_update_steps,
     )
 
     k8s_yaml([
@@ -116,8 +129,15 @@ def phoenix_service(name, context):
         'k8s/whispr/development/' + name + '/service.yaml',
     ])
 
+    forwards = []
+    if http_port != None:
+        forwards.append(str(http_port) + ':' + str(http_port))
+    if grpc_port != None:
+        forwards.append(str(grpc_port) + ':' + str(grpc_port))
+
     k8s_resource(
         name,
+        port_forwards = forwards,
         resource_deps = ['postgres', 'redis'],
         labels = ['services'],
     )
@@ -155,11 +175,15 @@ nestjs_service(
 
 # Elixir/Phoenix services
 phoenix_service(
-    name    = 'notification-service',
-    context = '../notification-service',
+    name      = 'notification-service',
+    context   = '../notification-service',
+    http_port = 4002,
+    grpc_port = 4003,
 )
 
 phoenix_service(
-    name    = 'messaging-service',
-    context = '../messaging-service',
+    name      = 'messaging-service',
+    context   = '../messaging-service',
+    http_port = 4000,
+    grpc_port = 50051,
 )
