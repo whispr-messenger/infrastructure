@@ -19,6 +19,7 @@ spec:
       labels:
         app: grafana
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsUser: 472
         fsGroup: 472
@@ -57,6 +58,7 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "200m"
+              ephemeral-storage: "256Mi"
           volumeMounts:
             - name: grafana-data
               mountPath: /var/lib/grafana
