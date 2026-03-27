@@ -82,9 +82,9 @@ spec:
               # JWT key generation (one-time)
               ####################################################################################################
               if ! vault kv get kv/whispr/shared/jwt >/dev/null 2>&1; then
-                echo "Generating JWT RSA keys..."
-                openssl genrsa -out /tmp/jwt_private.pem 2048
-                openssl rsa -in /tmp/jwt_private.pem -pubout -out /tmp/jwt_public.pem
+                echo "Generating JWT EC P-256 keys..."
+                openssl ecparam -name prime256v1 -genkey -noout -out /tmp/jwt_private.pem
+                openssl ec -in /tmp/jwt_private.pem -pubout -out /tmp/jwt_public.pem
 
                 vault kv put kv/whispr/shared/jwt JWT_PUBLIC_KEY="$(cat /tmp/jwt_public.pem)"
                 vault kv put kv/whispr/auth-service/jwt JWT_PRIVATE_KEY="$(cat /tmp/jwt_private.pem)"
