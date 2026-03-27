@@ -20,7 +20,6 @@ spec:
   - istio-gateway.whispr-prod.svc
   - istio-gateway
   - whispr.epitech.beer
-  - www.whispr.epitech.beer
   #- api.whispr.app
   
   duration: 2160h

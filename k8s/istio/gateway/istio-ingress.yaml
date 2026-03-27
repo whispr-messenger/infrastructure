@@ -33,7 +33,6 @@ spec:
   tls:
   - hosts:
     - whispr.epitech.beer
-    - www.whispr.epitech.beer
     #- api.whispr.app
     secretName: whispr-tls  # Let's Encrypt
 
@@ -67,18 +66,6 @@ spec:
               number: 443
 
       # Root
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: istio-gateway
-            port:
-              number: 443
-
-  # WWW redirect
-  - host: www.whispr.epitech.beer
-    http:
-      paths:
       - path: /
         pathType: Prefix
         backend:
