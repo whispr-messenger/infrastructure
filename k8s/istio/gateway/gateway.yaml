@@ -13,7 +13,6 @@ spec:
         protocol: HTTP
       hosts:
         - whispr.epitech.beer
-        - www.whispr.epitech.beer
         #- api.whispr.epitech.beer
       tls:
         httpsRedirect: true
@@ -24,7 +23,6 @@ spec:
         protocol: HTTPS
       hosts:
         - whispr.epitech.beer
-        - www.whispr.epitech.beer
         #- api.whispr.epitech.beer
       tls:
         mode: SIMPLE
@@ -41,7 +39,6 @@ spec:
   hosts:
     #- "test.local"
     - whispr.epitech.beer
-    - www.whispr.epitech.beer
     # - api.whispr.epitech.beer
   gateways:
     - gateway # VirtualService is attached to the test-gateway without that the traffic will only apply to the mesh (internal traffic)
@@ -101,16 +98,6 @@ spec:
             port:
               number: 80
     # -> Exemple: http://test.local/api/users → App B
-
-    # WWW redirect --> whispr.epitech-msc2026.me
-    - match:
-      - uri:
-          prefix: /
-        authority:
-          exact: www.whispr.epitech.beer
-      redirect:
-        authority: whispr.epitech.beer
-        redirectCode: 301
 
     # Catch all
     - match:
