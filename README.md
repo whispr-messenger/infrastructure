@@ -39,7 +39,6 @@ infrastructure/
 | `minio` | Stockage d'objets (media microservice) | 2 |
 | `cert-manager` | Certificats TLS automatiques | 3 |
 | `nginx-ingress` | Ingress controller | 4 |
-| `sonarqube` | Qualité de code | 4 |
 | `whispr-microservices` | Application principale | 10 |
 
 ### Workflow GitOps :
@@ -66,7 +65,6 @@ infrastructure/
 - Nginx Ingress
 - PostgreSQL
 - Redis
-- SonarQube
 - **HashiCorp Vault** (Secrets management)
 - **External Secrets Operator** (Kubernetes secrets sync)
 
