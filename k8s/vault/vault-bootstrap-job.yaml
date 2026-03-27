@@ -238,4 +238,33 @@ spec:
                 echo "GitHub ARC secret already exists in Vault"
               fi
 
+              ####################################################################################################
+              # ArgoCD Dex GitHub OAuth — migrate existing live secret into Vault if missing
+              ####################################################################################################
+              ARGOCD_GITHUB_CLIENT_ID=$(vault kv get -field=dex.github.clientId kv/argocd/secret 2>/dev/null || true)
+              ARGOCD_GITHUB_CLIENT_SECRET=$(vault kv get -field=dex.github.clientSecret kv/argocd/secret 2>/dev/null || true)
+
+              if [ -n "$ARGOCD_GITHUB_CLIENT_ID" ] && [ -n "$ARGOCD_GITHUB_CLIENT_SECRET" ]; then
+                echo "ArgoCD GitHub OAuth credentials already exist in Vault"
+              else
+                echo "ArgoCD GitHub OAuth credentials missing in Vault, attempting migration from live argocd-secret..."
+                LIVE_ARGOCD_GITHUB_CLIENT_ID=$(kubectl get secret argocd-secret -n argocd -o jsonpath='{.data.dex\.github\.clientId}' 2>/dev/null | base64 -d || true)
+                LIVE_ARGOCD_GITHUB_CLIENT_SECRET=$(kubectl get secret argocd-secret -n argocd -o jsonpath='{.data.dex\.github\.clientSecret}' 2>/dev/null | base64 -d || true)
+
+                if [ -n "$LIVE_ARGOCD_GITHUB_CLIENT_ID" ] && [ -n "$LIVE_ARGOCD_GITHUB_CLIENT_SECRET" ]; then
+                  if vault kv get kv/argocd/secret >/dev/null 2>&1; then
+                    vault kv patch kv/argocd/secret \
+                      "dex.github.clientId=$LIVE_ARGOCD_GITHUB_CLIENT_ID" \
+                      "dex.github.clientSecret=$LIVE_ARGOCD_GITHUB_CLIENT_SECRET"
+                  else
+                    vault kv put kv/argocd/secret \
+                      "dex.github.clientId=$LIVE_ARGOCD_GITHUB_CLIENT_ID" \
+                      "dex.github.clientSecret=$LIVE_ARGOCD_GITHUB_CLIENT_SECRET"
+                  fi
+                  echo "Migrated ArgoCD GitHub OAuth credentials from live argocd-secret into Vault"
+                else
+                  echo "WARNING: Could not find dex.github.clientId/clientSecret in live argocd-secret; Vault path kv/argocd/secret was not updated."
+                fi
+              fi
+
               echo "Vault bootstrap completed. Microservice roles, policies and auth roles are managed by Vault Config Operator CRs."
