@@ -95,7 +95,7 @@ def nestjs_service(name, context, debug_port=9229):
 # Helper: build an Elixir/Phoenix service with live_update
 # ---------------------------------------------------------------------------
 def phoenix_service(name, context, http_port=None, grpc_port=None):
-    image = name + ':latest'
+    image = name + ':dev'
     abs_context = os.path.abspath(context)
 
     # Build live_update syncs — only sync priv/ if the directory exists on the host
