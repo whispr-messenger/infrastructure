@@ -47,6 +47,29 @@ k8s_yaml([
 k8s_resource('minio', port_forwards=['9000:9000', '9001:9001'], labels=['infrastructure'])
 
 # ---------------------------------------------------------------------------
+# Prometheus — metrics collection for dev
+# ---------------------------------------------------------------------------
+k8s_yaml([
+    'k8s/whispr/development/prometheus/rbac.yaml',
+    'k8s/whispr/development/prometheus/configmap.yaml',
+    'k8s/whispr/development/prometheus/deployment.yaml',
+    'k8s/whispr/development/prometheus/service.yaml',
+])
+
+k8s_resource('prometheus-server', port_forwards=['9090:9090'], labels=['infrastructure'])
+
+# ---------------------------------------------------------------------------
+# Grafana — lightweight dev instance with Prometheus datasource
+# ---------------------------------------------------------------------------
+k8s_yaml([
+    'k8s/whispr/development/grafana/configmap.yaml',
+    'k8s/whispr/development/grafana/deployment.yaml',
+    'k8s/whispr/development/grafana/service.yaml',
+])
+
+k8s_resource('grafana', port_forwards=['3001:3000'], resource_deps=['prometheus-server'], labels=['infrastructure'])
+
+# ---------------------------------------------------------------------------
 # Ingress — single entry point, like production
 # ---------------------------------------------------------------------------
 k8s_yaml('k8s/whispr/development/ingress.yaml')

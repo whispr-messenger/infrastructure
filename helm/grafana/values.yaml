@@ -1,15 +1,34 @@
 grafana:
+  # ------------------------------------------------------------------
+  # Admin credentials (will be migrated to Vault later)
+  # ------------------------------------------------------------------
   adminUser: admin
   adminPassword: admin123
 
+  # ------------------------------------------------------------------
+  # Security context — run as Grafana user (UID 472)
+  # ------------------------------------------------------------------
+  securityContext:
+    runAsUser: 472
+    fsGroup: 472
+
+  # ------------------------------------------------------------------
+  # Service
+  # ------------------------------------------------------------------
   service:
     type: ClusterIP
 
+  # ------------------------------------------------------------------
+  # Persistence
+  # ------------------------------------------------------------------
   persistence:
     enabled: true
     size: 10Gi
     storageClassName: standard-rwo
 
+  # ------------------------------------------------------------------
+  # Ingress
+  # ------------------------------------------------------------------
   ingress:
     enabled: true
     ingressClassName: nginx
@@ -20,3 +39,61 @@ grafana:
       - secretName: grafana-tls
         hosts:
           - grafana.whispr.epitech.beer
+
+  # ------------------------------------------------------------------
+  # Datasources — provisioned via Helm values (not external ConfigMaps)
+  # ------------------------------------------------------------------
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          uid: prometheus
+          url: http://prometheus-server.monitoring.svc.cluster.local:80
+          access: proxy
+          isDefault: true
+          editable: false
+          jsonData:
+            timeInterval: "15s"
+            httpMethod: POST
+
+  # ------------------------------------------------------------------
+  # Dashboard providers — load JSON dashboards from ConfigMaps
+  # ------------------------------------------------------------------
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: default
+          orgId: 1
+          folder: ""
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+
+  # ------------------------------------------------------------------
+  # Sidecar — auto-discover dashboards and datasources via labels
+  # ------------------------------------------------------------------
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+      folder: /var/lib/grafana/dashboards/default
+      searchNamespace: ALL
+    datasources:
+      enabled: true
+      label: grafana_datasource
+      labelValue: "1"
+
+  # ------------------------------------------------------------------
+  # Dashboard ConfigMaps — reference ConfigMaps by name
+  # The ConfigMaps are created from JSON files in k8s/grafana/dashboards/
+  # and should be applied with the grafana_dashboard=1 label for sidecar
+  # auto-discovery, OR referenced here for direct provisioning.
+  # ------------------------------------------------------------------
+  dashboardsConfigMaps:
+    default: grafana-dashboards

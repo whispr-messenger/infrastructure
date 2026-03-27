@@ -1,0 +1,17 @@
+{{- /*
+  Grafana dashboard ConfigMap — auto-generated from JSON files in dashboards/.
+  The sidecar picks these up via the grafana_dashboard label.
+*/ -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: grafana
+    grafana_dashboard: "1"
+data:
+  cluster-overview.json: |-
+    {{ .Files.Get "dashboards/cluster-overview.json" | nindent 4 }}
+  services-overview.json: |-
+    {{ .Files.Get "dashboards/services-overview.json" | nindent 4 }}

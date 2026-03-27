@@ -1,0 +1,107 @@
+---
+# Prometheus configuration for k3d dev environment.
+# Scrapes all Whispr microservices + kubernetes-pods via annotations.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-server
+  namespace: whispr-dev
+  labels:
+    app: prometheus-server
+    tier: infrastructure
+    environment: development
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+      # -----------------------------------------------------------------
+      # Prometheus self-monitoring
+      # -----------------------------------------------------------------
+      - job_name: prometheus
+        static_configs:
+          - targets:
+              - localhost:9090
+
+      # -----------------------------------------------------------------
+      # NestJS services (port 3000)
+      # -----------------------------------------------------------------
+      - job_name: auth-service
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+              - auth-service.whispr-dev.svc.cluster.local:3000
+
+      - job_name: user-service
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+              - user-service.whispr-dev.svc.cluster.local:3000
+
+      - job_name: media-service
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+              - media-service.whispr-dev.svc.cluster.local:3000
+
+      - job_name: scheduling-service
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+              - scheduling-service.whispr-dev.svc.cluster.local:3000
+
+      # -----------------------------------------------------------------
+      # Elixir services (custom ports)
+      # -----------------------------------------------------------------
+      - job_name: messaging-service
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+              - messaging-service.whispr-dev.svc.cluster.local:4000
+
+      - job_name: notification-service
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+              - notification-service.whispr-dev.svc.cluster.local:4002
+
+      # -----------------------------------------------------------------
+      # Kubernetes pod auto-discovery via annotations
+      #   prometheus.io/scrape: "true"
+      #   prometheus.io/port:   "<port>"
+      #   prometheus.io/path:   "<path>"  (default /metrics)
+      # -----------------------------------------------------------------
+      - job_name: kubernetes-pods
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - whispr-dev
+        relabel_configs:
+          # Only scrape pods with prometheus.io/scrape=true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: "true"
+          # Override metrics path if annotated
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          # Override port if annotated
+          - source_labels:
+              - __address__
+              - __meta_kubernetes_pod_annotation_prometheus_io_port
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          # Carry pod name as label
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+          # Carry namespace as label
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
