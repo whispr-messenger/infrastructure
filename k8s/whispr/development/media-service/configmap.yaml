@@ -27,4 +27,4 @@ data:
   S3_FORCE_PATH_STYLE: "true"
   ENABLE_CORS: "true"
   SWAGGER_ENABLED: "true"
-  JWT_JWKS_URL: "http://auth-service.whispr-dev.svc.cluster.local:3001/auth/auth/.well-known/jwks.json"
+  JWT_JWKS_URL: "http://auth-service.whispr-dev.svc.cluster.local:3001/auth/.well-known/jwks.json"
