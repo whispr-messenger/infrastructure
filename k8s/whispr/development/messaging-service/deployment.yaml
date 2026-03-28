@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: whispr-messaging-api
-          image: messaging-service:latest
+          image: messaging-service:dev
           ports:
             - name: http
               containerPort: 4000
