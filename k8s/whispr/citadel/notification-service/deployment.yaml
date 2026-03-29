@@ -19,10 +19,11 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: ghcr.io/whispr-messenger/notification-service:latest
+          image: ghcr.io/whispr-messenger/notification-service:sha-4d169a3
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: 4002
+              containerPort: 4011
             - name: grpc
               containerPort: 40011
           envFrom:
@@ -36,7 +37,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /ready
-              port: 4002
+              port: 4011
             initialDelaySeconds: 20
             periodSeconds: 10
           resources:
@@ -58,7 +59,7 @@ spec:
     app: notification-service
   ports:
     - name: http
-      port: 4002
+      port: 4011
       targetPort: 4002
       nodePort: 30021
     - name: grpc
