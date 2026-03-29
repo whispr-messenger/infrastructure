@@ -30,7 +30,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: scheduling-service
-          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-b70f1aa
+          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-1cea05f
           imagePullPolicy: Always
           ports:
             - name: http
