@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messaging-service
+  namespace: whispr-prod
+  labels:
+    app: messaging-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: messaging-service
+  template:
+    metadata:
+      labels:
+        app: messaging-service
+    spec:
+      containers:
+        - name: messaging-service
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-b37f148
+          ports:
+            - name: http
+              containerPort: 4010
+            - name: grpc
+              containerPort: 40010
+          envFrom:
+            - secretRef:
+                name: messaging-service-env
+          env:
+            - name: DATABASE_HOST
+              value: postgres
+            - name: REDIS_HOST
+              value: redis
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 4010
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-service
+  namespace: whispr-prod
+spec:
+  type: NodePort
+  selector:
+    app: messaging-service
+  ports:
+    - name: http
+      port: 4010
+      targetPort: 4010
+      nodePort: 30020
+    - name: grpc
+      port: 40010
+      targetPort: 40010
