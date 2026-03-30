@@ -14,6 +14,9 @@ REGISTRY_NAME="whispr-dev-registry"
 REGISTRY_PORT="5000"
 HTTP_PORT="8080"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "${SCRIPT_DIR}")"
+
 function print_header() {
   echo "============================================================"
   echo "$1"
@@ -38,9 +41,6 @@ if k3d cluster list 2>/dev/null | grep -q "${CLUSTER_NAME}"; then
 else
   print_header "[cluster] Creating k3d cluster ${CLUSTER_NAME}"
 
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  REPO_ROOT="$(dirname "${SCRIPT_DIR}")"
-
   k3d cluster create "${CLUSTER_NAME}" \
     --registry-use "k3d-${REGISTRY_NAME}:${REGISTRY_PORT}" \
     --registry-config "${REPO_ROOT}/k3d/registries.yaml" \
@@ -48,9 +48,6 @@ else
     --agents 2 \
     --wait \
     --timeout 120s
-
-  print_header "[cluster] Waiting for nodes to become ready..."
-  kubectl wait --for=condition=Ready node --all --timeout=120s
 fi
 
 # ---------------------------------------------------------------------------
@@ -66,7 +63,17 @@ done
 # ---------------------------------------------------------------------------
 # 4. Merge kubeconfig and switch context
 # ---------------------------------------------------------------------------
-k3d kubeconfig merge "${CLUSTER_NAME}" --kubeconfig-merge-default --kubeconfig-switch-context
+DEFAULT_KUBECONFIG="${HOME}/.kube/config"
+FALLBACK_KUBECONFIG="${REPO_ROOT}/.kube/config"
+
+mkdir -p "$(dirname "${DEFAULT_KUBECONFIG}")" 2>/dev/null || true
+mkdir -p "$(dirname "${FALLBACK_KUBECONFIG}")"
+if (touch "${DEFAULT_KUBECONFIG}" 2>/dev/null) && k3d kubeconfig merge "${CLUSTER_NAME}" --kubeconfig-merge-default --kubeconfig-switch-context; then
+  :
+else
+  k3d kubeconfig get "${CLUSTER_NAME}" > "${FALLBACK_KUBECONFIG}"
+  export KUBECONFIG="${FALLBACK_KUBECONFIG}"
+fi
 
 if [  $(kubectl config current-context) != "k3d-${CLUSTER_NAME}" ]; then
   print_header "[kubeconfig] Switching kubectl context to k3d-${CLUSTER_NAME}"
@@ -74,6 +81,9 @@ if [  $(kubectl config current-context) != "k3d-${CLUSTER_NAME}" ]; then
 else
   print_header "[kubeconfig] kubectl context already set to k3d-${CLUSTER_NAME} - skipping"
 fi
+
+print_header "[cluster] Waiting for nodes to become ready..."
+kubectl wait --for=condition=Ready node --all --timeout=120s
 
 # ---------------------------------------------------------------------------
 # 5. Create dev namespace and set it as default for the context

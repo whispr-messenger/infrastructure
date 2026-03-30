@@ -14,5 +14,15 @@ data:
     CREATE DATABASE messaging_service_db;
     CREATE DATABASE notification_service_db;
     CREATE DATABASE scheduling_service_db;
+    CREATE ROLE auth_app LOGIN PASSWORD 'whispr_dev_password' NOSUPERUSER;
+    ALTER DATABASE auth_service_db OWNER TO auth_app;
+    CREATE ROLE user_app LOGIN PASSWORD 'whispr_dev_password' NOSUPERUSER;
+    ALTER DATABASE user_service_db OWNER TO user_app;
     CREATE ROLE media_app LOGIN PASSWORD 'whispr_dev_password' NOSUPERUSER;
     ALTER DATABASE media_service_db OWNER TO media_app;
+    CREATE ROLE messaging_app LOGIN PASSWORD 'whispr_dev_password' NOSUPERUSER;
+    ALTER DATABASE messaging_service_db OWNER TO messaging_app;
+    CREATE ROLE notification_app LOGIN PASSWORD 'whispr_dev_password' NOSUPERUSER;
+    ALTER DATABASE notification_service_db OWNER TO notification_app;
+    CREATE ROLE scheduling_app LOGIN PASSWORD 'whispr_dev_password' NOSUPERUSER;
+    ALTER DATABASE scheduling_service_db OWNER TO scheduling_app;
