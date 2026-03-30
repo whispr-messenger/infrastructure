@@ -29,14 +29,14 @@ k8s_yaml([
     'k8s/whispr/development/postgres/service.yaml',
 ])
 
-k8s_resource('postgres', port_forwards=['5432:5432'], labels=['infrastructure'])
+k8s_resource('postgres', port_forwards=['15432:5432'], labels=['infrastructure'])
 
 k8s_yaml([
     'k8s/whispr/development/redis/deployment.yaml',
     'k8s/whispr/development/redis/service.yaml',
 ])
 
-k8s_resource('redis', port_forwards=['6379:6379'], labels=['infrastructure'])
+k8s_resource('redis', port_forwards=['16379:6379'], labels=['infrastructure'])
 
 k8s_yaml([
     'k8s/whispr/development/minio/secret.yaml',
@@ -44,7 +44,7 @@ k8s_yaml([
     'k8s/whispr/development/minio/service.yaml',
 ])
 
-k8s_resource('minio', port_forwards=['9000:9000', '9001:9001'], labels=['infrastructure'])
+k8s_resource('minio', port_forwards=['19000:9000', '19001:9001'], labels=['infrastructure'])
 
 # ---------------------------------------------------------------------------
 # Prometheus — metrics collection for dev
@@ -56,7 +56,7 @@ k8s_yaml([
     'k8s/whispr/development/prometheus/service.yaml',
 ])
 
-k8s_resource('prometheus-server', port_forwards=['9090:9090'], labels=['infrastructure'])
+k8s_resource('prometheus-server', port_forwards=['19090:9090'], labels=['infrastructure'])
 
 # ---------------------------------------------------------------------------
 # Grafana — lightweight dev instance with Prometheus datasource
@@ -67,7 +67,7 @@ k8s_yaml([
     'k8s/whispr/development/grafana/service.yaml',
 ])
 
-k8s_resource('grafana', port_forwards=['3001:3000'], resource_deps=['prometheus-server'], labels=['infrastructure'])
+k8s_resource('grafana', port_forwards=['13000:3000'], resource_deps=['prometheus-server'], labels=['infrastructure'])
 
 # ---------------------------------------------------------------------------
 # Ingress — single entry point, like production
@@ -84,7 +84,7 @@ k8s_resource(
 # Helper: build a NestJS service with live_update (TypeScript hot-reload)
 # ---------------------------------------------------------------------------
 
-def nestjs_service(name, context, debug_port=9229):
+def nestjs_service(name, context, debug_port=9229, http_port=None, grpc_port=None):
     image = name + ':latest'
     abs_context = os.path.abspath(context)
 
@@ -98,18 +98,28 @@ def nestjs_service(name, context, debug_port=9229):
         ],
     )
 
-    k8s_yaml([
+    yamls = [
         'k8s/whispr/development/' + name + '/configmap.yaml',
-        'k8s/whispr/development/' + name + '/secret.yaml',
         'k8s/whispr/development/' + name + '/deployment.yaml',
         'k8s/whispr/development/' + name + '/service.yaml',
-    ])
+    ]
+    secret_yaml = 'k8s/whispr/development/' + name + '/secret.yaml'
+    if os.path.exists(secret_yaml):
+        yamls.insert(1, secret_yaml)
+
+    k8s_yaml(yamls)
+
+    forwards = [
+        str(debug_port) + ':9229',
+    ]
+    if http_port != None:
+        forwards.append(str(http_port) + ':' + str(http_port))
+    if grpc_port != None:
+        forwards.append(str(grpc_port) + ':' + str(grpc_port))
 
     k8s_resource(
         name,
-        port_forwards = [
-            str(debug_port) + ':9229',
-        ],
+        port_forwards = forwards,
         resource_deps = ['postgres', 'redis'],
         labels = ['services'],
     )
@@ -173,18 +183,24 @@ nestjs_service(
     name       = 'auth-service',
     context    = '../auth-service',
     debug_port = 9229,
+    http_port  = 3001,
+    grpc_port  = 50056,
 )
 
 nestjs_service(
     name       = 'user-service',
     context    = '../user-service',
     debug_port = 9230,
+    http_port  = 3002,
+    grpc_port  = 50055,
 )
 
 nestjs_service(
     name       = 'media-service',
     context    = '../media-service',
     debug_port = 9231,
+    http_port  = 3003,
+    grpc_port  = 50054,
 )
 
 k8s_resource('media-service', resource_deps=['postgres', 'redis', 'minio'])
@@ -193,6 +209,8 @@ nestjs_service(
     name       = 'scheduling-service',
     context    = '../scheduling-service',
     debug_port = 9232,
+    http_port  = 3004,
+    grpc_port  = 50052,
 )
 
 # Elixir/Phoenix services
