@@ -35,10 +35,9 @@ spec:
             - name: REDIS_HOST
               value: redis
           readinessProbe:
-            httpGet:
-              path: /ready
+            tcpSocket:
               port: 4011
-            initialDelaySeconds: 20
+            initialDelaySeconds: 10
             periodSeconds: 10
           resources:
             requests:
