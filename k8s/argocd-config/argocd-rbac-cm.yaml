@@ -11,6 +11,8 @@ metadata:
 data:
   # Default policy for authenticated users
   policy.default: role:readonly
+  policy.matchMode: glob
+  scopes: '[groups]'
   
   # CSV format for RBAC policies
   policy.csv: |
