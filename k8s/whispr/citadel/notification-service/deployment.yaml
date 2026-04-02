@@ -20,7 +20,7 @@ spec:
       containers:
         - name: notification-service
           image: ghcr.io/whispr-messenger/notification-service:deploy-preprod
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 4011
