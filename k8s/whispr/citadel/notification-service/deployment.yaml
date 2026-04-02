@@ -60,7 +60,7 @@ spec:
   ports:
     - name: http
       port: 4011
-      targetPort: 4002
+      targetPort: 4011
       nodePort: 30021
     - name: grpc
       port: 40011
