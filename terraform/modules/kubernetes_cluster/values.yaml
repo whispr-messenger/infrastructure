@@ -10,6 +10,10 @@ crds:
 ####################################################################################################
 redis-ha:
   enabled: true
+  persistentVolume:
+    enabled: true
+    size: 8Gi
+    storageClass: standard-rwo
 
 controller:
   replicas: 1
@@ -31,8 +35,7 @@ global:
 ## Argo Configs
 configs:
   cm:
-    # Temporary URL (will be updated by the app of apps)
-    url: http://localhost:8080
+    url: https://${ domain }
 
     repositories: |
       - url: https://github.com/whispr-messenger/infrastructure/

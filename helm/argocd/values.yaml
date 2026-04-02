@@ -149,7 +149,7 @@ configs:
     application.instanceLabelKey: argocd.argoproj.io/instance
     server.insecure: true
   cm:
-    url: http://localhost:8080
+    url: https://argocd.whispr.epitech.beer
     repositories: |
       - url: https://github.com/whispr-messenger/infrastructure/
         type: git
