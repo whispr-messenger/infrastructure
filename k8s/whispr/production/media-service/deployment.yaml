@@ -73,13 +73,13 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: media-service-s3-secret
-                  key: S3_ACCESS_KEY_ID
+                  key: root-user
                   
             - name: S3_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
                   name: media-service-s3-secret
-                  key: S3_SECRET_ACCESS_KEY
+                  key: root-password
                   
           envFrom:
             - configMapRef:
