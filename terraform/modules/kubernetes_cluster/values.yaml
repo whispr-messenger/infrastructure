@@ -5,15 +5,11 @@ crds:
   # -- Install and upgrade CRDs
   install: true
 
-####################################################################################################
-# High Availabilty mode with autoscaling
-####################################################################################################
 redis-ha:
+  enabled: false
+
+redis:
   enabled: true
-  persistentVolume:
-    enabled: true
-    size: 8Gi
-    storageClass: standard-rwo
 
 controller:
   replicas: 1
