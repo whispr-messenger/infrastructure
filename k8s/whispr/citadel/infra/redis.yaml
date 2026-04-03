@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
-  namespace: whispr-prod
+  namespace: whispr-staging
   labels:
     app: redis
 spec:
@@ -51,7 +51,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis
-  namespace: whispr-prod
+  namespace: whispr-staging
 spec:
   type: ClusterIP
   selector:
