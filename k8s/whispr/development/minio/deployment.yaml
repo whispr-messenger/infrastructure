@@ -32,6 +32,8 @@ spec:
                 secretKeyRef:
                   name: minio-root-credentials
                   key: MINIO_ROOT_PASSWORD
+            - name: MINIO_DEFAULT_BUCKETS
+              value: "whispr-media"
           ports:
             - name: s3-api
               containerPort: 9000
