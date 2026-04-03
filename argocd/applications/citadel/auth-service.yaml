@@ -14,7 +14,7 @@ spec:
     path: k8s/whispr/citadel/auth-service
   destination:
     server: https://kubernetes.default.svc
-    namespace: whispr-prod
+    namespace: whispr-staging
   syncPolicy:
     automated:
       prune: true
