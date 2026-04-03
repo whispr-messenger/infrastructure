@@ -139,6 +139,12 @@ spec:
     path "kv/data/whispr/shared/redis" {
       capabilities = ["read"]
     }
+    path "kv/data/whispr/media-service/*" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/minio/root" {
+      capabilities = ["read"]
+    }
 ---
 # scheduling-service
 apiVersion: redhatcop.redhat.io/v1alpha1
