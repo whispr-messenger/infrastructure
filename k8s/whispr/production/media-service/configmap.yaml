@@ -56,3 +56,9 @@ data:
   ENABLE_CORS: "true"
   HOT_RELOAD: "false"  # Should be false in production
 
+  # S3/MinIO Configuration
+  S3_ENDPOINT: "http://minio.minio.svc.cluster.local:9000"
+  S3_REGION: "us-east-1"
+  S3_FORCE_PATH_STYLE: "true"
+  S3_BUCKET: "whispr-media"
+

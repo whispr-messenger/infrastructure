@@ -90,6 +90,8 @@ spec:
                 name: media-service-redis-sentinel-secret
             - secretRef:
                 name: media-service-public-jwt-secret
+            - secretRef:
+                name: media-service-s3-secret
           # Resource limits and requests
           resources:
             requests:
