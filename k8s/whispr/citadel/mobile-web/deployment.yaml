@@ -4,7 +4,7 @@ metadata:
   labels:
     app: mobile-web
   name: mobile-web
-  namespace: whispr-prod
+  namespace: whispr-staging
 spec:
   replicas: 1
   selector:

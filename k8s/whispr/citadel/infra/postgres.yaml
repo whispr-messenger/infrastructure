@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-init
-  namespace: whispr-prod
+  namespace: whispr-staging
 data:
   init-databases.sh: |
     #!/bin/bash
@@ -18,7 +18,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgresql
-  namespace: whispr-prod
+  namespace: whispr-staging
   labels:
     app: postgresql
 spec:
@@ -75,7 +75,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
-  namespace: whispr-prod
+  namespace: whispr-staging
 spec:
   type: ClusterIP
   selector:
