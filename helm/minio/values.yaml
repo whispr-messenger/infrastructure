@@ -30,8 +30,8 @@ mode: standalone
 auth:
   # Use existing secret for credentials (not stored in Git for security)
   existingSecret: minio-root-credentials
-  existingSecretPasswordKey: rootPassword
-  existingSecretUserKey: rootUser
+  existingSecretPasswordKey: root-password
+  existingSecretUserKey: root-user
 
 ## MinIO API configuration
 apiPort: 9000
