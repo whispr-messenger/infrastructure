@@ -16,22 +16,22 @@ spec:
         app: mobile-web
     spec:
       containers:
-      - image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-ef321a6
-        imagePullPolicy: Always
-        name: mobile-web
-        ports:
-        - containerPort: 3020
-          name: http
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 3020
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        resources:
-          limits:
-            cpu: 200m
-            memory: 128Mi
-          requests:
-            cpu: 50m
-            memory: 64Mi
+        - image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-a8337a2
+          imagePullPolicy: Always
+          name: mobile-web
+          ports:
+            - containerPort: 3020
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3020
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: 200m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
