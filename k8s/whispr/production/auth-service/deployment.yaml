@@ -68,6 +68,10 @@ spec:
                 secretKeyRef:
                   name: auth-service-redis-secret
                   key: password
+            - name: JWT_PRIVATE_KEY_FILE
+              value: /app/secrets/jwt/jwt_private_key.pem
+            - name: JWT_PUBLIC_KEY_FILE
+              value: /app/secrets/jwt/jwt_public_key.pem
           envFrom:
             - configMapRef:
                 name: auth-service-config
@@ -79,10 +83,6 @@ spec:
                 name: auth-service-redis-sentinel-secret
             - secretRef:
                 name: auth-service-twilio-secret
-            - secretRef:
-                name: auth-service-jwt-private-secret
-            - secretRef:
-                name: auth-service-public-jwt-secret
           # Resource limits and requests
           resources:
             requests:
@@ -136,12 +136,32 @@ spec:
               mountPath: /tmp
             - name: logs
               mountPath: /app/logs
+            - name: jwt-private
+              mountPath: /app/secrets/jwt/jwt_private_key.pem
+              subPath: jwt_private_key.pem
+              readOnly: true
+            - name: jwt-public
+              mountPath: /app/secrets/jwt/jwt_public_key.pem
+              subPath: jwt_public_key.pem
+              readOnly: true
       # Volumes
       volumes:
         - name: tmp
           emptyDir: {}
         - name: logs
           emptyDir: {}
+        - name: jwt-private
+          secret:
+            secretName: auth-service-jwt-private-secret
+            items:
+              - key: JWT_PRIVATE_KEY
+                path: jwt_private_key.pem
+        - name: jwt-public
+          secret:
+            secretName: auth-service-public-jwt-secret
+            items:
+              - key: JWT_PUBLIC_KEY
+                path: jwt_public_key.pem
       # Restart policy
       restartPolicy: Always
       # DNS policy
