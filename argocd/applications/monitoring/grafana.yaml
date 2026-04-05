@@ -10,10 +10,14 @@ spec:
     server: https://kubernetes.default.svc
     namespace: observability
 
-  source:
-    repoURL: https://github.com/whispr-messenger/infrastructure/
-    targetRevision: main
-    path: helm/grafana
+  sources:
+    - repoURL: https://github.com/whispr-messenger/infrastructure/
+      targetRevision: main
+      path: helm/grafana
+
+    - repoURL: https://github.com/whispr-messenger/infrastructure/
+      targetRevision: main
+      path: k8s/grafana
 
   syncPolicy:
     automated:
