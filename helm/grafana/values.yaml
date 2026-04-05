@@ -8,6 +8,26 @@ grafana:
     passwordKey: adminPassword
 
   # ------------------------------------------------------------------
+  # GitHub OAuth — credentials injected from Vault via VSO
+  # ------------------------------------------------------------------
+  envValueFrom:
+    GF_AUTH_GITHUB_CLIENT_ID:
+      secretKeyRef:
+        name: grafana-oauth-secret
+        key: client_id
+    GF_AUTH_GITHUB_CLIENT_SECRET:
+      secretKeyRef:
+        name: grafana-oauth-secret
+        key: client_secret
+
+  grafana.ini:
+    auth.github:
+      enabled: true
+      allowed_organizations: whispr-messenger
+      role_attribute_path: >-
+        contains(groups[*], '@whispr-messenger/whispr-team') && 'Admin' || 'Viewer'
+
+  # ------------------------------------------------------------------
   # Security context — run as Grafana user (UID 472)
   # ------------------------------------------------------------------
   securityContext:
