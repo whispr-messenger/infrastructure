@@ -140,4 +140,37 @@ spec:
                       fi
                     done
                   fi
+                  ####################################################################################################
+                  # Step 7: Propagate ACL users from master to all replicas.
+                  # Redis does NOT replicate ACL commands. Vault creates users only on master.
+                  # When a service connects via Sentinel and gets routed to a replica for reads,
+                  # it gets WRONGPASS because the replica has no ACL entry for the Vault user.
+                  ####################################################################################################
+                  echo "=== Step 7: ACL propagation to replicas ==="
+                  VAULT_USERS=$(redis-cli -h "$NEW_MASTER" -p 6379 \
+                    -a "$REDIS_PASSWORD" --no-auth-warning ACL LIST 2>/dev/null \
+                    | grep "^user V_KUBERNETES" || true)
+
+                  if [ -z "$VAULT_USERS" ]; then
+                    echo "No Vault ACL users found on master — nothing to propagate."
+                  else
+                    REPLICA_PODS=$(kubectl get pods -n redis -o wide --no-headers 2>/dev/null \
+                      | awk -v master_ip="$MASTER_IP" '$6 != master_ip {print $1 ":" $6}')
+
+                    for replica_info in $REPLICA_PODS; do
+                      replica_pod=$(echo "$replica_info" | cut -d: -f1)
+                      replica_ip=$(echo "$replica_info" | cut -d: -f2)
+                      replica_dns="${replica_pod}.redis-headless.redis.svc.cluster.local"
+                      echo "Propagating ACL users to $replica_pod ($replica_ip)..."
+
+                      echo "$VAULT_USERS" | while IFS= read -r acl_line; do
+                        acl_spec=$(echo "$acl_line" | sed 's/^user //')
+                        redis-cli -h "$replica_dns" -p 6379 \
+                          -a "$REDIS_PASSWORD" --no-auth-warning \
+                          ACL SETUSER $acl_spec 2>/dev/null || true
+                      done
+                      echo "ACL propagation to $replica_pod done."
+                    done
+                  fi
+
                   echo "=== vault-redis-master-sync completed ==="
