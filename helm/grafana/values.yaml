@@ -95,11 +95,4 @@ grafana:
       label: grafana_datasource
       labelValue: "1"
 
-  # ------------------------------------------------------------------
-  # Dashboard ConfigMaps — reference ConfigMaps by name
-  # The ConfigMaps are created from JSON files in k8s/grafana/dashboards/
-  # and should be applied with the grafana_dashboard=1 label for sidecar
-  # auto-discovery, OR referenced here for direct provisioning.
-  # ------------------------------------------------------------------
-  dashboardsConfigMaps:
-    default: grafana-dashboards
+  # Dashboards are auto-discovered by the sidecar via grafana_dashboard=1 label.
