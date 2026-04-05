@@ -1,0 +1,54 @@
+# Promtail — DaemonSet log collector shipping to Loki
+
+config:
+  clients:
+    - url: http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push
+
+  snippets:
+    extraScrapeConfigs: |
+      # Scrape Istio JSON access logs with json parsing
+      - job_name: kubernetes-pods-istio
+        kubernetes_sd_configs:
+          - role: pod
+        pipeline_stages:
+          - cri: {}
+          - json:
+              expressions:
+                method: method
+                path: path
+                response_code: response_code
+                upstream_cluster: upstream_cluster
+          - labels:
+              method:
+              path:
+              response_code:
+              upstream_cluster:
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_sidecar_istio_io_status]
+            action: keep
+            regex: .+
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            action: keep
+            regex: istio-proxy
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            target_label: app
+
+daemonset:
+  enabled: true
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
