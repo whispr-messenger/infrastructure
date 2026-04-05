@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: moderation-service
-          image: ghcr.io/whispr-messenger/moderation-service:sha-97cce53
+          image: ghcr.io/whispr-messenger/moderation-service:sha-7e4116b
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
