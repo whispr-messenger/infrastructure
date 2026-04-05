@@ -1,6 +1,6 @@
 grafana:
   # ------------------------------------------------------------------
-  # Admin credentials — injected from Vault via VSO (k8s/grafana/vault-admin-secret.yaml)
+  # Admin credentials — injected from Vault via VSO
   # ------------------------------------------------------------------
   admin:
     existingSecret: grafana-admin-secret

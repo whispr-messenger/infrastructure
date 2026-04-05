@@ -10,5 +10,5 @@ spec:
     role: vault-admin
     serviceAccount: default
     audiences:
-      - https://kubernetes.default.svc.cluster.local
+      - vault
   vaultConnectionRef: grafana-connection
