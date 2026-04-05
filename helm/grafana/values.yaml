@@ -1,6 +1,6 @@
 grafana:
   # ------------------------------------------------------------------
-  # Admin credentials — injected from Vault via VSO (k8s/grafana/vault-admin-secret.yaml)
+  # Admin credentials — injected from Vault via VSO
   # ------------------------------------------------------------------
   admin:
     existingSecret: grafana-admin-secret
@@ -32,15 +32,7 @@ grafana:
   # Ingress
   # ------------------------------------------------------------------
   ingress:
-    enabled: true
-    ingressClassName: nginx
-    hosts:
-      - grafana.whispr.epitech.beer
-    path: /
-    tls:
-      - secretName: grafana-tls
-        hosts:
-          - grafana.whispr.epitech.beer
+    enabled: false
 
   # ------------------------------------------------------------------
   # Datasources — provisioned via Helm values (not external ConfigMaps)
