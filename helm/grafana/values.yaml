@@ -57,6 +57,12 @@ grafana:
           jsonData:
             timeInterval: "15s"
             httpMethod: POST
+        - name: Loki
+          type: loki
+          uid: loki
+          url: http://loki.monitoring.svc.cluster.local:3100
+          access: proxy
+          editable: false
 
   # ------------------------------------------------------------------
   # Dashboard providers — load JSON dashboards from ConfigMaps
