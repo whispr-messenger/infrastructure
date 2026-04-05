@@ -1,0 +1,14 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: grafana-auth
+  namespace: observability
+spec:
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: vault-admin
+    serviceAccount: default
+    audiences:
+      - https://kubernetes.default.svc.cluster.local
+  vaultConnectionRef: grafana-connection

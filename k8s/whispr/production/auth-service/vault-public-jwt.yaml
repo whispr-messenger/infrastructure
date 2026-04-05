@@ -4,6 +4,8 @@ kind: VaultStaticSecret
 metadata:
   name: auth-service-public-jwt
   namespace: whispr-prod
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   vaultAuthRef: auth-service-vault-auth
   mount: kv
