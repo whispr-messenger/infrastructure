@@ -9,6 +9,7 @@ metadata:
     environment: production
   annotations:
     description: "Non-sensitive configuration for Auth Service"
+    argocd.argoproj.io/sync-wave: "0"
 
 data:
   # Node Environment
@@ -47,4 +48,3 @@ data:
   # Feature Flags
   ENABLE_CORS: "true"
   HOT_RELOAD: "false"  # Should be false in production
-
