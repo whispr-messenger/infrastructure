@@ -32,15 +32,7 @@ grafana:
   # Ingress
   # ------------------------------------------------------------------
   ingress:
-    enabled: true
-    ingressClassName: nginx
-    hosts:
-      - grafana.whispr.epitech.beer
-    path: /
-    tls:
-      - secretName: grafana-tls
-        hosts:
-          - grafana.whispr.epitech.beer
+    enabled: false
 
   # ------------------------------------------------------------------
   # Datasources — provisioned via Helm values (not external ConfigMaps)
