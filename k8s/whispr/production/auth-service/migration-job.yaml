@@ -32,7 +32,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: migration
-          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-0cad140
+          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-9f56faf
           command: ["/nodejs/bin/node"]
           args:
             - node_modules/typeorm/cli.js
