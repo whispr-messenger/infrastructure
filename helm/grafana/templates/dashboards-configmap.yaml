@@ -13,5 +13,9 @@ metadata:
 data:
   cluster-overview.json: |-
     {{ .Files.Get "dashboards/cluster-overview.json" | nindent 4 }}
+  ingress-overview.json: |-
+    {{ .Files.Get "dashboards/ingress-overview.json" | nindent 4 }}
+  logs-explorer.json: |-
+    {{ .Files.Get "dashboards/logs-explorer.json" | nindent 4 }}
   services-overview.json: |-
     {{ .Files.Get "dashboards/services-overview.json" | nindent 4 }}
