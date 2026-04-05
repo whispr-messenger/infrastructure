@@ -23,7 +23,7 @@ spec:
       ref: values
 
     - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: k8s/prometheus
 
   destination:
