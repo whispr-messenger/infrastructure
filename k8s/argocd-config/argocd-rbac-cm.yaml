@@ -19,6 +19,9 @@ data:
     # Admin access for whispr-messenger org members in whispr-team
     g, whispr-messenger:whispr-team, role:admin
     g, whispr-messenger, role:developer
+
+    # API admin account (deployer bot — sync + manage apps)
+    g, api-admin, role:admin
     
     # Custom developer role with specific permissions
     p, role:developer, applications, *, */*, allow
