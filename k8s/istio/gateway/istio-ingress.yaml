@@ -64,6 +64,20 @@ spec:
             name: istio-gateway
             port:
               number: 443
+      - path: /media
+        pathType: Prefix
+        backend:
+          service:
+            name: istio-gateway
+            port:
+              number: 443
+      - path: /notification
+        pathType: Prefix
+        backend:
+          service:
+            name: istio-gateway
+            port:
+              number: 443
 
       # Root
       - path: /

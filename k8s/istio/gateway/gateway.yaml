@@ -67,6 +67,16 @@ spec:
               number: 80
     - match:
         - uri:
+            prefix: "/media"
+          authority:
+            exact: whispr.epitech.beer
+      route:
+        - destination:
+            host: media-service.whispr-prod.svc.cluster.local
+            port:
+              number: 3001
+    - match:
+        - uri:
             prefix: "/messaging/"
           authority:
             exact: whispr.epitech.beer
@@ -95,6 +105,38 @@ spec:
       route:
         - destination:
             host: messaging-service.whispr-prod.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: "/notification/"
+          authority:
+            exact: whispr.epitech.beer
+      rewrite:
+        uri: "/"
+      headers:
+        request:
+          set:
+            x-forwarded-prefix: "/notification"
+      route:
+        - destination:
+            host: notification-service.whispr-prod.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            exact: "/notification"
+          authority:
+            exact: whispr.epitech.beer
+      rewrite:
+        uri: "/"
+      headers:
+        request:
+          set:
+            x-forwarded-prefix: "/notification"
+      route:
+        - destination:
+            host: notification-service.whispr-prod.svc.cluster.local
             port:
               number: 80
     # -> Exemple: http://test.local/api/users → App B
