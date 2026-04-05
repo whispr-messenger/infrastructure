@@ -19,6 +19,7 @@ spec:
     targetNamespaces:
       - default
       - argocd
+      - observability
   tokenTTL: 3600
 ---
 # auth-service
