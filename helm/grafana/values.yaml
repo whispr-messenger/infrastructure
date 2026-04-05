@@ -1,9 +1,11 @@
 grafana:
   # ------------------------------------------------------------------
-  # Admin credentials (will be migrated to Vault later)
+  # Admin credentials — injected from Vault via VSO (k8s/grafana/vault-admin-secret.yaml)
   # ------------------------------------------------------------------
-  adminUser: admin
-  adminPassword: admin123
+  admin:
+    existingSecret: grafana-admin-secret
+    userKey: adminUser
+    passwordKey: adminPassword
 
   # ------------------------------------------------------------------
   # Security context — run as Grafana user (UID 472)
