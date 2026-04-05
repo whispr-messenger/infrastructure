@@ -21,6 +21,9 @@ grafana:
         key: client_secret
 
   grafana.ini:
+    server:
+      domain: grafana.whispr.epitech.beer
+      root_url: https://grafana.whispr.epitech.beer
     auth.github:
       enabled: true
       allowed_organizations: whispr-messenger
