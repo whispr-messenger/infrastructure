@@ -48,3 +48,4 @@ data:
   # Feature Flags
   ENABLE_CORS: "true"
   HOT_RELOAD: "false"  # Should be false in production
+  DEMO_MODE: "true"
