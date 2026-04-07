@@ -16,3 +16,6 @@ data:
     CREATE DATABASE scheduling_service_db;
     CREATE ROLE media_app LOGIN PASSWORD 'whispr_dev_password' NOSUPERUSER;
     ALTER DATABASE media_service_db OWNER TO media_app;
+
+    \c user_service_db;
+    CREATE SCHEMA IF NOT EXISTS users;
