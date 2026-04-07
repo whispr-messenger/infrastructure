@@ -11,7 +11,8 @@ set -euo pipefail
 
 CLUSTER_NAME="whispr-dev"
 REGISTRY_NAME="whispr-dev-registry"
-REGISTRY_PORT="5001"
+REGISTRY_HOST_PORT="5001"
+REGISTRY_CLUSTER_PORT="5000"
 HTTP_PORT="8080"
 
 function print_header() {
@@ -26,8 +27,8 @@ function print_header() {
 if k3d registry list 2>/dev/null | grep -q "${REGISTRY_NAME}"; then
   print_header "[registry] ${REGISTRY_NAME} already exists — skipping"
 else
-  echo "[registry] Creating local registry ${REGISTRY_NAME}:${REGISTRY_PORT}"
-  k3d registry create "${REGISTRY_NAME}" --port "${REGISTRY_PORT}"
+  echo "[registry] Creating local registry ${REGISTRY_NAME}:${REGISTRY_HOST_PORT}"
+  k3d registry create "${REGISTRY_NAME}" --port "${REGISTRY_HOST_PORT}"
 fi
 
 # ---------------------------------------------------------------------------
@@ -42,7 +43,7 @@ else
   REPO_ROOT="$(dirname "${SCRIPT_DIR}")"
 
   k3d cluster create "${CLUSTER_NAME}" \
-    --registry-use "k3d-${REGISTRY_NAME}:${REGISTRY_PORT}" \
+    --registry-use "k3d-${REGISTRY_NAME}:${REGISTRY_CLUSTER_PORT}" \
     --registry-config "${REPO_ROOT}/k3d/registries.yaml" \
     --port "${HTTP_PORT}:80@loadbalancer" \
     --agents 2 \
@@ -126,5 +127,5 @@ echo ""
 print_header "[done] Cluster ready."
 echo ""
 echo "Run 'tilt up' from the repo root to start services."
-echo " - Registry: localhost:${REGISTRY_PORT}"
+echo " - Registry: localhost:${REGISTRY_HOST_PORT}"
 echo " - kubectl context: k3d-${CLUSTER_NAME}"
