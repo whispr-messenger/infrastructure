@@ -75,7 +75,7 @@ whispr-dev namespace
 └── messaging-service (Elixir/Phoenix, HTTP :4000, gRPC :50051)
 ```
 
-Images are built locally and pushed to the k3d registry (`k3d-whispr-dev-registry:5001`), not pulled from `ghcr.io`.
+Images are built locally and pushed to the host registry (`localhost:5001`) and pulled inside the cluster via `k3d-whispr-dev-registry:5000`, not from `ghcr.io`.
 
 ---
 
