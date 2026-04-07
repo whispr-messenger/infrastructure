@@ -1,8 +1,8 @@
 mirrors:
-  "k3d-whispr-dev-registry:5000":
+  "k3d-whispr-dev-registry:5001":
     endpoint:
-      - http://k3d-whispr-dev-registry:5000
+      - http://k3d-whispr-dev-registry:5001
 configs:
-  "k3d-whispr-dev-registry:5000":
+  "k3d-whispr-dev-registry:5001":
     tls:
       insecure_skip_verify: true
