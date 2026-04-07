@@ -2,29 +2,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: citadel-moderation-service
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "5"
+  name: whispr-preprod
+  namespace: argocd-preprod
 spec:
   project: default
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
-    targetRevision: main
-    path: k8s/whispr/prod/moderation-service
+    targetRevision: deploy/preprod
+    path: argocd-preprod/applications
   destination:
     server: https://kubernetes.default.svc
-    namespace: whispr-prod
+    namespace: argocd-preprod
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
-    retry:
-      limit: 5
-      backoff:
-        duration: 5s
-        factor: 2
-        maxDuration: 3m

@@ -2,19 +2,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: citadel-moderation-service
-  namespace: argocd
+  name: preprod-scheduling-service
+  namespace: argocd-preprod
   annotations:
     argocd.argoproj.io/sync-wave: "5"
 spec:
   project: default
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
-    targetRevision: main
-    path: k8s/whispr/prod/moderation-service
+    targetRevision: deploy/preprod
+    path: k8s/whispr/preprod/scheduling-service
   destination:
     server: https://kubernetes.default.svc
-    namespace: whispr-prod
+    namespace: whispr-preprod
   syncPolicy:
     automated:
       prune: true

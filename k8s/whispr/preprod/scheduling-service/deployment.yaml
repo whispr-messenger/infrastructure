@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduling-service
+  namespace: whispr-preprod
+  labels:
+    app: scheduling-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scheduling-service
+  template:
+    metadata:
+      labels:
+        app: scheduling-service
+    spec:
+      containers:
+        - name: scheduling-service
+          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-fd8ac9f
+          ports:
+            - name: http
+              containerPort: 3013
+            - name: grpc
+              containerPort: 50013
+          envFrom:
+            - secretRef:
+                name: scheduling-service-env
+          env:
+            - name: DB_HOST
+              value: postgres
+            - name: REDIS_HOST
+              value: redis
+            - name: JWT_JWKS_URL
+              value: http://auth-service:3010/auth/.well-known/jwks.json
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 3013
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scheduling-service
+  namespace: whispr-preprod
+spec:
+  type: NodePort
+  selector:
+    app: scheduling-service
+  ports:
+    - name: http
+      port: 3013
+      targetPort: 3013
+      nodePort: 30113
+    - name: grpc
+      port: 50013
+      targetPort: 50013

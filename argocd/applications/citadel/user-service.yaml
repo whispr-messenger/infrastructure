@@ -11,10 +11,10 @@ spec:
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
     targetRevision: main
-    path: k8s/whispr/citadel/user-service
+    path: k8s/whispr/prod/user-service
   destination:
     server: https://kubernetes.default.svc
-    namespace: whispr-staging
+    namespace: whispr-prod
   syncPolicy:
     automated:
       prune: true

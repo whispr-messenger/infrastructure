@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: whispr-preprod
+  labels:
+    app: user-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: ghcr.io/whispr-messenger/user-service/user-service:sha-e9e4922
+          ports:
+            - name: http
+              containerPort: 3011
+            - name: grpc
+              containerPort: 50011
+          envFrom:
+            - secretRef:
+                name: user-service-env
+          env:
+            - name: DB_HOST
+              value: postgres
+            - name: REDIS_HOST
+              value: redis
+            - name: JWT_JWKS_URL
+              value: http://auth-service:3010/auth/.well-known/jwks.json
+          readinessProbe:
+            httpGet:
+              path: /user/v1/health/ready
+              port: 3011
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: whispr-preprod
+spec:
+  type: NodePort
+  selector:
+    app: user-service
+  ports:
+    - name: http
+      port: 3011
+      targetPort: 3011
+      nodePort: 30111
+    - name: grpc
+      port: 50011
+      targetPort: 50011
