@@ -62,6 +62,18 @@ serverFiles:
             regex: istiod;http-monitoring
 
       # Envoy Stats job
+      # Redis exporter (bitnami sidecar on port 9121)
+      - job_name: redis
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - redis
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: metrics
+
       - job_name: envoy-stats
         metrics_path: /stats/prometheus
         kubernetes_sd_configs:
