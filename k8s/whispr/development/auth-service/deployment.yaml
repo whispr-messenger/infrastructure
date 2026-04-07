@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: whispr-auth-api
-          image: auth-service:latest
+          image: k3d-whispr-dev-registry:5000/auth-service:latest
           ports:
             - name: http
               containerPort: 3001
