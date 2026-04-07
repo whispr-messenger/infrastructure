@@ -34,20 +34,16 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 1 }
+              { "color": "green", "value": null }
             ]
           },
-          "mappings": [
-            { "options": { "0": { "text": "Master" } }, "type": "value" },
-            { "options": { "1": { "text": "Replica" } }, "type": "value" }
-          ]
+          "mappings": []
         },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
       "id": 1,
-      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "textMode": "name", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
       "title": "Role",
       "type": "stat",
       "targets": [
@@ -205,7 +201,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "rate(redis_keyspace_hits_total{instance=~\"$instance\"}[5m]) / (rate(redis_keyspace_hits_total{instance=~\"$instance\"}[5m]) + rate(redis_keyspace_misses_total{instance=~\"$instance\"}[5m]))",
+          "expr": "rate(redis_keyspace_hits_total{instance=~\"$instance\"}[5m]) / clamp_min(rate(redis_keyspace_hits_total{instance=~\"$instance\"}[5m]) + rate(redis_keyspace_misses_total{instance=~\"$instance\"}[5m]), 1e-9)",
           "legendFormat": "",
           "refId": "A"
         }
@@ -270,7 +266,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "redis_memory_used_rss_bytes{instance=~\"$instance\"} / redis_memory_used_bytes{instance=~\"$instance\"}",
+          "expr": "redis_memory_used_rss_bytes{instance=~\"$instance\"} / clamp_min(redis_memory_used_bytes{instance=~\"$instance\"}, 1)",
           "legendFormat": "Fragmentation Ratio",
           "refId": "A"
         }

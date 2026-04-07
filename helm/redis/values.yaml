@@ -209,10 +209,7 @@ metrics:
       memory: "128Mi"
       cpu: "100m"
   serviceMonitor:
-    enabled: true
-    namespace: monitoring
-    interval: 30s
-    scrapeTimeout: 10s
+    enabled: false
 
 ## Pod Annotations
 commonAnnotations:
