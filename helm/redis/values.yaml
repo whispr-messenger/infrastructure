@@ -194,30 +194,25 @@ pdb:
   create: true
   minAvailable: 1
 
-## Service Monitor for Prometheus
-serviceMonitor:
-  enabled: false
-  # Enable when Prometheus is deployed
-  # enabled: true
-  # namespace: monitoring
-  # interval: 30s
-  # scrapeTimeout: 10s
-
-## Metrics configuration
+## Metrics configuration — redis-exporter sidecar
 metrics:
-  enabled: false
-  # Enable when monitoring is setup
-  # enabled: true
-  # resources:
-  #   requests:
-  #     memory: "64Mi"
-  #     cpu: "50m"
-  #   limits:
-  #     memory: "128Mi"
-  #     cpu: "100m"
-  # serviceMonitor:
-  #   enabled: true
-  #   namespace: monitoring
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnami/redis-exporter
+    tag: "1.58.0-debian-12-r4"
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 30s
+    scrapeTimeout: 10s
 
 ## Pod Annotations
 commonAnnotations:
