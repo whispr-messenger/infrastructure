@@ -24,7 +24,7 @@ Run the setup script once (idempotent — safe to re-run):
 ```
 
 This creates:
-- A k3d local registry at `localhost:5000`
+- A k3d local registry at `localhost:5001`
 - A k3d cluster named `whispr-dev` with port mappings:
   - `0.0.0.0:3001` → cluster HTTP ingress
   - `0.0.0.0:50051` → cluster gRPC ingress
@@ -75,7 +75,7 @@ whispr-dev namespace
 └── messaging-service (Elixir/Phoenix, HTTP :4000, gRPC :50051)
 ```
 
-Images are built locally and pushed to the k3d registry (`k3d-whispr-registry:5000`), not pulled from `ghcr.io`.
+Images are built locally and pushed to the k3d registry (`k3d-whispr-dev-registry:5001`), not pulled from `ghcr.io`.
 
 ---
 

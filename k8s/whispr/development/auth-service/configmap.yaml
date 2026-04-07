@@ -26,3 +26,5 @@ data:
   ENABLE_CORS: "true"
   USER_SERVICE_GRPC_URL: "user-service.whispr-dev.svc.cluster.local:50055"
   MEDIA_SERVICE_GRPC_URL: "media-service.whispr-dev.svc.cluster.local:50054"
+  DEMO_MODE: "true"
+  OTP_BYPASS_CODE: "000000"

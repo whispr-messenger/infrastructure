@@ -15,7 +15,7 @@
 #   - /notification/* → notification-service
 
 secret_settings(disable_scrub = True)
-default_registry(host = 'localhost:5000', host_from_cluster='k3d-whispr-dev-registry:5000')
+default_registry(host = 'localhost:5001', host_from_cluster='k3d-whispr-dev-registry:5001')
 
 # ---------------------------------------------------------------------------
 # Namespace and shared infrastructure
@@ -29,14 +29,14 @@ k8s_yaml([
     'k8s/whispr/development/postgres/service.yaml',
 ])
 
-k8s_resource('postgres', port_forwards=['5432:5432'], labels=['infrastructure'])
+k8s_resource('postgres', port_forwards=['15432:5432'], labels=['infrastructure'])
 
 k8s_yaml([
     'k8s/whispr/development/redis/deployment.yaml',
     'k8s/whispr/development/redis/service.yaml',
 ])
 
-k8s_resource('redis', port_forwards=['6379:6379'], labels=['infrastructure'])
+k8s_resource('redis', port_forwards=['16379:6379'], labels=['infrastructure'])
 
 k8s_yaml([
     'k8s/whispr/development/minio/secret.yaml',
