@@ -2,7 +2,7 @@
 # dev-setup.sh — bootstrap a local k3d cluster for Whispr development.
 #
 # Creates a k3d cluster named "whispr-dev" with:
-#   - A local image registry at localhost:5000
+#   - A local image registry at localhost:5001
 #   - HTTP port mapping  0.0.0.0:3001 → cluster ingress
 #
 # Prerequisites: k3d, kubectl, tilt
@@ -11,7 +11,7 @@ set -euo pipefail
 
 CLUSTER_NAME="whispr-dev"
 REGISTRY_NAME="whispr-dev-registry"
-REGISTRY_PORT="5000"
+REGISTRY_PORT="5001"
 HTTP_PORT="8080"
 
 function print_header() {
@@ -66,11 +66,22 @@ done
 # ---------------------------------------------------------------------------
 # 4. Merge kubeconfig and switch context
 # ---------------------------------------------------------------------------
-k3d kubeconfig merge "${CLUSTER_NAME}" --kubeconfig-merge-default --kubeconfig-switch-context
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "${SCRIPT_DIR}")"
+FALLBACK_KUBECONFIG="${REPO_ROOT}/.kube/k3d-${CLUSTER_NAME}.yaml"
 
-if [  $(kubectl config current-context) != "k3d-${CLUSTER_NAME}" ]; then
+if k3d kubeconfig merge "${CLUSTER_NAME}" --kubeconfig-merge-default --kubeconfig-switch-context 2>/dev/null; then
+  :
+else
+  mkdir -p "$(dirname "${FALLBACK_KUBECONFIG}")"
+  k3d kubeconfig get "${CLUSTER_NAME}" > "${FALLBACK_KUBECONFIG}"
+  export KUBECONFIG="${FALLBACK_KUBECONFIG}"
+  kubectl config use-context "k3d-${CLUSTER_NAME}" >/dev/null 2>&1 || true
+fi
+
+if [ "$(kubectl config current-context 2>/dev/null || echo '')" != "k3d-${CLUSTER_NAME}" ]; then
   print_header "[kubeconfig] Switching kubectl context to k3d-${CLUSTER_NAME}"
-  kubectl config use-context "k3d-${CLUSTER_NAME}"
+  kubectl config use-context "k3d-${CLUSTER_NAME}" >/dev/null
 else
   print_header "[kubeconfig] kubectl context already set to k3d-${CLUSTER_NAME} - skipping"
 fi
