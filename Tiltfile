@@ -15,7 +15,7 @@
 #   - /notification/* → notification-service
 
 secret_settings(disable_scrub = True)
-default_registry(host = 'localhost:5001', host_from_cluster='k3d-whispr-dev-registry:5001')
+default_registry(host = 'localhost:5001', host_from_cluster='k3d-whispr-dev-registry:5000')
 
 # ---------------------------------------------------------------------------
 # Namespace and shared infrastructure
