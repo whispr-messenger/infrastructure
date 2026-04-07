@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: whispr-preprod
+  labels:
+    app: notification-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: ghcr.io/whispr-messenger/notification-service:deploy-preprod
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 4011
+            - name: grpc
+              containerPort: 40011
+          envFrom:
+            - secretRef:
+                name: notification-service-env
+          env:
+            - name: DATABASE_HOST
+              value: postgres
+            - name: REDIS_HOST
+              value: redis
+          readinessProbe:
+            tcpSocket:
+              port: 4011
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: whispr-preprod
+spec:
+  type: NodePort
+  selector:
+    app: notification-service
+  ports:
+    - name: http
+      port: 4011
+      targetPort: 4011
+      nodePort: 30121
+    - name: grpc
+      port: 40011
+      targetPort: 40011
