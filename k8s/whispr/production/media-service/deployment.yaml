@@ -8,6 +8,7 @@ metadata:
     tier: backend
     environment: production
   annotations:
+    argocd.argoproj.io/sync-wave: "2"
     description: "Media management microservice for Whispr Messenger"
     maintainer: "gabriel.lopez@epitech.eu"
 spec:
