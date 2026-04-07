@@ -19,3 +19,5 @@ data:
     {{ .Files.Get "dashboards/logs-explorer.json" | nindent 4 }}
   services-overview.json: |-
     {{ .Files.Get "dashboards/services-overview.json" | nindent 4 }}
+  redis-overview.json: |-
+    {{ .Files.Get "dashboards/redis-overview.json" | nindent 4 }}
