@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: ghcr.io/whispr-messenger/user-service/user-service:sha-e9e4922
+          image: ghcr.io/whispr-messenger/user-service/user-service:sha-d513143
           ports:
             - name: http
               containerPort: 3011
@@ -66,3 +66,7 @@ spec:
     - name: grpc
       port: 50011
       targetPort: 50011
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/whispr-messenger/user-service/user-service:sha-d513143
