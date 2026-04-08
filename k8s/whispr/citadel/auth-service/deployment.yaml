@@ -36,7 +36,7 @@ spec:
               value: redis
           readinessProbe:
             httpGet:
-              path: /auth/v1/health/ready
+              path: /auth/health/ready
               port: 3010
             initialDelaySeconds: 20
             periodSeconds: 10
