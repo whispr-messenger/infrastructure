@@ -38,7 +38,7 @@ data:
   USER_SERVICE_GRPC_URL: "user-service:50052"
   MEDIA_SERVICE_GRPC_URL: "media-service:50053"
   
-  API_PREFIX: "/api/v1"
+  API_PREFIX: "/api"
   ENABLE_CORS: "false"
   SWAGGER_ENABLED: "true"
   LOG_LEVEL: "info"
