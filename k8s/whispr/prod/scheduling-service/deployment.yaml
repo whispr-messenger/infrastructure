@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: scheduling-service
-          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-01131d3
+          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-5ae2655
           ports:
             - name: http
               containerPort: 3013
@@ -69,4 +69,4 @@ spec:
   template:
     spec:
       containers:
-        - image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-01131d3
+        - image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-5ae2655
