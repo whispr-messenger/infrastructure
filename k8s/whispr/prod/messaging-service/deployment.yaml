@@ -5,8 +5,6 @@ metadata:
   namespace: whispr-prod
   labels:
     app: messaging-service
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   replicas: 1
   selector:
@@ -20,56 +18,22 @@ spec:
       containers:
         - name: messaging-service
           image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-b39e598
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 4010
             - name: grpc
               containerPort: 40010
-          env:
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: messaging-service-db-secret
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: messaging-service-db-secret
-                  key: password
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: messaging-service-public-jwt-secret
-                  key: JWT_PUBLIC_KEY
-            - name: REDIS_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: messaging-service-redis-secret
-                  key: username
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: messaging-service-redis-secret
-                  key: password
           envFrom:
-            - configMapRef:
-                name: messaging-service-config
             - secretRef:
-                name: messaging-service-db-secret
-            - secretRef:
-                name: messaging-service-redis-secret
-            - secretRef:
-                name: messaging-service-redis-sentinel-secret
-            - secretRef:
-                name: messaging-service-public-jwt-secret
-            - secretRef:
-                name: messaging-service-app-secret
+                name: messaging-service-env
           readinessProbe:
             httpGet:
-              path: /ready
+              path: /api/health
               port: 4010
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi

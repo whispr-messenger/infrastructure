@@ -35,10 +35,11 @@ spec:
               value: redis
           readinessProbe:
             httpGet:
-              path: /ready
+              path: /api/health
               port: 4010
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi

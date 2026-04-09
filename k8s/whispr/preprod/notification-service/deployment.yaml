@@ -35,10 +35,12 @@ spec:
             - name: REDIS_HOST
               value: redis
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /api/v1/health
               port: 4011
-            initialDelaySeconds: 10
+            initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi
