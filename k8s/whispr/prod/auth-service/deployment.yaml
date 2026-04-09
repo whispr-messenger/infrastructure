@@ -23,9 +23,9 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: 3010
+              containerPort: 3001
             - name: grpc
-              containerPort: 50010
+              containerPort: 50051
           env:
             - name: DB_USERNAME
               valueFrom:
@@ -64,8 +64,8 @@ spec:
                 name: auth-service-twilio-secret
           readinessProbe:
             httpGet:
-              path: /auth/health/ready
-              port: 3010
+              path: /auth/.well-known/jwks.json
+              port: 3001
             initialDelaySeconds: 20
             periodSeconds: 10
           resources:
@@ -95,9 +95,9 @@ spec:
     app: auth-service
   ports:
     - name: http
-      port: 3010
-      targetPort: 3010
+      port: 3001
+      targetPort: 3001
       nodePort: 30010
     - name: grpc
-      port: 50010
-      targetPort: 50010
+      port: 50051
+      targetPort: 50051
