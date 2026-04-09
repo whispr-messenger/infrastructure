@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
     targetRevision: deploy/preprod
-    path: argocd-preprod/applications
+    path: argocd-preprod-citadel/applications
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd-preprod
