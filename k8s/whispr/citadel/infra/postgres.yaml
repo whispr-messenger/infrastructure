@@ -57,8 +57,6 @@ spec:
                 - whispr_preprod
                 - -d
                 - postgres
-                - -d
-                - postgres
             initialDelaySeconds: 5
             periodSeconds: 10
           volumeMounts:
