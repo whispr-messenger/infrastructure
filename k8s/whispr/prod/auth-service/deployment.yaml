@@ -26,6 +26,31 @@ spec:
               containerPort: 3010
             - name: grpc
               containerPort: 50010
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: auth-service-db-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth-service-db-secret
+                  key: password
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: auth-service-redis-secret
+                  key: username
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth-service-redis-secret
+                  key: password
+            - name: JWT_PRIVATE_KEY_FILE
+              value: /app/secrets/jwt_private.pem
+            - name: JWT_PUBLIC_KEY_FILE
+              value: /app/secrets/jwt_public.pem
           envFrom:
             - configMapRef:
                 name: auth-service-config

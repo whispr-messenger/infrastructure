@@ -25,6 +25,19 @@ spec:
               containerPort: 3013
             - name: grpc
               containerPort: 50013
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: scheduling-service-db-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: scheduling-service-db-secret
+                  key: password
+            - name: JWT_JWKS_URL
+              value: http://auth-service:3010/auth/.well-known/jwks.json
           envFrom:
             - configMapRef:
                 name: scheduling-service-config
