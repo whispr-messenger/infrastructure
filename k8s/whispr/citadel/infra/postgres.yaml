@@ -55,6 +55,10 @@ spec:
                 - pg_isready
                 - -U
                 - whispr_preprod
+                - -d
+                - postgres
+                - -d
+                - postgres
             initialDelaySeconds: 5
             periodSeconds: 10
           volumeMounts:
