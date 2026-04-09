@@ -2,17 +2,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: whispr-preprod
-  namespace: argocd-preprod
+  name: whispr-citadel
+  namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
-    targetRevision: deploy/preprod
-    path: argocd-preprod/applications
+    targetRevision: main
+    path: argocd-prod-citadel/applications
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd-preprod
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
