@@ -2,16 +2,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: citadel-moderation-service
+  name: citadel-infra
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
     targetRevision: main
-    path: k8s/whispr/prod/moderation-service
+    path: k8s/whispr/prod/infra
   destination:
     server: https://kubernetes.default.svc
     namespace: whispr-prod
