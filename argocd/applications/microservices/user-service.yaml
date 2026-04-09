@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
     targetRevision: main
-    path: k8s/whispr/prod/user-service
+    path: k8s/whispr/production/user-service
   destination:
     server: https://kubernetes.default.svc
     namespace: whispr-prod
