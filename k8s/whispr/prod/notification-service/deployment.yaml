@@ -29,7 +29,7 @@ spec:
                 name: notification-service-env
           readinessProbe:
             httpGet:
-              path: /api/v1/health
+              path: /api/health
               port: 4011
             initialDelaySeconds: 20
             periodSeconds: 10
