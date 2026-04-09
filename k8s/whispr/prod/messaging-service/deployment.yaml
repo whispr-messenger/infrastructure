@@ -26,13 +26,18 @@ spec:
             - name: grpc
               containerPort: 40010
           envFrom:
+            - configMapRef:
+                name: messaging-service-config
             - secretRef:
-                name: messaging-service-env
-          env:
-            - name: DATABASE_HOST
-              value: postgres
-            - name: REDIS_HOST
-              value: redis
+                name: messaging-service-db-secret
+            - secretRef:
+                name: messaging-service-redis-secret
+            - secretRef:
+                name: messaging-service-redis-sentinel-secret
+            - secretRef:
+                name: messaging-service-public-jwt-secret
+            - secretRef:
+                name: messaging-service-app-secret
           readinessProbe:
             httpGet:
               path: /ready

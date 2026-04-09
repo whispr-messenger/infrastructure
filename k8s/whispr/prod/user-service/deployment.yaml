@@ -26,15 +26,14 @@ spec:
             - name: grpc
               containerPort: 50011
           envFrom:
+            - configMapRef:
+                name: user-service-config
             - secretRef:
-                name: user-service-env
-          env:
-            - name: DB_HOST
-              value: postgres
-            - name: REDIS_HOST
-              value: redis
-            - name: JWT_JWKS_URL
-              value: http://auth-service:3010/auth/.well-known/jwks.json
+                name: user-service-db-secret
+            - secretRef:
+                name: user-service-redis-sentinel-secret
+            - secretRef:
+                name: user-service-public-jwt-secret
           readinessProbe:
             httpGet:
               path: /user/health/ready
