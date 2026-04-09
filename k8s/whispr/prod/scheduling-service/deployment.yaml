@@ -38,11 +38,23 @@ spec:
                   key: password
             - name: JWT_JWKS_URL
               value: http://auth-service:3001/auth/.well-known/jwks.json
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: scheduling-service-redis-secret
+                  key: username
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: scheduling-service-redis-secret
+                  key: password
           envFrom:
             - configMapRef:
                 name: scheduling-service-config
             - secretRef:
                 name: scheduling-service-db-secret
+            - secretRef:
+                name: scheduling-service-redis-secret
             - secretRef:
                 name: scheduling-service-redis-sentinel-secret
             - secretRef:
