@@ -22,9 +22,9 @@ spec:
           image: ghcr.io/whispr-messenger/user-service/user-service:sha-b2c2979
           ports:
             - name: http
-              containerPort: 3011
+              containerPort: 3001
             - name: grpc
-              containerPort: 50011
+              containerPort: 50051
           env:
             - name: DB_USERNAME
               valueFrom:
@@ -37,7 +37,7 @@ spec:
                   name: user-service-db-secret
                   key: password
             - name: JWT_JWKS_URL
-              value: http://auth-service:3010/auth/.well-known/jwks.json
+              value: http://auth-service:3001/auth/.well-known/jwks.json
           envFrom:
             - configMapRef:
                 name: user-service-config
@@ -50,7 +50,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /user/health/ready
-              port: 3011
+              port: 3001
             initialDelaySeconds: 20
             periodSeconds: 10
           resources:
@@ -72,12 +72,12 @@ spec:
     app: user-service
   ports:
     - name: http
-      port: 3011
-      targetPort: 3011
+      port: 3001
+      targetPort: 3001
       nodePort: 30011
     - name: grpc
-      port: 50011
-      targetPort: 50011
+      port: 50051
+      targetPort: 50051
   template:
     spec:
       containers:
