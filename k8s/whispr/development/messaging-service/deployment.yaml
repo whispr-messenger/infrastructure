@@ -20,6 +20,7 @@ spec:
       containers:
         - name: whispr-messaging-api
           image: messaging-service:dev
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 4000
