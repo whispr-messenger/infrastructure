@@ -27,13 +27,12 @@ spec:
             - name: grpc
               containerPort: 40011
           envFrom:
+            - configMapRef:
+                name: notification-service-config
             - secretRef:
-                name: notification-service-env
-          env:
-            - name: DATABASE_HOST
-              value: postgres
-            - name: REDIS_HOST
-              value: redis
+                name: notification-service-db-secret
+            - secretRef:
+                name: notification-service-public-jwt-secret
           readinessProbe:
             tcpSocket:
               port: 4011

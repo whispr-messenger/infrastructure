@@ -26,15 +26,14 @@ spec:
             - name: grpc
               containerPort: 50013
           envFrom:
+            - configMapRef:
+                name: scheduling-service-config
             - secretRef:
-                name: scheduling-service-env
-          env:
-            - name: DB_HOST
-              value: postgres
-            - name: REDIS_HOST
-              value: redis
-            - name: JWT_JWKS_URL
-              value: http://auth-service:3010/auth/.well-known/jwks.json
+                name: scheduling-service-db-secret
+            - secretRef:
+                name: scheduling-service-redis-sentinel-secret
+            - secretRef:
+                name: scheduling-service-public-jwt-secret
           readinessProbe:
             httpGet:
               path: /health/ready
