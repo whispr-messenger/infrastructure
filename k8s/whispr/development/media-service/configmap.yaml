@@ -16,7 +16,7 @@ data:
   DB_PORT: "5432"
   DB_NAME: "media_service_db"
   DB_MIGRATIONS_RUN: "true"
-  DB_SYNCHRONIZE: "false"
+  DB_SYNCHRONIZE: "true"
   DB_LOGGING: "true"
   REDIS_HOST: "redis.whispr-dev.svc.cluster.local"
   REDIS_PORT: "6379"
