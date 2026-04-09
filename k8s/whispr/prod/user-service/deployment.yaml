@@ -37,7 +37,7 @@ spec:
               value: http://auth-service:3010/auth/.well-known/jwks.json
           readinessProbe:
             httpGet:
-              path: /user/health/ready
+              path: /v1/user/health/ready
               port: 3011
             initialDelaySeconds: 20
             periodSeconds: 10
