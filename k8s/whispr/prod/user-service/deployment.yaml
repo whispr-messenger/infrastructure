@@ -5,8 +5,6 @@ metadata:
   namespace: whispr-prod
   labels:
     app: user-service
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   replicas: 1
   selector:
@@ -20,51 +18,22 @@ spec:
       containers:
         - name: user-service
           image: ghcr.io/whispr-messenger/user-service/user-service:sha-b2c2979
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: 3001
+              containerPort: 3011
             - name: grpc
-              containerPort: 50051
-          env:
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: user-service-db-secret
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: user-service-db-secret
-                  key: password
-            - name: JWT_JWKS_URL
-              value: http://auth-service:3001/auth/.well-known/jwks.json
-            - name: REDIS_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: user-service-redis-secret
-                  key: username
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: user-service-redis-secret
-                  key: password
+              containerPort: 50011
           envFrom:
-            - configMapRef:
-                name: user-service-config
             - secretRef:
-                name: user-service-db-secret
-            - secretRef:
-                name: user-service-redis-secret
-            - secretRef:
-                name: user-service-redis-sentinel-secret
-            - secretRef:
-                name: user-service-public-jwt-secret
+                name: user-service-env
           readinessProbe:
             httpGet:
               path: /user/health/ready
-              port: 3001
+              port: 3011
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi
@@ -84,13 +53,9 @@ spec:
     app: user-service
   ports:
     - name: http
-      port: 3001
-      targetPort: 3001
+      port: 3011
+      targetPort: 3011
       nodePort: 30011
     - name: grpc
-      port: 50051
-      targetPort: 50051
-  template:
-    spec:
-      containers:
-        - image: ghcr.io/whispr-messenger/user-service/user-service:sha-4a98c58
+      port: 50011
+      targetPort: 50011

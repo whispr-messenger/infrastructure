@@ -5,8 +5,6 @@ metadata:
   namespace: whispr-prod
   labels:
     app: notification-service
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   replicas: 1
   selector:
@@ -26,33 +24,16 @@ spec:
               containerPort: 4011
             - name: grpc
               containerPort: 40011
-          env:
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: notification-service-db-secret
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: notification-service-db-secret
-                  key: password
-            - name: DATABASE_URL
-              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
-            - name: SECRET_KEY_BASE
-              value: "5NCXsMTyEFqQRqsWs8N6sWoH06ki+bXmuXlFffKq8Q5Lhmo21mf2SDDjt1Uhqocw"
           envFrom:
-            - configMapRef:
-                name: notification-service-config
             - secretRef:
-                name: notification-service-db-secret
-            - secretRef:
-                name: notification-service-public-jwt-secret
+                name: notification-service-env
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /api/v1/health
               port: 4011
-            initialDelaySeconds: 10
+            initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi

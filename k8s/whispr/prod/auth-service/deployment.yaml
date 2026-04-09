@@ -5,8 +5,6 @@ metadata:
   namespace: whispr-prod
   labels:
     app: auth-service
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   replicas: 1
   selector:
@@ -23,51 +21,19 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: 3001
+              containerPort: 3010
             - name: grpc
-              containerPort: 50051
-          env:
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: auth-service-db-secret
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: auth-service-db-secret
-                  key: password
-            - name: REDIS_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: auth-service-redis-secret
-                  key: username
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: auth-service-redis-secret
-                  key: password
-            - name: JWT_PRIVATE_KEY_FILE
-              value: /app/secrets/jwt_private.pem
-            - name: JWT_PUBLIC_KEY_FILE
-              value: /app/secrets/jwt_public.pem
+              containerPort: 50010
           envFrom:
-            - configMapRef:
-                name: auth-service-config
             - secretRef:
-                name: auth-service-db-secret
-            - secretRef:
-                name: auth-service-redis-secret
-            - secretRef:
-                name: auth-service-redis-sentinel-secret
-            - secretRef:
-                name: auth-service-twilio-secret
+                name: auth-service-env
           readinessProbe:
             httpGet:
-              path: /auth/.well-known/jwks.json
-              port: 3001
+              path: /auth/v1/health/ready
+              port: 3010
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi
@@ -95,9 +61,9 @@ spec:
     app: auth-service
   ports:
     - name: http
-      port: 3001
-      targetPort: 3001
+      port: 3010
+      targetPort: 3010
       nodePort: 30010
     - name: grpc
-      port: 50051
-      targetPort: 50051
+      port: 50010
+      targetPort: 50010
