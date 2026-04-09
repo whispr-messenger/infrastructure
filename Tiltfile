@@ -98,12 +98,16 @@ def nestjs_service(name, context, debug_port=9229):
         ],
     )
 
-    k8s_yaml([
+    yaml_files = [
         'k8s/whispr/development/' + name + '/configmap.yaml',
-        'k8s/whispr/development/' + name + '/secret.yaml',
         'k8s/whispr/development/' + name + '/deployment.yaml',
         'k8s/whispr/development/' + name + '/service.yaml',
-    ])
+    ]
+    secret_path = 'k8s/whispr/development/' + name + '/secret.yaml'
+    if os.path.exists(secret_path):
+        yaml_files.append(secret_path)
+
+    k8s_yaml(yaml_files)
 
     k8s_resource(
         name,

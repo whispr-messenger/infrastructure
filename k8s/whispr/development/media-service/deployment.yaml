@@ -20,6 +20,7 @@ spec:
       containers:
         - name: whispr-media-api
           image: media-service:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 3003
