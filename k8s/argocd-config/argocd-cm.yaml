@@ -32,3 +32,9 @@ data:
         orgs:
         - name: whispr-messenger
           # Remove teams restriction to allow all org members
+    staticClients:
+    - id: kargo
+      name: Kargo
+      redirectURIs:
+      - https://kargo.whispr.epitech.beer/auth/callback
+      secretEnv: DEX_KARGO_CLIENT_SECRET
