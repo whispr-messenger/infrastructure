@@ -161,3 +161,23 @@ spec:
     targetNamespaces:
       - arc-runners
   tokenTTL: 3600
+---
+# kargo
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: KubernetesAuthEngineRole
+metadata:
+  name: kargo
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: kubernetes
+  policies:
+    - kargo-policy
+  targetServiceAccounts:
+    - kargo-sa
+  targetNamespaces:
+    targetNamespaces:
+      - kargo
+  tokenTTL: 3600
