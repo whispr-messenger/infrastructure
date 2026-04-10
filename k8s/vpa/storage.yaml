@@ -1,0 +1,86 @@
+---
+# VPA objects for storage layer — PostgreSQL & Redis
+# updateMode: Off → recommender only, no automatic updates
+
+# ─── PostgreSQL ─────────────────────────────────────────────────────────────
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: postgresql
+  namespace: postgresql
+  labels:
+    app: postgresql
+    managed-by: vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: postgresql
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: postgresql
+        minAllowed:
+          cpu: 50m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 2000m
+          memory: 4Gi
+        controlledResources: ["cpu", "memory"]
+
+---
+# ─── Redis cluster (redis-node) ─────────────────────────────────────────────
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: redis-node
+  namespace: redis
+  labels:
+    app: redis
+    managed-by: vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: redis-node
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: redis
+        minAllowed:
+          cpu: 10m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 1000m
+          memory: 2Gi
+        controlledResources: ["cpu", "memory"]
+
+---
+# ─── MinIO ──────────────────────────────────────────────────────────────────
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: minio
+  namespace: minio
+  labels:
+    app: minio
+    managed-by: vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: minio
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: minio
+        minAllowed:
+          cpu: 50m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 1000m
+          memory: 2Gi
+        controlledResources: ["cpu", "memory"]

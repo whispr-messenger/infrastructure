@@ -63,6 +63,10 @@ resource "google_container_cluster" "whispr" {
   logging_service    = "logging.googleapis.com/kubernetes"
   monitoring_service = "monitoring.googleapis.com/kubernetes"
 
+  vertical_pod_autoscaling {
+    enabled = true
+  }
+
   maintenance_policy {
     daily_maintenance_window {
       start_time = "03:00"

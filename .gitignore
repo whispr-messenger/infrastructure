@@ -16,3 +16,9 @@ auth
 
 .kube/
 .beads/
+
+# Terraform sensitive files
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform/
