@@ -1,13 +1,7 @@
 terraform {
 
-  # Use Terraform Cloud as the backend to store the state file
-  backend "remote" {
-    organization = "glopez-personnal"
-
-    workspaces {
-      name = "whispr-google-kubernetes-engine"
-    }
-  }
+  # Local backend — state stored in terraform.tfstate
+  backend "local" {}
 
   required_version = ">= 1.6"
 
