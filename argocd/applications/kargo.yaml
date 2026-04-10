@@ -1,0 +1,30 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kargo
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+spec:
+  project: default
+  sources:
+  - repoURL: https://charts.kargo.io
+    chart: kargo
+    targetRevision: 1.4.1
+    helm:
+      valueFiles:
+        - $values/helm/kargo/values.yaml
+  - repoURL: 'https://github.com/whispr-messenger/infrastructure.git'
+    targetRevision: main
+    ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kargo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
