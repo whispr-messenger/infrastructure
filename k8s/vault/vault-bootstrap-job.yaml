@@ -276,7 +276,11 @@ spec:
               if ! vault kv get -field=DEX_KARGO_CLIENT_SECRET kv/argocd/secret >/dev/null 2>&1; then
                 echo "Generating Kargo OIDC client secret..."
                 KARGO_CLIENT_SECRET=$(openssl rand -base64 32 | tr -d '\n')
-                vault kv patch kv/argocd/secret DEX_KARGO_CLIENT_SECRET="$KARGO_CLIENT_SECRET"
+                if vault kv get kv/argocd/secret >/dev/null 2>&1; then
+                  vault kv patch kv/argocd/secret DEX_KARGO_CLIENT_SECRET="$KARGO_CLIENT_SECRET"
+                else
+                  vault kv put kv/argocd/secret DEX_KARGO_CLIENT_SECRET="$KARGO_CLIENT_SECRET"
+                fi
                 vault kv put kv/kargo/oidc clientSecret="$KARGO_CLIENT_SECRET"
                 echo "Kargo OIDC client secret generated and stored"
               else
