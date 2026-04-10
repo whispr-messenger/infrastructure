@@ -1,0 +1,23 @@
+# Fairwinds VPA Helm chart values
+# https://github.com/FairwindsOps/charts/tree/master/stable/vpa
+
+# Deploy all three VPA components
+admissionController:
+  enabled: true
+  replicaCount: 1
+
+recommender:
+  enabled: true
+  replicaCount: 1
+
+updater:
+  enabled: true
+  replicaCount: 1
+
+# CRDs are managed by the chart
+crds:
+  image:
+    tag: "1.2.1"
+
+# Use the VPA in passive mode by default (updateMode: Off on each VPA object)
+# The components are still deployed so the recommender collects data
