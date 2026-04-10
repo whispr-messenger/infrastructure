@@ -1,4 +1,7 @@
 api:
+  host: kargo.whispr.epitech.beer
+  adminAccount:
+    enabled: false
   ingress:
     enabled: true
     ingressClassName: nginx
@@ -8,23 +11,13 @@ api:
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     tls:
-      - hosts:
-          - kargo.whispr.epitech.beer
-        secretName: kargo-tls
-    rules:
-      - host: kargo.whispr.epitech.beer
-        paths:
-          - path: /
-            pathType: Prefix
-
-oidc:
-  enabled: true
-  issuerURL: https://argocd.whispr.epitech.beer/api/dex
-  clientID: kargo
-  clientSecretSecretRef:
-    name: kargo-oidc-secret
-    key: clientSecret
-
-rbac:
-  adminRoles:
-    - github.com:whispr-messenger
+      enabled: true
+      selfSignedCert: false
+  oidc:
+    enabled: true
+    issuerURL: https://argocd.whispr.epitech.beer/api/dex
+    clientID: kargo
+    admins:
+      claims:
+        groups:
+          - whispr-messenger
