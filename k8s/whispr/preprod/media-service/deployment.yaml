@@ -49,7 +49,7 @@ spec:
               value: production
           readinessProbe:
             httpGet:
-              path: /media/health/ready
+              path: /media/v1/health/ready
               port: 3012
             initialDelaySeconds: 20
             periodSeconds: 10
