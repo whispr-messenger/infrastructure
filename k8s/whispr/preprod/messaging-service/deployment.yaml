@@ -33,6 +33,8 @@ spec:
               value: postgres
             - name: REDIS_HOST
               value: redis
+            - name: HTTP_PORT
+              value: "4010"
           readinessProbe:
             httpGet:
               path: /ready
