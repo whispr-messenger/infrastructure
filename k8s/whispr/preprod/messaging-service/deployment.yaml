@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: messaging-service
-          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-d5a1395
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-08dc4c2
           ports:
             - name: http
               containerPort: 4010
