@@ -1,7 +1,12 @@
 terraform {
 
-  # Local backend — state stored in terraform.tfstate
-  backend "local" {}
+  backend "remote" {
+    organization = "whispr-messenger"
+
+    workspaces {
+      name = "whispr-google-kubernetes-engine"
+    }
+  }
 
   required_version = ">= 1.6"
 

@@ -11,7 +11,7 @@ recommender:
   replicaCount: 1
 
 updater:
-  enabled: true
+  enabled: false
   replicaCount: 1
 
 # CRDs are managed by the chart

@@ -18,13 +18,12 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     # namespace is ignored since each manifest targets its own namespace
-    namespace: vpa
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
       - ServerSideApply=true
     retry:
       limit: 5

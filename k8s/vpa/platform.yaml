@@ -139,6 +139,7 @@ spec:
         maxAllowed:
           cpu: 500m
           memory: 512Mi
+        controlledResources: ["cpu", "memory"]
       - containerName: sentinel
         minAllowed:
           cpu: 10m
@@ -146,4 +147,4 @@ spec:
         maxAllowed:
           cpu: 200m
           memory: 128Mi
-    controlledResources: ["cpu", "memory"]
+        controlledResources: ["cpu", "memory"]
