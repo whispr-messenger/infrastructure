@@ -16,3 +16,15 @@ api:
         paths:
           - path: /
             pathType: Prefix
+
+oidc:
+  enabled: true
+  issuerURL: https://argocd.whispr.epitech.beer/api/dex
+  clientID: kargo
+  clientSecretSecretRef:
+    name: kargo-oidc-secret
+    key: clientSecret
+
+rbac:
+  adminRoles:
+    - github.com:whispr-messenger
