@@ -1,14 +1,14 @@
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
 metadata:
-  name: argocd-secret
+  name: argocd-dex-kargo-client
   namespace: argocd
 spec:
   type: kv-v2
   mount: kv
-  path: argocd/secret
+  path: kargo/oidc
   destination:
-    name: argocd-secret
+    name: argocd-dex-kargo-client
     create: true
   refreshAfter: 60s
   vaultAuthRef: argocd-auth

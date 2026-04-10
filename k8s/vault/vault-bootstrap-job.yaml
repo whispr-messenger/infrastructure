@@ -269,19 +269,17 @@ spec:
 
               ####################################################################################################
               # Kargo OIDC client secret (one-time)
-              # Stored at two paths:
-              #   kv/argocd/secret  → key DEX_KARGO_CLIENT_SECRET (injected into argocd-dex-server via VSO)
-              #   kv/kargo/oidc     → key clientSecret (injected into kargo namespace via VSO)
+              # Stored at:
+              #   kv/kargo/oidc → keys clientSecret + DEX_KARGO_CLIENT_SECRET
+              #     - clientSecret           injected into kargo namespace via VSO
+              #     - DEX_KARGO_CLIENT_SECRET injected into argocd-dex-server via VSO (argocd-dex-kargo-client secret)
               ####################################################################################################
-              if ! vault kv get -field=DEX_KARGO_CLIENT_SECRET kv/argocd/secret >/dev/null 2>&1; then
+              if ! vault kv get -field=DEX_KARGO_CLIENT_SECRET kv/kargo/oidc >/dev/null 2>&1; then
                 echo "Generating Kargo OIDC client secret..."
                 KARGO_CLIENT_SECRET=$(openssl rand -base64 32 | tr -d '\n')
-                if vault kv get kv/argocd/secret >/dev/null 2>&1; then
-                  vault kv patch kv/argocd/secret DEX_KARGO_CLIENT_SECRET="$KARGO_CLIENT_SECRET"
-                else
-                  vault kv put kv/argocd/secret DEX_KARGO_CLIENT_SECRET="$KARGO_CLIENT_SECRET"
-                fi
-                vault kv put kv/kargo/oidc clientSecret="$KARGO_CLIENT_SECRET"
+                vault kv patch kv/kargo/oidc \
+                  clientSecret="$KARGO_CLIENT_SECRET" \
+                  DEX_KARGO_CLIENT_SECRET="$KARGO_CLIENT_SECRET"
                 echo "Kargo OIDC client secret generated and stored"
               else
                 echo "Kargo OIDC client secret already exists in Vault"
