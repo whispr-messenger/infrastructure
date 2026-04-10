@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   sources:
-  - repoURL: https://charts.kargo.io
+  - repoURL: https://akuity.github.io/kargo-charts
     chart: kargo
     targetRevision: 1.4.1
     helm:
