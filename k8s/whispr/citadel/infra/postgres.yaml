@@ -31,6 +31,7 @@ spec:
       labels:
         app: postgresql
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: postgresql
           image: postgres:15-alpine
@@ -43,6 +44,7 @@ spec:
             limits:
               memory: 1Gi
               cpu: 500m
+              ephemeral-storage: 2Gi
           env:
             - name: POSTGRES_USER
               valueFrom:
