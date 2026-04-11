@@ -17,11 +17,6 @@ spec:
       labels:
         app: scheduling-service
     spec:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
       containers:
         - name: scheduling-service
           image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-1d3c811
@@ -40,52 +35,3 @@ spec:
               value: redis-master.redis.svc.cluster.local
             - name: JWT_JWKS_URL
               value: http://auth-service:3010/auth/.well-known/jwks.json
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
-            capabilities:
-              drop: ["ALL"]
-          startupProbe:
-            httpGet:
-              path: /health/ready
-              port: 3013
-            failureThreshold: 30
-            periodSeconds: 2
-          livenessProbe:
-            httpGet:
-              path: /health/ready
-              port: 3013
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /health/ready
-              port: 3013
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            failureThreshold: 3
-          resources:
-            requests:
-              memory: 256Mi
-              cpu: 100m
-            limits:
-              memory: 512Mi
-              cpu: 500m
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: scheduling-service
-  namespace: whispr-preprod
-spec:
-  type: ClusterIP
-  selector:
-    app: scheduling-service
-  ports:
-    - name: http
-      port: 3013
-      targetPort: 3013
-    - name: grpc
-      port: 50013
-      targetPort: 50013
