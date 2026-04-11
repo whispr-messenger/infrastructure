@@ -15,8 +15,10 @@ auth
 *.db
 
 .kube/
-.beads/
-.worktree/
+.claude/
+.gitnexus/
+.playwright-mcp/
+AGENTS.md
 
 # Terraform sensitive files
 *.tfstate

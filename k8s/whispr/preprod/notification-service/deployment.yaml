@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: ghcr.io/whispr-messenger/notification-service:deploy-preprod
+          image: ghcr.io/whispr-messenger/notification-service:sha-dfb62e1
           imagePullPolicy: Always
           ports:
             - name: http
@@ -31,38 +31,13 @@ spec:
                 name: notification-service-env
           env:
             - name: DATABASE_HOST
-              value: postgres
+              value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
-              value: redis
-          readinessProbe:
-            httpGet:
-              path: /api/v1/health
-              port: 4011
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            failureThreshold: 3
+              value: redis-master.redis.svc.cluster.local
           resources:
             requests:
-              memory: 256Mi
+              memory: 128Mi
               cpu: 100m
             limits:
-              memory: 512Mi
+              memory: 384Mi
               cpu: 500m
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: notification-service
-  namespace: whispr-preprod
-spec:
-  type: NodePort
-  selector:
-    app: notification-service
-  ports:
-    - name: http
-      port: 4011
-      targetPort: 4011
-      nodePort: 30121
-    - name: grpc
-      port: 40011
-      targetPort: 40011

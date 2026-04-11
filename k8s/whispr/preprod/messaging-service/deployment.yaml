@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: messaging-service
-          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-b39e598
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-95c3bff
           ports:
             - name: http
               containerPort: 4010
@@ -30,16 +30,11 @@ spec:
                 name: messaging-service-env
           env:
             - name: DATABASE_HOST
-              value: postgres
+              value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
-              value: redis
-          readinessProbe:
-            httpGet:
-              path: /api/health
-              port: 4010
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            failureThreshold: 3
+              value: redis-master.redis.svc.cluster.local
+            - name: HTTP_PORT
+              value: "4010"
           resources:
             requests:
               memory: 256Mi
@@ -47,21 +42,3 @@ spec:
             limits:
               memory: 512Mi
               cpu: 500m
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: messaging-service
-  namespace: whispr-preprod
-spec:
-  type: NodePort
-  selector:
-    app: messaging-service
-  ports:
-    - name: http
-      port: 4010
-      targetPort: 4010
-      nodePort: 30120
-    - name: grpc
-      port: 40010
-      targetPort: 40010
