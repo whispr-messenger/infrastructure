@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: media-service
+  namespace: whispr-preprod
+spec:
+  type: ClusterIP
+  selector:
+    app: media-service
+  ports:
+    - name: http
+      port: 3012
+      targetPort: 3012
+    - name: grpc
+      port: 50012
+      targetPort: 50012
