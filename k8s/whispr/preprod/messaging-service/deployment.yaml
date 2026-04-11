@@ -35,3 +35,10 @@ spec:
               value: redis-master.redis.svc.cluster.local
             - name: HTTP_PORT
               value: "4010"
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
