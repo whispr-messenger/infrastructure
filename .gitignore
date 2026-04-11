@@ -15,3 +15,7 @@ auth
 *.db
 
 .kube/
+.claude/
+.gitnexus/
+.playwright-mcp/
+AGENTS.md
