@@ -34,3 +34,29 @@ spec:
               value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
               value: redis-master.redis.svc.cluster.local
+          volumeMounts:
+            - name: jwt-keys
+              mountPath: /app/secrets
+              readOnly: true
+          startupProbe:
+            httpGet:
+              path: /auth/v1/health/ready
+              port: 3010
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /auth/v1/health/ready
+              port: 3010
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /auth/v1/health/ready
+              port: 3010
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: jwt-keys
+          secret:
+            secretName: jwt-keys
