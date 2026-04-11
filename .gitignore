@@ -16,6 +16,7 @@ auth
 
 .kube/
 .beads/
+.worktree/
 
 # Terraform sensitive files
 *.tfstate

@@ -15,9 +15,22 @@ api:
       selfSignedCert: false
   oidc:
     enabled: true
-    issuerURL: https://argocd.whispr.epitech.beer/api/dex
-    clientID: kargo
     admins:
       claims:
         groups:
           - whispr-messenger
+    dex:
+      enabled: true
+      envFrom:
+        - secretRef:
+            name: kargo-github-oauth
+      connectors:
+        - type: github
+          id: github
+          name: GitHub
+          config:
+            clientID: $GITHUB_CLIENT_ID
+            clientSecret: $GITHUB_CLIENT_SECRET
+            redirectURI: https://kargo.whispr.epitech.beer/dex/callback
+            orgs:
+              - name: whispr-messenger
