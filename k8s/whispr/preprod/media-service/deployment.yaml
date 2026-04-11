@@ -5,6 +5,8 @@ metadata:
   namespace: whispr-preprod
   labels:
     app: media-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   replicas: 1
   selector:
@@ -17,8 +19,7 @@ spec:
     spec:
       containers:
         - name: media-service
-          image: ghcr.io/whispr-messenger/media-service/media-service:latest
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-fc2ce47
           ports:
             - name: http
               containerPort: 3012
@@ -27,35 +28,25 @@ spec:
           envFrom:
             - secretRef:
                 name: media-service-env
-          readinessProbe:
-            httpGet:
-              path: /media/health/ready
-              port: 3012
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            failureThreshold: 3
+          env:
+            - name: DB_HOST
+              value: postgresql.postgresql.svc.cluster.local
+            - name: REDIS_HOST
+              value: redis-master.redis.svc.cluster.local
+            - name: MINIO_ENDPOINT
+              value: minio.minio.svc.cluster.local
+            - name: JWT_JWKS_URL
+              value: http://auth-service:3010/auth/.well-known/jwks.json
+            - name: S3_ENDPOINT
+              value: http://minio.minio.svc.cluster.local:9000
+            - name: S3_REGION
+              value: us-east-1
+            - name: NODE_ENV
+              value: production
           resources:
             requests:
-              memory: 256Mi
+              memory: 128Mi
               cpu: 100m
             limits:
-              memory: 512Mi
+              memory: 384Mi
               cpu: 500m
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: media-service
-  namespace: whispr-preprod
-spec:
-  type: NodePort
-  selector:
-    app: media-service
-  ports:
-    - name: http
-      port: 3012
-      targetPort: 3012
-      nodePort: 30112
-    - name: grpc
-      port: 50012
-      targetPort: 50012
