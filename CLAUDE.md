@@ -24,17 +24,33 @@ when picking up and completing a Jira ticket for this repository.
 
 ---
 
-## 2. Prepare the branch
+## 2. Prepare the worktree and branch
+
+Each ticket gets its own git worktree so multiple tickets can be worked on in
+parallel without interfering with each other.
 
 ```bash
-git checkout main
+# From the main repo directory
 git pull origin main
-git checkout -b <TICKET-KEY>-<short-kebab-description>
+git worktree add -b <TICKET-KEY>-<short-kebab-description> \
+  ../whispr-infrastructure-<TICKET-KEY> main
 ```
 
+Worktree location convention: `../whispr-infrastructure-<TICKET-KEY>`
 Branch naming convention: `WHISPR-XXX-short-description`
 
-Example: `WHISPR-312-fix-messaging-service-grpc-env-vars`
+Examples:
+```bash
+git worktree add -b WHISPR-635-expose-grafana-nginx-ingress \
+  ../whispr-infrastructure-WHISPR-635 main
+```
+
+All implementation work happens inside the worktree directory. When the ticket
+is done, remove the worktree:
+
+```bash
+git worktree remove ../whispr-infrastructure-<TICKET-KEY>
+```
 
 ---
 
@@ -214,33 +230,3 @@ Then pass it as a number in `createJiraIssue`:
 - `mcp__atlassian__jiraRead` — requires an `action` enum parameter, not a free-form URL; not useful for agile/sprint endpoints.
 - `mcp__atlassian__fetch` — requires an `id` parameter; cannot be used for arbitrary REST calls.
 
----
-
-## Task Tracking with Beads
-
-This repository uses **beads** (`bd`) — a git-backed, graph-based issue tracker optimised for AI agents — for local task tracking within a session or across long-horizon work.
-
-Beads is already initialised (`.beads/` directory is committed). Issue prefix: `infrastructure`.
-
-### Key commands
-
-| Command | Purpose |
-|---------|---------|
-| `bd ready` | List tasks with no blocking dependencies (pick your next task here) |
-| `bd create "Title" -p 0` | Create a new task (`-p 0` = highest priority) |
-| `bd update <id> --claim` | Atomically assign the task to yourself and mark it in-progress |
-| `bd dep add <child> <parent>` | Declare that `<child>` depends on `<parent>` |
-| `bd show <id>` | Show task details and history |
-
-### Task hierarchy
-
-Tasks use dot notation: `infrastructure-a3f8` (epic) → `infrastructure-a3f8.1` (task) → `infrastructure-a3f8.1.1` (subtask).
-
-### Workflow
-
-1. Run `bd ready` to see what is available.
-2. Run `bd update <id> --claim` to take ownership and start work.
-3. Use `bd dep add` to express blocking relationships between tasks.
-4. Close tasks with `bd update <id> --status done` when complete.
-
-Use beads for **in-session planning and subtask decomposition**. Jira remains the source of truth for sprint-level tickets.

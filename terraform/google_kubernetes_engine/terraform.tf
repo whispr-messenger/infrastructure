@@ -1,8 +1,7 @@
 terraform {
 
-  # Use Terraform Cloud as the backend to store the state file
   backend "remote" {
-    organization = "glopez-personnal"
+    organization = "whispr-messenger"
 
     workspaces {
       name = "whispr-google-kubernetes-engine"

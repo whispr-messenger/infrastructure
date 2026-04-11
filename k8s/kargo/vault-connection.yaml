@@ -1,0 +1,11 @@
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultConnection
+metadata:
+  name: default
+  namespace: kargo
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  address: http://vault.vault.svc:8200
+  skipTLSVerify: true

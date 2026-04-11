@@ -40,7 +40,7 @@ spec:
       containers:
         - name: whispr-auth-api
           # The image is automatically updated by the CD pipeline with yq
-          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-1ef5bef # Placeholder, replaced by CD pipeline
+          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-822b3cb # Placeholder, replaced by CD pipeline
           ports:
             - name: http
               containerPort: 3001
@@ -109,7 +109,7 @@ spec:
           # Liveness probe - checks if the container is alive
           livenessProbe:
             httpGet:
-              path: /auth/health/live
+              path: /auth/v1/health/live
               port: http
             initialDelaySeconds: 60
             periodSeconds: 30
@@ -119,7 +119,7 @@ spec:
           # Readiness probe - checks if the container is ready to serve traffic
           readinessProbe:
             httpGet:
-              path: /auth/health/ready
+              path: /auth/v1/health/ready
               port: http
             initialDelaySeconds: 30
             periodSeconds: 10
@@ -129,7 +129,7 @@ spec:
           # Startup probe - gives more time for initial startup
           startupProbe:
             httpGet:
-              path: /auth/health/live
+              path: /auth/v1/health/live
               port: http
             initialDelaySeconds: 15
             periodSeconds: 5

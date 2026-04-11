@@ -5,8 +5,6 @@ metadata:
   namespace: whispr-prod
   labels:
     app: notification-service
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   replicas: 1
   selector:
@@ -29,16 +27,13 @@ spec:
           envFrom:
             - secretRef:
                 name: notification-service-env
-          env:
-            - name: DATABASE_HOST
-              value: postgres
-            - name: REDIS_HOST
-              value: redis
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /api/health
               port: 4011
-            initialDelaySeconds: 10
+            initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi
