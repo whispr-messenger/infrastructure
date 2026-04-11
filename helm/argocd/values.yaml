@@ -35,11 +35,6 @@ applicationSet:
 crds:
   install: true
 
-dex:
-  envFrom:
-    - secretRef:
-        name: argocd-dex-kargo-client
-
 configs:
   params:
     application.instanceLabelKey: argocd.argoproj.io/instance
