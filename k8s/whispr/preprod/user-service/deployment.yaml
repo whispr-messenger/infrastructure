@@ -35,3 +35,10 @@ spec:
               value: redis-master.redis.svc.cluster.local
             - name: JWT_JWKS_URL
               value: http://auth-service:3010/auth/.well-known/jwks.json
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 384Mi
+              cpu: 500m

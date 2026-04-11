@@ -53,3 +53,10 @@ spec:
               value: us-east-1
             - name: NODE_ENV
               value: production
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 384Mi
+              cpu: 500m
