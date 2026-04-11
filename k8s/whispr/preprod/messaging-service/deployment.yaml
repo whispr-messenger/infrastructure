@@ -17,6 +17,11 @@ spec:
       labels:
         app: messaging-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: messaging-service
           image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-08dc4c2
@@ -35,12 +40,31 @@ spec:
               value: redis-master.redis.svc.cluster.local
             - name: HTTP_PORT
               value: "4010"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
+          startupProbe:
+            httpGet:
+              path: /ready
+              port: 4010
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 4010
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /ready
               port: 4010
-            initialDelaySeconds: 20
+            initialDelaySeconds: 5
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi
