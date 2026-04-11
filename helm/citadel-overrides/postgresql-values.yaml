@@ -1,0 +1,13 @@
+# Bitnami PostgreSQL overrides for Citadel k3s (single node)
+architecture: standalone
+primary:
+  persistence:
+    storageClass: "local-path"
+    size: 20Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi

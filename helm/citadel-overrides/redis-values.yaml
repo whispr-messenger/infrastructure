@@ -1,0 +1,13 @@
+# Bitnami Redis overrides for Citadel k3s (single node, no sentinel)
+architecture: standalone
+master:
+  persistence:
+    storageClass: "local-path"
+    size: 8Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

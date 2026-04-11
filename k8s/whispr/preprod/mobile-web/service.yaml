@@ -4,11 +4,10 @@ metadata:
   name: mobile-web
   namespace: whispr-preprod
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: mobile-web
   ports:
     - name: http
       port: 3020
       targetPort: 3020
-      nodePort: 30130
