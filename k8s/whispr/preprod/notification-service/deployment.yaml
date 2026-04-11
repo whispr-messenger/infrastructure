@@ -31,9 +31,9 @@ spec:
                 name: notification-service-env
           env:
             - name: DATABASE_HOST
-              value: postgres
+              value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
-              value: redis
+              value: redis-master.redis.svc.cluster.local
           readinessProbe:
             tcpSocket:
               port: 4011
