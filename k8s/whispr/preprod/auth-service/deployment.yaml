@@ -31,9 +31,9 @@ spec:
                 name: auth-service-env
           env:
             - name: DB_HOST
-              value: postgres
+              value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
-              value: redis
+              value: redis-master.redis.svc.cluster.local
           readinessProbe:
             httpGet:
               path: /auth/v1/health/ready
