@@ -5,8 +5,6 @@ metadata:
   namespace: whispr-prod
   labels:
     app: messaging-service
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   replicas: 1
   selector:
@@ -20,6 +18,7 @@ spec:
       containers:
         - name: messaging-service
           image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-b39e598
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 4010
@@ -28,17 +27,13 @@ spec:
           envFrom:
             - secretRef:
                 name: messaging-service-env
-          env:
-            - name: DATABASE_HOST
-              value: postgres
-            - name: REDIS_HOST
-              value: redis
           readinessProbe:
             httpGet:
-              path: /ready
+              path: /api/v1/health
               port: 4010
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi

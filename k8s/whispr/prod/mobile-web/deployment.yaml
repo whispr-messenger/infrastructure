@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app: mobile-web
   name: mobile-web
   namespace: whispr-prod
+  labels:
+    app: mobile-web
 spec:
   replicas: 1
   selector:
@@ -16,22 +16,23 @@ spec:
         app: mobile-web
     spec:
       containers:
-        - image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-100ea31
+        - name: mobile-web
+          image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-000d300
           imagePullPolicy: Always
-          name: mobile-web
           ports:
-            - containerPort: 3020
-              name: http
+            - name: http
+              containerPort: 3020
           readinessProbe:
             httpGet:
               path: /
               port: 3020
             initialDelaySeconds: 5
             periodSeconds: 10
+            failureThreshold: 3
           resources:
-            limits:
-              cpu: 200m
-              memory: 128Mi
             requests:
-              cpu: 50m
               memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 128Mi
+              cpu: 200m

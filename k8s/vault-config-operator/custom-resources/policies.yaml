@@ -186,3 +186,19 @@ spec:
     path "kv/data/whispr/shared/github-arc" {
       capabilities = ["read"]
     }
+---
+# kargo
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: kargo-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "kv/data/kargo/*" {
+      capabilities = ["read"]
+    }

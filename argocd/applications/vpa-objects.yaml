@@ -1,0 +1,33 @@
+---
+# ArgoCD Application that deploys all VPA objects (mode Off)
+# for whispr-prod, storage, and platform workloads.
+# Depends on vpa.yaml (CRDs must be installed first — sync-wave 1)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vpa-objects
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/whispr-messenger/infrastructure.git
+    targetRevision: main
+    path: k8s/vpa
+  destination:
+    server: https://kubernetes.default.svc
+    # namespace is ignored since each manifest targets its own namespace
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
