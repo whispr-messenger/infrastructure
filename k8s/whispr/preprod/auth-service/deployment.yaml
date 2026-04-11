@@ -53,7 +53,7 @@ spec:
             periodSeconds: 2
           livenessProbe:
             httpGet:
-              path: /auth/v1/health/ready
+              path: /auth/v1/health/live
               port: 3010
             initialDelaySeconds: 10
             periodSeconds: 30
