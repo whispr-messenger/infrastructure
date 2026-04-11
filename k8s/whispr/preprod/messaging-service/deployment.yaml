@@ -79,14 +79,13 @@ metadata:
   name: messaging-service
   namespace: whispr-preprod
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: messaging-service
   ports:
     - name: http
       port: 4010
       targetPort: 4010
-      nodePort: 30120
     - name: grpc
       port: 40010
       targetPort: 40010

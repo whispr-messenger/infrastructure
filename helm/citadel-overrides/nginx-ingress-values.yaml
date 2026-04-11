@@ -1,0 +1,14 @@
+# Nginx Ingress Controller overrides for Citadel k3s
+controller:
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080
+      https: 30443
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

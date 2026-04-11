@@ -1,0 +1,25 @@
+# HashiCorp Vault overrides for Citadel k3s (standalone, single node)
+server:
+  ha:
+    enabled: false
+  standalone:
+    enabled: true
+    config: |
+      ui = true
+      listener "tcp" {
+        tls_disable = 1
+        address = "[::]:8200"
+        cluster_address = "[::]:8201"
+      }
+      storage "file" {
+        path = "/vault/data"
+      }
+      service_registration "kubernetes" {}
+  dataStorage:
+    storageClass: "local-path"
+    size: 5Gi
+  auditStorage:
+    storageClass: "local-path"
+    size: 5Gi
+injector:
+  replicas: 1

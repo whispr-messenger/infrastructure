@@ -79,14 +79,13 @@ metadata:
   name: scheduling-service
   namespace: whispr-preprod
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: scheduling-service
   ports:
     - name: http
       port: 3013
       targetPort: 3013
-      nodePort: 30113
     - name: grpc
       port: 50013
       targetPort: 50013
