@@ -17,6 +17,11 @@ spec:
       labels:
         app: user-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: user-service
           image: ghcr.io/whispr-messenger/user-service/user-service:sha-2d7ccde
@@ -35,12 +40,31 @@ spec:
               value: redis-master.redis.svc.cluster.local
             - name: JWT_JWKS_URL
               value: http://auth-service:3010/auth/.well-known/jwks.json
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
+          startupProbe:
+            httpGet:
+              path: /user/v1/health/ready
+              port: 3011
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /user/v1/health/ready
+              port: 3011
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /user/v1/health/ready
               port: 3011
-            initialDelaySeconds: 20
+            initialDelaySeconds: 5
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi

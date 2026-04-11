@@ -17,6 +17,11 @@ spec:
       labels:
         app: auth-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: auth-service
           image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-97611d2
@@ -34,12 +39,31 @@ spec:
               value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
               value: redis-master.redis.svc.cluster.local
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
+          startupProbe:
+            httpGet:
+              path: /auth/v1/health/ready
+              port: 3010
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /auth/v1/health/ready
+              port: 3010
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /auth/v1/health/ready
               port: 3010
-            initialDelaySeconds: 20
+            initialDelaySeconds: 5
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: 256Mi
