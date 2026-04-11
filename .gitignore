@@ -19,3 +19,9 @@ auth
 .gitnexus/
 .playwright-mcp/
 AGENTS.md
+
+# Terraform sensitive files
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform/
