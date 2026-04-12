@@ -22,6 +22,7 @@ metadata:
   labels:
     app: postgresql
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -49,6 +50,13 @@ spec:
                   key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
               value: postgres
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 1Gi
+              cpu: 500m
           readinessProbe:
             exec:
               command:

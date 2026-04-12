@@ -6,6 +6,7 @@ metadata:
   labels:
     app: media-service
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -17,7 +18,7 @@ spec:
     spec:
       containers:
         - name: media-service
-          image: ghcr.io/whispr-messenger/media-service/media-service:latest
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-fc2ce47
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

@@ -8,6 +8,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
