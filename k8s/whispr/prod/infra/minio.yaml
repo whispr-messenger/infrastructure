@@ -6,6 +6,7 @@ metadata:
   labels:
     app: minio
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -37,6 +38,13 @@ spec:
                 secretKeyRef:
                   name: minio-root-credentials
                   key: MINIO_ROOT_PASSWORD
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 1Gi
+              cpu: 500m
           readinessProbe:
             httpGet:
               path: /minio/health/ready
