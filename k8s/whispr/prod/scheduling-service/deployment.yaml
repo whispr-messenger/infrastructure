@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: scheduling-service
-          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-ff2461d
+          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-41b0177
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
