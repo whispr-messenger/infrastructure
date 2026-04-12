@@ -30,14 +30,14 @@ spec:
                 name: media-service-env
           readinessProbe:
             httpGet:
-              path: /media/health/ready
+              path: /media/v1/health/ready
               port: 3012
             initialDelaySeconds: 20
             periodSeconds: 10
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /media/health/ready
+              path: /media/v1/health/ready
               port: 3012
             initialDelaySeconds: 45
             periodSeconds: 30
