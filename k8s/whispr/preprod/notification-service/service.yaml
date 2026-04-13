@@ -4,13 +4,14 @@ metadata:
   name: notification-service
   namespace: whispr-preprod
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: notification-service
   ports:
     - name: http
       port: 4011
       targetPort: 4011
+      nodePort: 30121
     - name: grpc
       port: 40011
       targetPort: 40011
