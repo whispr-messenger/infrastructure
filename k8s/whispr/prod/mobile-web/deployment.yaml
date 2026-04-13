@@ -6,6 +6,7 @@ metadata:
   labels:
     app: mobile-web
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -17,7 +18,7 @@ spec:
     spec:
       containers:
         - name: mobile-web
-          image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-000d300
+          image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-5878514
           imagePullPolicy: Always
           ports:
             - name: http

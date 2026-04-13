@@ -6,6 +6,7 @@ metadata:
   labels:
     app: notification-service
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -17,7 +18,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: ghcr.io/whispr-messenger/notification-service:deploy-preprod
+          image: ghcr.io/whispr-messenger/notification-service:sha-ed99985
           imagePullPolicy: Always
           ports:
             - name: http
@@ -29,10 +30,17 @@ spec:
                 name: notification-service-env
           readinessProbe:
             httpGet:
-              path: /api/health
+              path: /api/v1/health
               port: 4011
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4011
+            initialDelaySeconds: 45
+            periodSeconds: 30
             failureThreshold: 3
           resources:
             requests:

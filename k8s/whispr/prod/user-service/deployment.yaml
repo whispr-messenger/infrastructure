@@ -6,6 +6,7 @@ metadata:
   labels:
     app: user-service
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -17,7 +18,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: ghcr.io/whispr-messenger/user-service/user-service:sha-b2c2979
+          image: ghcr.io/whispr-messenger/user-service/user-service:sha-e137ebd
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -27,12 +28,22 @@ spec:
           envFrom:
             - secretRef:
                 name: user-service-env
+          env:
+            - name: DB_SYNCHRONIZE
+              value: "false"
           readinessProbe:
             httpGet:
-              path: /user/health/ready
+              path: /user/v1/health/ready
               port: 3011
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /user/v1/health/ready
+              port: 3011
+            initialDelaySeconds: 45
+            periodSeconds: 30
             failureThreshold: 3
           resources:
             requests:

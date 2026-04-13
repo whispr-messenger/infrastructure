@@ -6,6 +6,7 @@ metadata:
   labels:
     app: scheduling-service
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -17,7 +18,7 @@ spec:
     spec:
       containers:
         - name: scheduling-service
-          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-7241e6d
+          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-4eaf17e
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -33,6 +34,13 @@ spec:
               port: 3013
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health/ready
+              port: 3013
+            initialDelaySeconds: 45
+            periodSeconds: 30
             failureThreshold: 3
           resources:
             requests:

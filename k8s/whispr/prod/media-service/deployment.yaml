@@ -6,6 +6,7 @@ metadata:
   labels:
     app: media-service
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -17,7 +18,7 @@ spec:
     spec:
       containers:
         - name: media-service
-          image: ghcr.io/whispr-messenger/media-service/media-service:latest
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-fc2ce47
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -29,10 +30,17 @@ spec:
                 name: media-service-env
           readinessProbe:
             httpGet:
-              path: /media/health/ready
+              path: /media/v1/health/ready
               port: 3012
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /media/v1/health/ready
+              port: 3012
+            initialDelaySeconds: 45
+            periodSeconds: 30
             failureThreshold: 3
           resources:
             requests:

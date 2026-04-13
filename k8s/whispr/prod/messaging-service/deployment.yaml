@@ -6,6 +6,7 @@ metadata:
   labels:
     app: messaging-service
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -17,7 +18,7 @@ spec:
     spec:
       containers:
         - name: messaging-service
-          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-b39e598
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-a81af0b
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -29,10 +30,17 @@ spec:
                 name: messaging-service-env
           readinessProbe:
             httpGet:
-              path: /api/v1/health
+              path: /messaging/api/v1/health
               port: 4010
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /messaging/api/v1/health
+              port: 4010
+            initialDelaySeconds: 45
+            periodSeconds: 30
             failureThreshold: 3
           resources:
             requests:

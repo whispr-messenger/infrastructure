@@ -6,6 +6,7 @@ metadata:
   labels:
     app: auth-service
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -17,7 +18,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-ed71039
+          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-f5da5e4
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -33,6 +34,13 @@ spec:
               port: 3010
             initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /auth/v1/health/ready
+              port: 3010
+            initialDelaySeconds: 45
+            periodSeconds: 30
             failureThreshold: 3
           resources:
             requests:
