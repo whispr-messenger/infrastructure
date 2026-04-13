@@ -49,3 +49,7 @@ data:
   ENABLE_CORS: "true"
   HOT_RELOAD: "false"  # Should be false in production
   DEMO_MODE: "true"
+
+  # JWT Claims
+  JWT_ISSUER: "https://auth.whispr.epitech.beer"
+  JWT_AUDIENCE: "whispr-api"
