@@ -34,7 +34,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: migration
-          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-6a038fd
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-a81af0b
           command: ["/app/bin/whispr_messaging"]
           args:
             - eval
