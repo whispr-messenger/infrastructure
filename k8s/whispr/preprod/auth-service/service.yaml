@@ -4,13 +4,14 @@ metadata:
   name: auth-service
   namespace: whispr-preprod
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: auth-service
   ports:
     - name: http
       port: 3010
       targetPort: 3010
+      nodePort: 30110
     - name: grpc
       port: 50010
       targetPort: 50010
