@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: moderation-config
+  namespace: whispr
+data:
+  MOD_MUTE_THRESHOLD: "3"
+  MOD_MUTE_DAYS: "7"
+  MOD_MUTE_DURATION_HOURS: "24"
+  MOD_BAN_THRESHOLD: "5"
+  MOD_BAN_DAYS: "14"
+  MOD_REVIEW_THRESHOLD: "10"
+  MOD_REVIEW_DAYS: "30"

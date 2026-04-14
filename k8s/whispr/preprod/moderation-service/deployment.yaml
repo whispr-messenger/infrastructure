@@ -5,7 +5,10 @@ metadata:
   namespace: whispr-preprod
   labels:
     app: moderation-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
+  revisionHistoryLimit: 3
   replicas: 1
   selector:
     matchLabels:
@@ -18,9 +21,15 @@ spec:
       containers:
         - name: moderation-service
           image: ghcr.io/whispr-messenger/moderation-service:sha-7e4116b
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: moderation-service-env
+            - configMapRef:
+                name: moderation-config
           readinessProbe:
             httpGet:
               path: /health
@@ -34,3 +43,18 @@ spec:
             limits:
               memory: 1Gi
               cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moderation-service
+  namespace: whispr-preprod
+spec:
+  type: NodePort
+  selector:
+    app: moderation-service
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      nodePort: 30014

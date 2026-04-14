@@ -28,6 +28,8 @@ spec:
           envFrom:
             - secretRef:
                 name: moderation-service-env
+            - configMapRef:
+                name: moderation-config
           readinessProbe:
             httpGet:
               path: /health
