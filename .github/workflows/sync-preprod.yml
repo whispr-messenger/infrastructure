@@ -1,0 +1,43 @@
+name: Sync deploy/preprod with main
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'k8s/whispr/preprod/**'
+      - 'k8s/whispr/prod/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge main into deploy/preprod
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check if deploy/preprod exists remotely
+          if git ls-remote --exit-code origin deploy/preprod; then
+            git fetch origin deploy/preprod
+            git checkout deploy/preprod
+
+            # Merge main with auto-resolve conflicts by keeping main's version
+            if git merge origin/main --no-edit; then
+              echo "Merge succeeded cleanly"
+            else
+              echo "Merge conflict detected — auto-resolving with main's version"
+              git checkout --theirs .
+              git add -A
+              git commit --no-edit
+            fi
+          else
+            echo "deploy/preprod does not exist yet — creating from main"
+            git checkout -b deploy/preprod origin/main
+          fi
+
+          git push origin deploy/preprod
