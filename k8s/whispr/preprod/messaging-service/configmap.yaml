@@ -6,3 +6,5 @@ metadata:
 data:
   JWT_ISSUER: "https://auth.whispr.roadmvn.com"
   JWT_AUDIENCE: "whispr-api"
+  USER_SERVICE_HTTP_URL: "http://user-service:3011"
+  ADMIN_USER_IDS: "3378ee73-ce43-4145-b689-ba982d97721e"
