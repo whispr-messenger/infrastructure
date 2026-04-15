@@ -28,13 +28,13 @@ spec:
           envFrom:
             - secretRef:
                 name: user-service-env
+            - configMapRef:
+                name: user-service-config
           env:
             - name: DB_HOST
               value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
               value: redis-master.redis.svc.cluster.local
-            - name: JWT_JWKS_URL
-              value: http://auth-service:3010/auth/.well-known/jwks.json
           resources:
             requests:
               memory: 128Mi

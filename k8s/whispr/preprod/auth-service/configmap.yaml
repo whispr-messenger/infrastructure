@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-service-config
+  namespace: whispr-preprod
+data:
+  JWT_ISSUER: "https://auth.whispr.roadmvn.com"
+  JWT_AUDIENCE: "whispr-api"
