@@ -28,6 +28,8 @@ spec:
           envFrom:
             - secretRef:
                 name: messaging-service-env
+            - configMapRef:
+                name: messaging-service-config
           env:
             - name: DATABASE_HOST
               value: postgresql.postgresql.svc.cluster.local
