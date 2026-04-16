@@ -18,7 +18,7 @@ spec:
         community:
           enabled: true
         image:
-          tag: 25.1-community
+          tag: community
           pullPolicy: IfNotPresent
         elasticsearch:
           bootstrapChecks: false
