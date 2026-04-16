@@ -46,6 +46,8 @@ spec:
           namespace: whispr-preprod
           port: 4010
       middlewares:
+        - name: strip-messaging
+          namespace: whispr-preprod
         - name: whispr-cors
           namespace: whispr-preprod
     - match: PathPrefix(`/notification`)
@@ -66,5 +68,7 @@ spec:
           namespace: whispr-preprod
           port: 3013
       middlewares:
+        - name: strip-scheduling
+          namespace: whispr-preprod
         - name: whispr-cors
           namespace: whispr-preprod

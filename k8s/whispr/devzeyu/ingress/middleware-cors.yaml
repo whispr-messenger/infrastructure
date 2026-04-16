@@ -31,3 +31,23 @@ spec:
     accessControlAllowCredentials: true
     accessControlMaxAge: 3600
     addVaryHeader: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-messaging
+  namespace: whispr-preprod
+spec:
+  stripPrefix:
+    prefixes:
+      - /messaging
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-scheduling
+  namespace: whispr-preprod
+spec:
+  stripPrefix:
+    prefixes:
+      - /scheduling
