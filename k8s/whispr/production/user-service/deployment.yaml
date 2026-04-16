@@ -33,7 +33,7 @@ spec:
       containers:
         - name: whispr-user-api
           # the image is automatically updated by the CD pipeline with yq
-          image: ghcr.io/whispr-messenger/user-service/user-service:sha-658654a
+          image: ghcr.io/whispr-messenger/user-service/user-service:sha-e86089f
           ports:
             - name: http
               containerPort: 3001
