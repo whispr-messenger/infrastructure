@@ -1,0 +1,27 @@
+---
+# IngressRoute Traefik qui expose MinIO publiquement sous /whispr-media/*
+# (WHISPR-917). Les URLs présignées émises par media-service sont signées
+# avec `S3_PUBLIC_ENDPOINT=https://whispr.devzeyu.com` et chemin
+# `/whispr-media/<key>?X-Amz-Signature=…`. Traefik ne strip pas le
+# préfixe — il le passe tel quel à MinIO, et le Host d'origine est
+# préservé de sorte que la signature S3 V4 valide.
+#
+# Attention : le nom du bucket est volontairement inclus dans le
+# préfixe (`whispr-media` == bucket name) pour que `forcePathStyle`
+# de l'AWS SDK produise exactement cette forme.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: minio-public
+  namespace: minio
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: PathPrefix(`/whispr-media`)
+      kind: Rule
+      priority: 100
+      services:
+        - name: minio
+          namespace: minio
+          port: 9000

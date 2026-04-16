@@ -4,3 +4,4 @@ resources:
   - middleware-cors.yaml
   - ingressroute-api.yaml
   - ingressroute-admin.yaml
+  - ingressroute-media-blob.yaml

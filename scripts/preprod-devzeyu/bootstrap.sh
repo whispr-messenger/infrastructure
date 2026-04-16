@@ -151,6 +151,8 @@ create_service_secrets() {
         DB_NAME=media_service \
         JWT_PUBLIC_KEY_PATH=/app/secrets/jwt_public.pem \
         S3_ENDPOINT=http://minio.minio.svc.cluster.local:9000 \
+        S3_PUBLIC_ENDPOINT=https://whispr.devzeyu.com \
+        S3_FORCE_PATH_STYLE=true \
         S3_REGION=us-east-1 \
         S3_BUCKET=whispr-media \
         S3_ACCESS_KEY="${MINIO_ROOT_USER}" \
