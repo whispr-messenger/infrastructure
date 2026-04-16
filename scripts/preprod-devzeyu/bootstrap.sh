@@ -325,7 +325,60 @@ main() {
     set_argocd_admin_pw
     apply_root_app
     wait_for_argocd_sync
+    tune_argocd_reconciliation
+    ensure_postgres_roles
     print_summary
+}
+
+# Réduit l'intervalle de polling ArgoCD de 180s à 30s (preprod).
+# Amélioration purement locale, aucun effet sur d'autres clusters.
+tune_argocd_reconciliation() {
+    log "Réglage ArgoCD timeout.reconciliation=30s"
+    kubectl -n "${ARGOCD_NS}" patch cm argocd-cm --type=merge \
+        -p '{"data":{"timeout.reconciliation":"30s"}}' >/dev/null
+    kubectl -n "${ARGOCD_NS}" rollout restart statefulset argocd-application-controller >/dev/null
+    ok "ArgoCD reconciliation 30s"
+}
+
+# Crée les rôles PostgreSQL non-superuser dont certains services ont besoin.
+# - media_app : rôle de connexion utilisé par media-service (RLS refuse superuser)
+# - media_user : rôle cible de GRANT utilisé par les migrations media-service
+# Les rôles sont créés idempotemment ; les mots de passe vivent uniquement en DB.
+ensure_postgres_roles() {
+    log "Création des rôles PostgreSQL non-superuser"
+    # Attendre que le StatefulSet postgresql soit prêt (géré par ArgoCD).
+    kubectl -n postgresql wait --for=condition=ready pod postgresql-0 --timeout=180s >/dev/null 2>&1 || true
+
+    local media_app_pass
+    media_app_pass="$(rand_b64 24)"
+    local media_user_pass
+    media_user_pass="$(rand_b64 24)"
+
+    kubectl -n postgresql exec postgresql-0 -- psql -U postgres -v ON_ERROR_STOP=1 <<PSQL_EOF >/dev/null 2>&1 || true
+DO \$\$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'media_app') THEN
+        CREATE ROLE media_app WITH LOGIN PASSWORD '${media_app_pass}';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'media_user') THEN
+        CREATE ROLE media_user WITH LOGIN PASSWORD '${media_user_pass}';
+    END IF;
+END
+\$\$;
+GRANT ALL PRIVILEGES ON DATABASE media_service TO media_app;
+GRANT ALL PRIVILEGES ON DATABASE media_service TO media_user;
+ALTER DATABASE media_service OWNER TO media_app;
+PSQL_EOF
+
+    # Mise à jour du secret media-service-env pour qu'il utilise media_app en tant
+    # que rôle de connexion (required by RLS subscriber in media-service).
+    kubectl -n whispr-preprod get secret media-service-env -o json 2>/dev/null \
+        | jq --arg u "$(echo -n 'media_app' | base64 -w0)" \
+             --arg p "$(echo -n "${media_app_pass}" | base64 -w0)" \
+             '.data.DB_USER=$u | .data.DB_USERNAME=$u | .data.DB_PASSWORD=$p' \
+        | kubectl apply -f - >/dev/null 2>&1
+
+    ok "Rôles PostgreSQL (media_app, media_user) créés"
 }
 
 main "$@"
