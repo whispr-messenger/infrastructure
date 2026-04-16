@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: ghcr.io/whispr-messenger/user-service/user-service:sha-e86089f
+          image: ghcr.io/whispr-messenger/user-service/user-service:sha-5331ae5
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
