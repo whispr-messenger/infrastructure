@@ -327,7 +327,21 @@ main() {
     wait_for_argocd_sync
     tune_argocd_reconciliation
     ensure_postgres_roles
+    ensure_minio_buckets
     print_summary
+}
+
+# Crée les buckets MinIO requis par les services (media-service notamment).
+# Idempotent grâce à `mc mb --ignore-existing`.
+ensure_minio_buckets() {
+    log "Création des buckets MinIO"
+    kubectl -n minio wait --for=condition=ready pod -l app=minio --timeout=120s >/dev/null 2>&1 || true
+
+    kubectl run mc-bootstrap -n minio --rm -i --restart=Never --image=minio/mc --quiet --command -- \
+        sh -c "mc alias set local http://minio.minio.svc.cluster.local:9000 '${MINIO_ROOT_USER}' '${MINIO_ROOT_PASSWORD}' >/dev/null 2>&1 && mc mb --ignore-existing local/whispr-media >/dev/null" \
+        2>&1 | grep -vE 'command prompt|pod |recorded' || true
+
+    ok "Buckets MinIO prêts (whispr-media)"
 }
 
 # Réduit l'intervalle de polling ArgoCD de 180s à 30s (preprod).
