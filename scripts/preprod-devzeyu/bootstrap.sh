@@ -161,11 +161,12 @@ create_service_secrets() {
         MINIO_SECRET_KEY="${MINIO_ROOT_PASSWORD}" \
         MINIO_BUCKET=whispr-media
 
-    # messaging-service (Elixir)
+    # messaging-service (Elixir) — JWT_JWKS_URL explicite car le défaut pointe sur port 80
     apply_secret whispr-preprod messaging-service-env \
         "${common_env[@]}" \
         DB_NAME=messaging_service \
         JWT_PUBLIC_KEY_PATH=/app/secrets/jwt_public.pem \
+        JWT_JWKS_URL=http://auth-service.whispr-preprod.svc.cluster.local:3010/auth/.well-known/jwks.json \
         SECRET_KEY_BASE="$(rand_b64 64)" \
         PHX_HOST=whispr.devzeyu.com \
         PHX_PORT=4010
@@ -176,11 +177,13 @@ create_service_secrets() {
         DB_NAME=notification_service \
         JWT_PUBLIC_KEY_PATH=/app/secrets/jwt_public.pem
 
-    # scheduling-service (Elixir)
+    # scheduling-service (NestJS) — JWT_JWKS_URL explicite
+
     apply_secret whispr-preprod scheduling-service-env \
         "${common_env[@]}" \
         DB_NAME=scheduling_service \
         JWT_PUBLIC_KEY_PATH=/app/secrets/jwt_public.pem \
+        JWT_JWKS_URL=http://auth-service.whispr-preprod.svc.cluster.local:3010/auth/.well-known/jwks.json \
         SECRET_KEY_BASE="$(rand_b64 64)" \
         PHX_HOST=whispr.devzeyu.com \
         PHX_PORT=3013
