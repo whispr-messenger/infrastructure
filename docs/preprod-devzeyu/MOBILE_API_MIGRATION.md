@@ -186,8 +186,36 @@ Mobile app should **gracefully handle missing notification service**: disable pu
 - Algorithm: `ES256`
 - Public key endpoint: `https://whispr.devzeyu.com/auth/.well-known/jwks.json`
 
-### Known limitation (preprod-only)
-Twilio is stubbed (`TWILIO_ACCOUNT_SID=AC000...`). Real SMS does not leave the server. If the backend exposes a preprod-only dev endpoint to fetch the last generated code, use it. Otherwise coordinate with backend to get test codes, or use QR-code login flow (`/auth/v1/qr-code/...`) if available.
+### Preprod-only: DEMO MODE enabled ⭐
+
+Because preprod-devzeyu has no real Twilio, the auth-service runs with `DEMO_MODE=true`. The verification code is **returned in the HTTP response body** — no SMS needed.
+
+```json
+POST /auth/v1/verify/register/request
+Body:     { "phoneNumber": "+33612345678" }
+Response: { "verificationId": "uuid...", "code": "944826" }
+
+POST /auth/v1/verify/login/request      (same behaviour)
+```
+
+Mobile-side preprod build should read `code` from the response and autofill (or display) it. In prod, the response will only contain `verificationId` (code stays secret, delivered via SMS).
+
+**Phone number format**: must be E.164 (international with `+`). Examples: `+33612345678`, `+8613800138000`. Fake prefixes like `+15555550100` (US-reserved fictional range) are rejected with 400 "Invalid phone number".
+
+### Code in-response detection
+
+A simple client-side check:
+```ts
+const resp = await fetch(`${API.auth}/v1/verify/register/request`, { ... });
+const json = await resp.json();
+if (json.code) {
+  // preprod-devzeyu : verification code returned directly
+  autofillCode(json.code);
+} else {
+  // production: wait for user to enter the code from SMS
+  promptUserForCode(json.verificationId);
+}
+```
 
 ---
 
