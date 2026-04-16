@@ -56,16 +56,36 @@ spec:
           limits:
             cpu: 1500m
             memory: 3Gi
+        readinessProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - 'curl -sf http://localhost:9000/sonarqube/api/system/status | grep -qE "UP|DB_MIGRATION"'
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 6
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - 'curl -sf --max-time 2 -H "X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" http://localhost:9000/sonarqube/api/system/liveness >/dev/null'
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          failureThreshold: 6
+          timeoutSeconds: 5
         startupProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - 'curl -sf http://localhost:9000/sonarqube/api/system/status | grep -qE "UP|DB_MIGRATION"'
           initialDelaySeconds: 90
           periodSeconds: 30
           failureThreshold: 30
-        livenessProbe:
-          initialDelaySeconds: 120
-          periodSeconds: 30
-        readinessProbe:
-          initialDelaySeconds: 60
-          periodSeconds: 30
+          timeoutSeconds: 5
   destination:
     server: https://kubernetes.default.svc
     namespace: sonarqube
