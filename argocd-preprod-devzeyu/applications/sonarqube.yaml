@@ -11,14 +11,18 @@ spec:
   source:
     repoURL: https://SonarSource.github.io/helm-chart-sonarqube
     chart: sonarqube
-    targetRevision: 10.8.0+3262
+    targetRevision: 2025.1.0+601
     helm:
       releaseName: sonarqube
       values: |
-        sonarqubeVersion: "25.1.0.102122"
         edition: community
         community:
           enabled: true
+        image:
+          tag: 25.1-community
+          pullPolicy: IfNotPresent
+        elasticsearch:
+          bootstrapChecks: false
         sonarProperties:
           sonar.web.context: /sonarqube
         OpenShift:
