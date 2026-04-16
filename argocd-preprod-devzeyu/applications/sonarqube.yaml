@@ -1,0 +1,82 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devzeyu-sonarqube
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  project: default
+  source:
+    repoURL: https://SonarSource.github.io/helm-chart-sonarqube
+    chart: sonarqube
+    targetRevision: 10.8.0+3262
+    helm:
+      releaseName: sonarqube
+      values: |
+        sonarqubeVersion: "25.1.0.102122"
+        edition: community
+        community:
+          enabled: true
+        sonarProperties:
+          sonar.web.context: /sonarqube
+        OpenShift:
+          enabled: false
+        postgresql:
+          enabled: true
+          postgresqlUsername: sonarUser
+          postgresqlPassword: sonarPass
+          postgresqlDatabase: sonarDB
+          persistence:
+            enabled: true
+            size: 8Gi
+          service:
+            port: 5432
+        prometheusMonitoring:
+          podMonitor:
+            enabled: false
+        prometheusExporter:
+          enabled: false
+        service:
+          type: ClusterIP
+        ingress:
+          enabled: false
+        persistence:
+          enabled: true
+          size: 10Gi
+        initSysctl:
+          enabled: true
+        resources:
+          requests:
+            cpu: 200m
+            memory: 1Gi
+          limits:
+            cpu: 1500m
+            memory: 3Gi
+        startupProbe:
+          initialDelaySeconds: 90
+          periodSeconds: 30
+          failureThreshold: 30
+        livenessProbe:
+          initialDelaySeconds: 120
+          periodSeconds: 30
+        readinessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 30
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sonarqube
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 5m

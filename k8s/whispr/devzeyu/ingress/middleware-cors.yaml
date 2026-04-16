@@ -1,0 +1,33 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: whispr-cors
+  namespace: whispr-preprod
+spec:
+  headers:
+    accessControlAllowMethods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+      - HEAD
+    accessControlAllowHeaders:
+      - "*"
+    accessControlExposeHeaders:
+      - "*"
+    accessControlAllowOriginListRegex:
+      - "^https://whispr\\.devzeyu\\.com$"
+      - "^http://whispr\\.devzeyu\\.com(:[0-9]+)?$"
+      - "^http://localhost(:[0-9]+)?$"
+      - "^http://127\\.0\\.0\\.1(:[0-9]+)?$"
+      - "^http://192\\.168\\.[0-9]+\\.[0-9]+(:[0-9]+)?$"
+      - "^http://10\\.[0-9]+\\.[0-9]+\\.[0-9]+(:[0-9]+)?$"
+      - "^capacitor://localhost$"
+      - "^ionic://localhost$"
+      - "^http://10\\.0\\.2\\.2(:[0-9]+)?$"
+    accessControlAllowCredentials: true
+    accessControlMaxAge: 3600
+    addVaryHeader: true
