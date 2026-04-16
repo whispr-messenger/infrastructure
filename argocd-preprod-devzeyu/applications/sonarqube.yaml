@@ -15,7 +15,6 @@ spec:
     helm:
       releaseName: sonarqube
       values: |
-        edition: community
         community:
           enabled: true
         image:
