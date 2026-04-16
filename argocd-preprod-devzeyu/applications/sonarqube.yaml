@@ -24,15 +24,13 @@ spec:
         OpenShift:
           enabled: false
         postgresql:
+          enabled: false
+        jdbcOverwrite:
           enabled: true
-          postgresqlUsername: sonarUser
-          postgresqlPassword: sonarPass
-          postgresqlDatabase: sonarDB
-          persistence:
-            enabled: true
-            size: 8Gi
-          service:
-            port: 5432
+          jdbcUrl: jdbc:postgresql://postgresql.postgresql.svc.cluster.local:5432/sonarqube
+          jdbcUsername: postgres
+          jdbcSecretName: sonarqube-jdbc
+          jdbcSecretPasswordKey: password
         prometheusMonitoring:
           podMonitor:
             enabled: false

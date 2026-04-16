@@ -112,6 +112,9 @@ create_infra_secrets() {
         root-user="${MINIO_ROOT_USER}" \
         root-password="${MINIO_ROOT_PASSWORD}"
 
+    apply_secret sonarqube sonarqube-jdbc \
+        password="${PG_PASSWORD}"
+
     ok "Secrets infra appliques"
 }
 
