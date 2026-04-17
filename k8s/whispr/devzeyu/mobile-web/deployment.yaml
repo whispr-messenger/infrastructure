@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mobile-web
+  name: mobile-web
+  namespace: whispr-preprod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mobile-web
+  template:
+    metadata:
+      labels:
+        app: mobile-web
+    spec:
+      containers:
+        # Build local (patché : apiBase.ts utilise window.location.origin sur
+        # web → pas de CORS, fonctionne sur whispr.devzeyu.com comme sur
+        # localhost:NNNN via port-forward Traefik). Image chargée dans k3d
+        # via `k3d image import`, d'où imagePullPolicy: Never.
+        - image: local/mobile-web:devzeyu
+          imagePullPolicy: Never
+          name: mobile-web
+          ports:
+            - containerPort: 3020
+              name: http
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 256Mi
+              cpu: 250m
