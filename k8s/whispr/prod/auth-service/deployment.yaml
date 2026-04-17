@@ -25,6 +25,11 @@ spec:
               containerPort: 3010
             - name: grpc
               containerPort: 50010
+          env:
+            - name: JWT_ISSUER
+              value: "https://auth.whispr.epitech.beer"
+            - name: JWT_AUDIENCE
+              value: "whispr-api"
           envFrom:
             - secretRef:
                 name: auth-service-env
