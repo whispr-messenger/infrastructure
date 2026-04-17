@@ -1,0 +1,22 @@
+---
+# IngressRoute catch-all pour le front mobile-web sur le vhost whispr.devzeyu.com.
+# Priorité 1 volontairement basse : les routes API (/auth, /user, /media,
+# /messaging, /notification, /scheduling) et /argocd, /sonarqube, /whispr-media
+# sont toutes à priorité 100 et continuent de gagner sur leurs préfixes.
+# Seul le reste (notamment /) tombe sur mobile-web.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: whispr-web
+  namespace: whispr-preprod
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: PathPrefix(`/`)
+      kind: Rule
+      priority: 1
+      services:
+        - name: mobile-web
+          namespace: whispr-preprod
+          port: 3020
