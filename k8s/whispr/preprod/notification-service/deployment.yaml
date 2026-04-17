@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: ghcr.io/whispr-messenger/notification-service:sha-841fdc3
+          image: ghcr.io/whispr-messenger/notification-service:sha-0e8b53f
           imagePullPolicy: Always
           ports:
             - name: http
