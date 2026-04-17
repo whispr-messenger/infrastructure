@@ -40,7 +40,7 @@ spec:
       containers:
         - name: whispr-auth-api
           # The image is automatically updated by the CD pipeline with yq
-          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-f5da5e4 # Placeholder, replaced by CD pipeline
+          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-fed681c # Placeholder, replaced by CD pipeline
           ports:
             - name: http
               containerPort: 3001
