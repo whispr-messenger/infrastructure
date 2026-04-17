@@ -34,6 +34,15 @@ spec:
               value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
               value: redis-master.redis.svc.cluster.local
+            # runtime.exs de notification-service exige DATABASE_URL (ecto://),
+            # le secret ne fournit que DB_* séparés : on recompose ici.
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-env
+                  key: DB_PASSWORD
+            - name: DATABASE_URL
+              value: "ecto://postgres:$(DB_PASSWORD)@postgresql.postgresql.svc.cluster.local:5432/notification_service"
           resources:
             requests:
               memory: 128Mi
