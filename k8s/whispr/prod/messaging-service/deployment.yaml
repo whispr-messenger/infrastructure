@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: messaging-service
-          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-49d2ba0
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-6f2362a
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
