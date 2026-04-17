@@ -10,11 +10,8 @@ spec:
   project: default
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
-    # On vise zeyu/preprod et un path devzeyu-spécifique pour utiliser
-    # l'image locale patchée (same-origin API) sans être écrasé par les
-    # bumps automatiques de deploy/preprod.
-    targetRevision: zeyu/preprod
-    path: k8s/whispr/devzeyu/mobile-web
+    targetRevision: deploy/preprod
+    path: k8s/whispr/preprod/mobile-web
   destination:
     server: https://kubernetes.default.svc
     namespace: whispr-preprod
