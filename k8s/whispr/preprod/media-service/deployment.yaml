@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: media-service
-          image: ghcr.io/whispr-messenger/media-service/media-service:sha-4f3dc70
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-cedf7f9
           ports:
             - name: http
               containerPort: 3012
