@@ -38,14 +38,7 @@ spec:
             - name: JWT_JWKS_URL
               value: http://auth-service:3010/auth/.well-known/jwks.json
             - name: S3_ENDPOINT
-              value: http://minio.minio.svc.cluster.local:9000
-            # Public endpoint for presigned URLs so browsers can reach MinIO
-            # via the dedicated subdomain (Citadel Nginx -> NodePort 30190).
-            # No path prefix -> signature matches without rewrite.
-            - name: S3_PUBLIC_ENDPOINT
-              value: https://minio-preprod.roadmvn.com
-            # Keep path-style addressing: avoids bucket-as-subdomain DNS
-            # (`whispr-media.minio-preprod.roadmvn.com`) which is not served.
+              value: https://whispr.devzeyu.com
             - name: S3_FORCE_PATH_STYLE
               value: "true"
             - name: S3_REGION
