@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-694a67b
+          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-1272275
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
