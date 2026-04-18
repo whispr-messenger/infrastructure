@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: ghcr.io/whispr-messenger/user-service/user-service:sha-405ddee
+          image: ghcr.io/whispr-messenger/user-service/user-service:sha-f9b4e4b
           ports:
             - name: http
               containerPort: 3011
