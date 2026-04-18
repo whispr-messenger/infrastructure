@@ -5,4 +5,5 @@ resources:
   - ingressroute-api.yaml
   - ingressroute-admin.yaml
   - ingressroute-media-blob.yaml
+  - ingressroute-minio-subdomain.yaml
   - ingressroute-web.yaml

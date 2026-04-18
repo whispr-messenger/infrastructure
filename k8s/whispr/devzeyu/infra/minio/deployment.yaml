@@ -55,6 +55,8 @@ spec:
                 secretKeyRef:
                   name: minio-credentials
                   key: root-password
+            - name: MINIO_SERVER_URL
+              value: "https://minio.whispr.devzeyu.com"
           volumeMounts:
             - name: data
               mountPath: /data
