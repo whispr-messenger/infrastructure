@@ -43,6 +43,11 @@ spec:
             # via the Citadel Nginx proxy (`/minio-proxy` -> NodePort 30190).
             - name: S3_PUBLIC_ENDPOINT
               value: https://preprod-whispr-api.roadmvn.com/minio-proxy
+            # Required because S3_PUBLIC_ENDPOINT has a path prefix (`/minio-proxy`).
+            # Virtual-hosted addressing (default) would produce bogus URLs like
+            # `https://whispr-media.preprod-whispr-api.roadmvn.com/minio-proxy/...`.
+            - name: S3_FORCE_PATH_STYLE
+              value: "true"
             - name: S3_REGION
               value: us-east-1
             - name: NODE_ENV
