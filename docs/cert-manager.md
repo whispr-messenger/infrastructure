@@ -12,3 +12,9 @@ Cert-Manager gère automatiquement les certificats TLS pour tous les services ex
 │  (K8s)       │     │   (ACME)     │     │  TLS auto    │
 └──────────────┘     └──────────────┘     └──────────────┘
 ```
+
+## Domaines couverts
+
+- `whispr.fr`
+- `*.whispr.fr`
+- `argocd.whispr.epitech.beer`
