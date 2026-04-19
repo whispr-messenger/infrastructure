@@ -108,6 +108,8 @@ infrastructure/
 - [K8s Namespaces](docs/k8s-namespaces.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Dev local avec k3d](docs/local-dev-k8s.md)
+- [Sécurité](SECURITY.md)
+- [Contribuer](CONTRIBUTING.md)
 
 ## Applications ArgoCD
 
