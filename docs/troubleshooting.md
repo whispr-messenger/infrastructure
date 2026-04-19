@@ -19,3 +19,10 @@ kubectl logs -f deployment/auth-service
 ```bash
 kubectl rollout restart deployment/auth-service
 ```
+
+### Vérifier le statut ArgoCD
+
+```bash
+argocd app list
+argocd app get <app-name>
+```
