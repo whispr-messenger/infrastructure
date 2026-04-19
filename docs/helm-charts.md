@@ -19,6 +19,8 @@ Le cluster utilise les Helm charts suivants pour les composants d'infrastructure
 | promtail | - | Agent de collecte de logs |
 | minio | - | Object storage |
 | external-secrets | - | Sync Vault → K8s secrets |
+| argo-rollouts | - | Déploiement canary / blue-green |
+| atlas | - | Database schema management |
 | vpa | - | Vertical Pod Autoscaler |
 
 ## Stack observabilité
