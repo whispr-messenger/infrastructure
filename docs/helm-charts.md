@@ -18,3 +18,5 @@ Le cluster utilise les Helm charts suivants pour les composants d'infrastructure
 | loki | - | Logs centralisés |
 | promtail | - | Agent de collecte de logs |
 | minio | - | Object storage |
+| external-secrets | - | Sync Vault → K8s secrets |
+| vpa | - | Vertical Pod Autoscaler |
