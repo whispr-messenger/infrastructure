@@ -2,6 +2,15 @@
 
 Infrastructure pour le projet Whispr avec GitOps et Kubernetes.
 
+## Table des matières
+
+- [Quick Start](#quick-start)
+- [Architecture](#architecture)
+- [Structure](#structure)
+- [Applications ArgoCD](#applications-argocd)
+- [Infrastructure](#infrastructure)
+- [Gestion des Secrets](#gestion-des-secrets)
+
 ## Quick Start
 
 ```bash
