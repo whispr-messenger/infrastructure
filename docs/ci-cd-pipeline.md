@@ -29,3 +29,10 @@ Le projet Whispr utilise GitHub Actions pour le CI et ArgoCD pour le CD (GitOps)
 ```
 
 ArgoCD surveille les manifests dans ce repo et synchronise automatiquement les changements.
+
+## Environnements
+
+| Environnement | Branche | Dossier K8s |
+|---------------|---------|-------------|
+| Preprod | deploy/preprod | k8s/whispr/preprod/ |
+| Production | main | k8s/whispr/prod/ |
