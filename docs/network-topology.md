@@ -51,3 +51,15 @@ Client (HTTPS)
 ```
 
 Tout le trafic inter-services passe par les sidecars Envoy d'Istio avec du mTLS automatique.
+
+## Ports exposés
+
+| Service | Port REST | Port gRPC |
+|---------|-----------|-----------|
+| auth-service | 3000 | 50051 |
+| messaging-service | 4000 | 50052 |
+| user-service | 3000 | - |
+| notification-service | 4000 | 50053 |
+| scheduling-service | 3000 | 50051 |
+| media-service | 3000 | - |
+| moderation-service | 8000 | 50052 |
