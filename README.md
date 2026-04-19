@@ -57,6 +57,16 @@ just --list
    └────────┘  └────────┘  └────────┘
 ```
 
+### Pipeline GitOps
+
+```
+Developer ──▶ Git Push ──▶ GitHub ──▶ ArgoCD ──▶ GKE Cluster
+                              │
+                              ▼
+                        GitHub Actions
+                         (CI / Build)
+```
+
 ## Structure
 
 ```
