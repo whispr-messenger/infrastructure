@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expo-status
+  namespace: whispr-preprod
+spec:
+  selector:
+    app: expo-status
+  ports:
+    - port: 80

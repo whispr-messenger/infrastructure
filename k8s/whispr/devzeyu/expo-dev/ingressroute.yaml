@@ -1,0 +1,24 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: whispr-expo-dev
+  namespace: whispr-preprod
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Path(`/expo-launch.html`)
+      kind: Rule
+      priority: 100
+      services:
+        - name: expo-status
+          namespace: whispr-preprod
+          port: 80
+    - match: PathPrefix(`/expo-status`)
+      kind: Rule
+      priority: 100
+      services:
+        - name: expo-status
+          namespace: whispr-preprod
+          port: 80

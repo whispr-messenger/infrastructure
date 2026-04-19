@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - configmap-launcher-html.yaml
+  - configmap-url.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingressroute.yaml
