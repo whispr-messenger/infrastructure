@@ -33,3 +33,11 @@ Istio est utilisé comme service mesh pour gérer le trafic entre les microservi
 │  └──────────────────────────────┘  │
 └────────────────────────────────────┘
 ```
+
+## Composants installés
+
+| Composant | Chart Helm | Rôle |
+|-----------|-----------|------|
+| istio-base | helm/istio/base | CRDs Istio |
+| istiod | helm/istio/istiod | Control plane |
+| istio-gateway | helm/istio/gateway | Ingress gateway |
