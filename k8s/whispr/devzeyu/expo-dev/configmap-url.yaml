@@ -5,4 +5,4 @@ metadata:
   name: expo-url-config
   namespace: whispr-preprod
 data:
-  url: ""
+  url: "exp://89.156.15.147:8081"
