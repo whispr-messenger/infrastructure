@@ -95,6 +95,8 @@ infrastructure/
 - [Pipeline CI/CD](docs/ci-cd-pipeline.md)
 - [Architecture Vault](docs/vault-architecture.md)
 - [Helm Charts](docs/helm-charts.md)
+- [Configuration Istio](docs/istio-config.md)
+- [Terraform / GKE](docs/terraform.md)
 - [Dev local avec k3d](docs/local-dev-k8s.md)
 
 ## Applications ArgoCD
