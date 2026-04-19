@@ -11,3 +11,9 @@ Le domaine `whispr.fr` pointe vers le load balancer GCP du cluster.
 | whispr.fr | Application principale |
 | argocd.whispr.epitech.beer | ArgoCD UI |
 | sonarqube.whispr.epitech.beer | SonarQube |
+
+## Flux DNS
+
+```
+Client ──▶ whispr.fr ──▶ Cloud DNS ──▶ GCP LB ──▶ Nginx Ingress
+```
