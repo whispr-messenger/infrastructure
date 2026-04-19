@@ -15,3 +15,7 @@ Les images sont stockées sur GitHub Container Registry (GHCR).
 | scheduling-service | ghcr.io/whispr-messenger/scheduling-service |
 | media-service | ghcr.io/whispr-messenger/media-service |
 | moderation-service | ghcr.io/whispr-messenger/moderation-service |
+
+## Tagging
+
+Les images sont taggées avec le SHA du commit Git : `sha-<commit_hash>`
