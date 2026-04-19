@@ -75,8 +75,17 @@ infrastructure/
 │   ├── applications/          # Applications ArgoCD
 │   ├── infrastructure/        # Infrastructure managée
 │   └── microservices/         # Microservices deployments
+├── docker/                    # Configs Docker (vault-config-job)
+├── docs/                      # Documentation technique
+├── helm/                      # Helm charts (istio, vault, grafana...)
+├── k3d/                       # Config cluster local k3d
+├── k8s/                       # Manifests Kubernetes
+│   ├── whispr/prod/           # Manifests production
+│   ├── whispr/preprod/        # Manifests preprod
+│   ├── istio/                 # Config Istio
+│   └── vault-secrets-operator/# ESO config
 ├── scripts/                   # Scripts d'automation
-├── terraform/                 # Infrastructure as Code
+├── terraform/                 # Infrastructure as Code (GKE)
 └── Justfile                   # Task automation
 ```
 
