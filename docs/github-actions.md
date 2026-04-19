@@ -14,3 +14,8 @@ GitHub Event ──▶ ARC Controller ──▶ Runner Pod ──▶ Job executi
                                    Cleanup auto
                                    après le job
 ```
+
+## Helm charts ARC
+
+- `helm/arc-controller` — Le contrôleur qui gère les runners
+- `helm/arc-runner-set` — La config des runner sets
