@@ -28,3 +28,7 @@ HashiCorp Vault est utilisé pour centraliser la gestion des secrets dans le clu
 | notification-service | FCM key, APNS cert, DB credentials |
 | media-service | GCS credentials, encryption key, DB credentials |
 | scheduling-service | DB credentials, Redis password |
+
+## Rotation des secrets
+
+La rotation se fait via le script `scripts/vault/populate-secrets.sh`. Les secrets sont mis à jour dans Vault, puis ESO synchronise automatiquement les Kubernetes Secrets.
