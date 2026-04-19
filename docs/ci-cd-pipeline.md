@@ -17,3 +17,15 @@ Le projet Whispr utilise GitHub Actions pour le CI et ArgoCD pour le CD (GitOps)
                                                    │   GHCR    │
                                                    └──────────┘
 ```
+
+## Pipeline CD (ArgoCD)
+
+```
+┌──────────┐     ┌──────────┐     ┌──────────┐
+│  Image   │────▶│ ArgoCD   │────▶│   GKE    │
+│  pushed  │     │  detect  │     │  deploy  │
+│  GHCR    │     │  change  │     │  rollout │
+└──────────┘     └──────────┘     └──────────┘
+```
+
+ArgoCD surveille les manifests dans ce repo et synchronise automatiquement les changements.
