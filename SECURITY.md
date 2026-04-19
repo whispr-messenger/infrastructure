@@ -15,3 +15,8 @@
 
 - RBAC Kubernetes pour contrôler les permissions
 - Service accounts dédiés par service
+
+## Container security
+
+- Images basées sur Alpine (surface d'attaque réduite)
+- Scan de vulnérabilités via Dependabot
