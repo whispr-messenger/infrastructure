@@ -89,6 +89,14 @@ infrastructure/
 └── Justfile                   # Task automation
 ```
 
+## Documentation détaillée
+
+- [Topologie réseau](docs/network-topology.md)
+- [Pipeline CI/CD](docs/ci-cd-pipeline.md)
+- [Architecture Vault](docs/vault-architecture.md)
+- [Helm Charts](docs/helm-charts.md)
+- [Dev local avec k3d](docs/local-dev-k8s.md)
+
 ## Applications ArgoCD
 
 | Application | Description | Sync Wave |
