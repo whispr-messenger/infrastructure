@@ -25,3 +25,12 @@ Le cluster GKE est provisionné via Terraform.
 │  └───────────────────────┘  │
 └─────────────────────────────┘
 ```
+
+## Usage
+
+```bash
+cd terraform/google_kubernetes_engine
+terraform init
+terraform plan
+terraform apply
+```
