@@ -13,3 +13,7 @@ PostgreSQL est la base de données principale partagée entre tous les microserv
 | user-service | whispr_user |
 | notification-service | whispr_notification |
 | scheduling-service | whispr_scheduling |
+
+## Backup
+
+Les backups sont gérés au niveau GCP via les snapshots automatiques.
