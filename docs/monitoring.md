@@ -22,3 +22,8 @@ Microservices ──▶ Prometheus ──▶ Grafana
      ▼          ▼
   Promtail ──▶ Loki (logs)
 ```
+
+## Accès
+
+- Grafana : accessible via Nginx Ingress
+- Prometheus : interne au cluster uniquement
