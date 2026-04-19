@@ -26,3 +26,16 @@ kubectl rollout restart deployment/auth-service
 argocd app list
 argocd app get <app-name>
 ```
+
+### Vérifier Istio
+
+```bash
+istioctl analyze
+kubectl get virtualservices -A
+```
+
+### Accéder à Vault
+
+```bash
+kubectl exec -it vault-0 -- vault status
+```
