@@ -40,7 +40,7 @@ spec:
             - node_modules/typeorm/cli.js
             - migration:run
             - -d
-            - dist/config/database.config.js
+            - dist/database/migration.config.js
           env:
             - name: DB_USERNAME
               valueFrom:
