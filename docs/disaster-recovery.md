@@ -18,3 +18,10 @@ Les données Vault sont stockées sur un backend persistant. En cas de perte, r�
 3. Réinitialiser Vault
 4. ArgoCD re-sync automatique des services
 ```
+
+## RTO / RPO
+
+| Métrique | Objectif |
+|----------|----------|
+| RTO (temps de recovery) | < 1h |
+| RPO (perte de données max) | < 24h |
