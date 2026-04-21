@@ -2,6 +2,15 @@
 
 Infrastructure pour le projet Whispr avec GitOps et Kubernetes.
 
+## Table des matières
+
+- [Quick Start](#quick-start)
+- [Architecture](#architecture)
+- [Structure](#structure)
+- [Applications ArgoCD](#applications-argocd)
+- [Infrastructure](#infrastructure)
+- [Gestion des Secrets](#gestion-des-secrets)
+
 ## Quick Start
 
 ```bash
@@ -15,6 +24,49 @@ just setup-platform-access
 just --list
 ```
 
+## Architecture globale
+
+```
+┌─────────────────────────────────────────────────┐
+│                   Internet                       │
+└────────────────────┬────────────────────────────┘
+                     │
+              ┌──────▼──────┐
+              │ Nginx Ingress│
+              │  + TLS       │
+              └──────┬──────┘
+                     │
+              ┌──────▼──────┐
+              │  Istio Mesh  │
+              │   (mTLS)     │
+              └──────┬──────┘
+                     │
+     ┌───────────────┼───────────────┐
+     │               │               │
+┌────▼────┐   ┌──────▼────┐   ┌─────▼─────┐
+│  Auth   │   │ Messaging │   │   User    │
+│ Service │   │  Service  │   │  Service  │
+└────┬────┘   └─────┬─────┘   └─────┬─────┘
+     │              │               │
+     └──────────────┼───────────────┘
+                    │
+        ┌───────────┼───────────┐
+        │           │           │
+   ┌────▼───┐  ┌────▼───┐  ┌───▼────┐
+   │Postgres│  │ Redis  │  │ Vault  │
+   └────────┘  └────────┘  └────────┘
+```
+
+### Pipeline GitOps
+
+```
+Developer ──▶ Git Push ──▶ GitHub ──▶ ArgoCD ──▶ GKE Cluster
+                              │
+                              ▼
+                        GitHub Actions
+                         (CI / Build)
+```
+
 ## Structure
 
 ```
@@ -23,10 +75,41 @@ infrastructure/
 │   ├── applications/          # Applications ArgoCD
 │   ├── infrastructure/        # Infrastructure managée
 │   └── microservices/         # Microservices deployments
+├── docker/                    # Configs Docker (vault-config-job)
+├── docs/                      # Documentation technique
+├── helm/                      # Helm charts (istio, vault, grafana...)
+├── k3d/                       # Config cluster local k3d
+├── k8s/                       # Manifests Kubernetes
+│   ├── whispr/prod/           # Manifests production
+│   ├── whispr/preprod/        # Manifests preprod
+│   ├── istio/                 # Config Istio
+│   └── vault-secrets-operator/# ESO config
 ├── scripts/                   # Scripts d'automation
-├── terraform/                 # Infrastructure as Code
+├── terraform/                 # Infrastructure as Code (GKE)
 └── Justfile                   # Task automation
 ```
+
+## Documentation détaillée
+
+- [Topologie réseau](docs/network-topology.md)
+- [Pipeline CI/CD](docs/ci-cd-pipeline.md)
+- [Architecture Vault](docs/vault-architecture.md)
+- [Helm Charts](docs/helm-charts.md)
+- [Configuration Istio](docs/istio-config.md)
+- [Terraform / GKE](docs/terraform.md)
+- [Nginx Ingress](docs/nginx-ingress.md)
+- [Redis](docs/redis-config.md)
+- [PostgreSQL](docs/postgresql-config.md)
+- [MinIO](docs/minio-storage.md)
+- [Monitoring](docs/monitoring.md)
+- [Scaling](docs/scaling.md)
+- [ArgoCD Sync Waves](docs/argocd-sync-waves.md)
+- [Cert-Manager](docs/cert-manager.md)
+- [K8s Namespaces](docs/k8s-namespaces.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Dev local avec k3d](docs/local-dev-k8s.md)
+- [Sécurité](SECURITY.md)
+- [Contribuer](CONTRIBUTING.md)
 
 ## Applications ArgoCD
 
