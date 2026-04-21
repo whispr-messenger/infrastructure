@@ -10,3 +10,7 @@ Tilt watch ──▶ Changement détecté ──▶ Build image ──▶ Deploy
                                                     Hot reload
                                                     automatique
 ```
+
+## Services gérés
+
+Le Tiltfile démarre tous les microservices en mode dev avec leurs dépendances (PostgreSQL, Redis).
