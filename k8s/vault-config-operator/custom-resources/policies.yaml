@@ -171,6 +171,162 @@ spec:
       capabilities = ["read"]
     }
 ---
+# auth-service-staging
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: auth-service-staging-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_auth_service_staging" {
+      capabilities = ["read"]
+    }
+    path "database/creds/redis_role_auth_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/redis" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/auth-service/*" {
+      capabilities = ["read"]
+    }
+---
+# user-service-staging
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: user-service-staging-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_user_service_staging" {
+      capabilities = ["read"]
+    }
+    path "database/creds/redis_role_user_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/redis" {
+      capabilities = ["read"]
+    }
+---
+# messaging-service-staging
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: messaging-service-staging-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_messaging_service_staging" {
+      capabilities = ["read"]
+    }
+    path "database/creds/redis_role_messaging_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/redis" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/messaging-service/*" {
+      capabilities = ["read"]
+    }
+---
+# notification-service-staging
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: notification-service-staging-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_notification_service_staging" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+---
+# media-service-staging
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: media-service-staging-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_media_service_staging" {
+      capabilities = ["read"]
+    }
+    path "database/creds/redis_role_media_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/redis" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/media-service/*" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/minio/root" {
+      capabilities = ["read"]
+    }
+---
+# scheduling-service-staging
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: Policy
+metadata:
+  name: scheduling-service-staging-policy
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  type: acl
+  policy: |
+    path "database/creds/role_scheduling_service_staging" {
+      capabilities = ["read"]
+    }
+    path "database/creds/redis_role_scheduling_service" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/redis" {
+      capabilities = ["read"]
+    }
+---
 # arc-runner
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: Policy

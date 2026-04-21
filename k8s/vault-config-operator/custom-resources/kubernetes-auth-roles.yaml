@@ -154,7 +154,7 @@ spec:
     role: vco-admin
   path: kubernetes
   policies:
-    - auth-service-policy
+    - auth-service-staging-policy
   targetServiceAccounts:
     - auth-service-sa
   targetNamespaces:
@@ -174,7 +174,7 @@ spec:
     role: vco-admin
   path: kubernetes
   policies:
-    - user-service-policy
+    - user-service-staging-policy
   targetServiceAccounts:
     - user-service-sa
   targetNamespaces:
@@ -194,7 +194,7 @@ spec:
     role: vco-admin
   path: kubernetes
   policies:
-    - messaging-service-policy
+    - messaging-service-staging-policy
   targetServiceAccounts:
     - messaging-service-sa
   targetNamespaces:
@@ -214,7 +214,7 @@ spec:
     role: vco-admin
   path: kubernetes
   policies:
-    - notification-service-policy
+    - notification-service-staging-policy
   targetServiceAccounts:
     - notification-service-sa
   targetNamespaces:
@@ -234,7 +234,7 @@ spec:
     role: vco-admin
   path: kubernetes
   policies:
-    - media-service-policy
+    - media-service-staging-policy
   targetServiceAccounts:
     - media-service-sa
   targetNamespaces:
@@ -254,7 +254,7 @@ spec:
     role: vco-admin
   path: kubernetes
   policies:
-    - scheduling-service-policy
+    - scheduling-service-staging-policy
   targetServiceAccounts:
     - scheduling-service-sa
   targetNamespaces:
