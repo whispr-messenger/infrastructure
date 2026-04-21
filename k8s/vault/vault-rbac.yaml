@@ -166,3 +166,38 @@ subjects:
   - kind: ServiceAccount
     name: vault-config
     namespace: vault
+
+---
+# Role in whispr-staging namespace to delete stale Redis credential secrets.
+# Mirrors the whispr-prod role above for staging environment parity.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vault-config-whispr-redis-health
+  namespace: whispr-staging
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames:
+      - auth-service-redis-secret
+      - user-service-redis-secret
+      - media-service-redis-secret
+      - messaging-service-redis-secret
+      - scheduling-service-redis-secret
+    verbs: ["delete"]
+
+---
+# RoleBinding in whispr-staging namespace for vault-config
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vault-config-whispr-redis-health
+  namespace: whispr-staging
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: vault-config-whispr-redis-health
+subjects:
+  - kind: ServiceAccount
+    name: vault-config
+    namespace: vault

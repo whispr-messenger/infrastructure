@@ -129,14 +129,26 @@ spec:
                   else
                     for svc in auth-service user-service media-service messaging-service scheduling-service; do
                       svc_upper=$(echo "$svc" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
-                      if echo "$ACL_LIST" | grep -qi "V_.*REDIS_ROLE_${svc_upper}"; then
-                        echo "ACL user for $svc: OK"
+                      SECRET_NAME="${svc}-redis-secret"
+
+                      # Production
+                      if echo "$ACL_LIST" | grep -qi "V_.*REDIS_ROLE_${svc_upper} "; then
+                        echo "ACL user for $svc (prod): OK"
                       else
-                        SECRET_NAME="${svc}-redis-secret"
-                        echo "WARNING: No ACL user found for $svc. Deleting $SECRET_NAME to force VSO rotation..."
+                        echo "WARNING: No ACL user found for $svc (prod). Deleting $SECRET_NAME to force VSO rotation..."
                         kubectl delete secret "$SECRET_NAME" -n whispr-prod --ignore-not-found=true && \
-                          echo "Deleted $SECRET_NAME — VSO will regenerate and register a fresh ACL user." || \
-                          echo "Could not delete $SECRET_NAME (RBAC or not found) — skipping."
+                          echo "Deleted $SECRET_NAME in whispr-prod — VSO will regenerate." || \
+                          echo "Could not delete $SECRET_NAME in whispr-prod — skipping."
+                      fi
+
+                      # Staging
+                      if echo "$ACL_LIST" | grep -qi "V_.*REDIS_ROLE_${svc_upper}_STAGING"; then
+                        echo "ACL user for $svc (staging): OK"
+                      else
+                        echo "WARNING: No ACL user found for $svc (staging). Deleting $SECRET_NAME to force VSO rotation..."
+                        kubectl delete secret "$SECRET_NAME" -n whispr-staging --ignore-not-found=true && \
+                          echo "Deleted $SECRET_NAME in whispr-staging — VSO will regenerate." || \
+                          echo "Could not delete $SECRET_NAME in whispr-staging — skipping."
                       fi
                     done
                   fi
