@@ -35,7 +35,7 @@ spec:
       containers:
         - name: whispr-media-api
           # The image is automatically updated by the CD pipeline with yq
-          image: ghcr.io/whispr-messenger/media-service/media-service:sha-9c36c35 # Placeholder, replaced by CD pipeline
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-6348d34 # Placeholder, replaced by CD pipeline
           ports:
             - name: http
               containerPort: 3001
@@ -69,7 +69,6 @@ spec:
                 secretKeyRef:
                   name: media-service-redis-secret
                   key: password
-
             - name: S3_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

@@ -1,3 +1,8 @@
+controller:
+  globalCredentials:
+    namespaces:
+      - kargo
+
 api:
   host: kargo.whispr.epitech.beer
   adminAccount:
@@ -18,7 +23,7 @@ api:
     admins:
       claims:
         groups:
-          - whispr-messenger
+          - whispr-messenger:whispr-team
     dex:
       enabled: true
       envFrom:

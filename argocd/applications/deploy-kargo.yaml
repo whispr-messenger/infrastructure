@@ -2,29 +2,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: user-service
+  name: deploy-kargo
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-wave: "7"
 spec:
   project: default
   source:
-    repoURL: https://github.com/whispr-messenger/infrastructure.git
+    repoURL: https://github.com/whispr-messenger/deploy.git
     targetRevision: main
-    path: k8s/whispr/production/user-service
+    path: kargo
   destination:
     server: https://kubernetes.default.svc
-    namespace: whispr-prod
+    namespace: whispr
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
-    retry:
-      limit: 5
-      backoff:
-        duration: 5s
-        factor: 2
-        maxDuration: 3m
