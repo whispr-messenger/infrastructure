@@ -244,8 +244,7 @@ spec:
   maxTTL: "24h"
 ---
 # Redis dynamic roles (ACL-based isolation per DB index)
-# DB mapping: auth=0, user=1, messaging=2, media=4, scheduling=5
-# notification-service has no Redis role
+# DB mapping: auth=0, user=1, messaging=2, notification=3, media=4, scheduling=5
 ---
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: DatabaseSecretEngineRole
@@ -295,6 +294,23 @@ spec:
   name: redis_role_messaging_service
   creationStatements:
     - '["on", ">{{password}}", "~*", "&*", "+@all", "-select", "+select|2"]'
+  defaultTTL: "1h"
+  maxTTL: "24h"
+---
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: DatabaseSecretEngineRole
+metadata:
+  name: redis-role-notification-service
+  namespace: vault-config-operator-system
+spec:
+  authentication:
+    path: kubernetes
+    role: vco-admin
+  path: database
+  dBName: redis
+  name: redis_role_notification_service
+  creationStatements:
+    - '["on", ">{{password}}", "~*", "&*", "+@all", "-select", "+select|3"]'
   defaultTTL: "1h"
   maxTTL: "24h"
 ---
