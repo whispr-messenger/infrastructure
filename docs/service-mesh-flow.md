@@ -1,0 +1,43 @@
+# Flux Service Mesh
+
+## Requête entrante complète
+
+```
+┌──────────┐
+│  Client  │
+└────┬─────┘
+     │ HTTPS
+     ▼
+┌──────────────┐
+│  Cloud DNS   │
+│  whispr.fr   │
+└────┬─────────┘
+     │
+     ▼
+┌──────────────┐
+│  GCP Load    │
+│  Balancer    │
+└────┬─────────┘
+     │
+     ▼
+┌──────────────────┐
+│  Nginx Ingress   │
+│  (TLS termination)│
+└────┬─────────────┘
+     │
+     ▼
+┌──────────────┐
+│ Istio Gateway│
+└────┬─────────┘
+     │
+     ▼
+┌──────────────┐
+│ Envoy Sidecar│
+│  (mTLS)      │
+└────┬─────────┘
+     │
+     ▼
+┌──────────────┐
+│ Microservice │
+└──────────────┘
+```
