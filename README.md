@@ -181,3 +181,8 @@ cd scripts/vault
 # Déployer le SecretStore
 kubectl apply -f k8s/vault/vault-secret-store.yaml
 ```
+
+## Liens utiles
+
+- [Sécurité](SECURITY.md)
+- [Contribuer](CONTRIBUTING.md)
