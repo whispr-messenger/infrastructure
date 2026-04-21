@@ -211,6 +211,29 @@ spec:
               done
 
               ####################################################################################################
+              # PostgreSQL staging databases, group roles, and schema grants
+              ####################################################################################################
+              for svc in auth-service user-service messaging-service notification-service media-service scheduling-service; do
+                svc_underscore=$(echo $svc | tr '-' '_')
+                DB_NAME="${svc_underscore}_staging_db"
+                GROUP_ROLE="role_${svc_underscore}_staging_group"
+
+                echo "Configuring staging PostgreSQL for ${svc}..."
+
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres \
+                  -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '${GROUP_ROLE}') THEN CREATE ROLE ${GROUP_ROLE} NOLOGIN; END IF; END \$\$;"
+
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres \
+                  -c "CREATE DATABASE \"${DB_NAME}\" OWNER ${GROUP_ROLE};" || \
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres \
+                  -c "ALTER DATABASE \"${DB_NAME}\" OWNER TO ${GROUP_ROLE};"
+
+                psql -h postgresql.postgresql.svc.cluster.local -U postgres -d "${DB_NAME}" \
+                  -c "ALTER SCHEMA public OWNER TO ${GROUP_ROLE};" \
+                  -c "GRANT ALL ON SCHEMA public TO PUBLIC;"
+              done
+
+              ####################################################################################################
               # Messaging-service app secrets (one-time)
               ####################################################################################################
               if ! vault kv get kv/whispr/messaging-service/secrets >/dev/null 2>&1; then
