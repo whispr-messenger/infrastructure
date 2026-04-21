@@ -1,0 +1,27 @@
+# MinIO NodePort for preprod public access
+# Exposes the internal MinIO API on a stable NodePort so the Citadel Nginx
+# reverse proxy can forward `/minio-proxy/*` from `preprod-whispr-api.roadmvn.com`
+# to the in-cluster MinIO service without relying on the volatile ClusterIP.
+#
+# The proxied path is used by media-service to generate presigned URLs that are
+# reachable from the browser (see S3_PUBLIC_ENDPOINT on media-service).
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-nodeport
+  namespace: minio
+  labels:
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: whispr-preprod
+spec:
+  type: NodePort
+  selector:
+    app: minio
+    release: minio
+  ports:
+    - name: api
+      port: 9000
+      targetPort: 9000
+      nodePort: 30190
+      protocol: TCP
