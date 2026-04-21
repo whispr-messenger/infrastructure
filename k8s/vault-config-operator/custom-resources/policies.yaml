@@ -192,7 +192,7 @@ spec:
     path "database/creds/role_auth_service_staging" {
       capabilities = ["read"]
     }
-    path "database/creds/redis_role_auth_service" {
+    path "database/creds/redis_role_auth_service_staging" {
       capabilities = ["read"]
     }
     path "kv/data/whispr/shared/jwt" {
@@ -220,7 +220,7 @@ spec:
     path "database/creds/role_user_service_staging" {
       capabilities = ["read"]
     }
-    path "database/creds/redis_role_user_service" {
+    path "database/creds/redis_role_user_service_staging" {
       capabilities = ["read"]
     }
     path "kv/data/whispr/shared/jwt" {
@@ -245,7 +245,7 @@ spec:
     path "database/creds/role_messaging_service_staging" {
       capabilities = ["read"]
     }
-    path "database/creds/redis_role_messaging_service" {
+    path "database/creds/redis_role_messaging_service_staging" {
       capabilities = ["read"]
     }
     path "kv/data/whispr/shared/jwt" {
@@ -273,7 +273,7 @@ spec:
     path "database/creds/role_notification_service_staging" {
       capabilities = ["read"]
     }
-    path "database/creds/redis_role_notification_service" {
+    path "database/creds/redis_role_notification_service_staging" {
       capabilities = ["read"]
     }
     path "kv/data/whispr/shared/jwt" {
@@ -298,7 +298,7 @@ spec:
     path "database/creds/role_media_service_staging" {
       capabilities = ["read"]
     }
-    path "database/creds/redis_role_media_service" {
+    path "database/creds/redis_role_media_service_staging" {
       capabilities = ["read"]
     }
     path "kv/data/whispr/shared/jwt" {
@@ -329,7 +329,7 @@ spec:
     path "database/creds/role_scheduling_service_staging" {
       capabilities = ["read"]
     }
-    path "database/creds/redis_role_scheduling_service" {
+    path "database/creds/redis_role_scheduling_service_staging" {
       capabilities = ["read"]
     }
     path "kv/data/whispr/shared/jwt" {
