@@ -18,7 +18,7 @@ api:
     admins:
       claims:
         groups:
-          - whispr-messenger
+          - whispr-messenger:whispr-team
     dex:
       enabled: true
       envFrom:
