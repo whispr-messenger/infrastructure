@@ -44,3 +44,19 @@ spec:
             limits:
               memory: 512Mi
               cpu: 500m
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 4010
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 4010
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
