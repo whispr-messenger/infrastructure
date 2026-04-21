@@ -96,7 +96,7 @@ spec:
       capabilities = ["read"]
     }
 ---
-# notification-service (no Redis)
+# notification-service
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: Policy
 metadata:
@@ -111,7 +111,13 @@ spec:
     path "database/creds/role_notification_service" {
       capabilities = ["read"]
     }
+    path "database/creds/redis_role_notification_service" {
+      capabilities = ["read"]
+    }
     path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/redis" {
       capabilities = ["read"]
     }
 ---
@@ -267,7 +273,13 @@ spec:
     path "database/creds/role_notification_service_staging" {
       capabilities = ["read"]
     }
+    path "database/creds/redis_role_notification_service" {
+      capabilities = ["read"]
+    }
     path "kv/data/whispr/shared/jwt" {
+      capabilities = ["read"]
+    }
+    path "kv/data/whispr/shared/redis" {
       capabilities = ["read"]
     }
 ---
