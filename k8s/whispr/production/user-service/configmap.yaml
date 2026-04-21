@@ -37,6 +37,9 @@ data:
   # gRPC Services
   USER_SERVICE_GRPC_URL: "user-service:50052"
   MEDIA_SERVICE_GRPC_URL: "media-service:50053"
+
+  # Internal service URLs
+  MEDIA_SERVICE_URL: "http://media-service.whispr-prod.svc.cluster.local:3001"
   
   API_PREFIX: "/api"
   ENABLE_CORS: "false"
