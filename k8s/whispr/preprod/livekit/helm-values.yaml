@@ -1,0 +1,66 @@
+# LiveKit Server (preprod) - Helm values
+# Chart: https://helm.livekit.io livekit-server (pinned via ArgoCD Application)
+# Consumed by argocd-preprod-citadel/applications/livekit.yaml
+#
+# Redis: uses the shared Bitnami Redis cluster in the `redis` namespace (same
+# host as all other Whispr services). Client-side connection talks directly
+# to the master service on 6379; Sentinel-based discovery is not used here
+# to stay consistent with auth/user/messaging/notification services.
+# The password is the `default` ACL password stored in the `redis` secret
+# of the `redis` namespace. In preprod it must be populated into the chart
+# value `livekit.redis.password` at deploy time - see README.md for the
+# current workflow.
+#
+# API keys: we do NOT use storeKeysInSecret because chart 1.7.x has a
+# subPath bug when `key_file` has a leading `/` (see README.md for
+# details). Instead the admin populates `livekit-keys` secret and later
+# patches the chart-generated ConfigMap once, or - preferred - overrides
+# via an ArgoCD Application helm.parameters block. Placeholder values in
+# the committed YAML keep the chart renderable.
+
+replicaCount: 1
+terminationGracePeriodSeconds: 18000
+
+image:
+  repository: livekit/livekit-server
+  pullPolicy: IfNotPresent
+
+livekit:
+  port: 7880
+  log_level: info
+  rtc:
+    use_external_ip: true
+    tcp_port: 7881
+    udp_port: 7882
+    port_range_start: 30000
+    port_range_end: 30100
+  redis:
+    address: redis-master.redis.svc.cluster.local:6379
+    username: default
+    # password: <set via ArgoCD Application helm.parameters at deploy time>
+  # TURN disabled for now - enabling requires a TLS cert secret on port
+  # 5349 (livekit.turn.secretName) plus public DNS for turn-preprod. Turn
+  # it back on once the cert is provisioned.
+  turn:
+    enabled: false
+  # Placeholder API keys. The admin MUST override these via the ArgoCD
+  # Application helm.parameters block or by patching the generated
+  # `livekit-server` ConfigMap after the first sync. Real keys also need
+  # to be mirrored into the calls-service secret so backend and SFU
+  # agree on the key pair.
+  keys:
+    REPLACE_ME: REPLACE_ME_WITH_REAL_SECRET
+
+loadBalancer:
+  # ClusterIP-only Service for the HTTP API (exposed via nginx Ingress in
+  # ingress.yaml). RTC TCP/UDP are published via hostPort + hostNetwork
+  # on the node (chart default podHostNetwork: true).
+  type: disable
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
