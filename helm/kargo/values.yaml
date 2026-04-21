@@ -1,3 +1,8 @@
+controller:
+  globalCredentials:
+    namespaces:
+      - kargo
+
 api:
   host: kargo.whispr.epitech.beer
   adminAccount:
