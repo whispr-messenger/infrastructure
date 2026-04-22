@@ -59,18 +59,3 @@ spec:
             limits:
               memory: 1Gi
               cpu: 500m
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: moderation-service
-  namespace: whispr-preprod
-spec:
-  type: NodePort
-  selector:
-    app: moderation-service
-  ports:
-    - name: http
-      port: 8000
-      targetPort: 8000
-      nodePort: 30014
