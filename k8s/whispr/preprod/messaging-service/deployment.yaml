@@ -48,13 +48,13 @@ spec:
           # de se connecter avant que le livenessProbe ne déclenche.
           startupProbe:
             httpGet:
-              path: /health/ready
+              path: /ready
               port: 4010
             failureThreshold: 30
             periodSeconds: 2
           livenessProbe:
             httpGet:
-              path: /health/live
+              path: /live
               port: 4010
             initialDelaySeconds: 30
             periodSeconds: 20
@@ -62,7 +62,7 @@ spec:
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /health/ready
+              path: /ready
               port: 4010
             initialDelaySeconds: 10
             periodSeconds: 10

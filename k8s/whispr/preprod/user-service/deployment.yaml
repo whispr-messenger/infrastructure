@@ -49,13 +49,13 @@ spec:
           # = 60 s max avant abandon du démarrage.
           startupProbe:
             httpGet:
-              path: /health
+              path: /user/v1/health/live
               port: 3011
             failureThreshold: 30
             periodSeconds: 2
           livenessProbe:
             httpGet:
-              path: /health
+              path: /user/v1/health/live
               port: 3011
             initialDelaySeconds: 30
             periodSeconds: 20
@@ -63,7 +63,7 @@ spec:
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /health
+              path: /user/v1/health/ready
               port: 3011
             initialDelaySeconds: 10
             periodSeconds: 10
