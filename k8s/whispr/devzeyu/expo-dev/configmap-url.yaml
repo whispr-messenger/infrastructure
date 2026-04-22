@@ -5,4 +5,4 @@ metadata:
   name: expo-url-config
   namespace: whispr-preprod
 data:
-  url: "exp://bidder-render-dangerous-extending.trycloudflare.com"
+  url: "exp://whispr.devzeyu.com:8443"
