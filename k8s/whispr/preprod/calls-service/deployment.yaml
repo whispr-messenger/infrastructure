@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calls-service
+  namespace: whispr-preprod
+  labels:
+    app: calls-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calls-service
+  template:
+    metadata:
+      labels:
+        app: calls-service
+    spec:
+      containers:
+        - name: calls-service
+          image: ghcr.io/whispr-messenger/calls-service/calls-service:preprod
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 4012
+            - name: grpc
+              containerPort: 40012
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: calls-preprod-db
+                  key: url
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: calls-preprod-secrets
+                  key: secret_key_base
+            - name: PHX_HOST
+              value: calls-preprod.roadmvn.com
+            - name: PHX_SERVER
+              value: "true"
+            - name: PORT
+              value: "4012"
+            - name: GRPC_PORT
+              value: "40012"
+            - name: LOG_LEVEL
+              value: info
+            - name: POOL_SIZE
+              value: "10"
+            - name: REDIS_SENTINEL_URLS
+              value: "redis.redis.svc.cluster.local:26379"
+            - name: REDIS_SENTINEL_MASTER
+              value: mymaster
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: redis-preprod
+                  key: username
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-preprod
+                  key: password
+            - name: JWT_JWKS_URL
+              value: http://auth-service-preprod:3010/.well-known/jwks.json
+            - name: LIVEKIT_API_URL
+              value: http://livekit-server.whispr-preprod:7880
+            - name: LIVEKIT_PUBLIC_URL
+              value: wss://livekit-preprod.roadmvn.com
+            - name: LIVEKIT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-keys
+                  key: api-key
+            - name: LIVEKIT_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-keys
+                  key: api-secret
+            - name: LIVEKIT_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-keys
+                  key: api-secret
+            - name: MESSAGING_GRPC_ENDPOINT
+              value: messaging-service:40010
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: 1000m
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 4012
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 4012
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
