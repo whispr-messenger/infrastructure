@@ -16,7 +16,7 @@ spec:
         app: mobile-web
     spec:
       containers:
-        - image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-a8d241e
+        - image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-557b480
           imagePullPolicy: Always
           name: mobile-web
           env:
