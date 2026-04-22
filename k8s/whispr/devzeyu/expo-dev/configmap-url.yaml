@@ -5,4 +5,4 @@ metadata:
   name: expo-url-config
   namespace: whispr-preprod
 data:
-  url: "exp://expo.devzeyu.com"
+  url: "exps://expo.devzeyu.com"
