@@ -64,7 +64,7 @@ spec:
                   name: redis-preprod
                   key: password
             - name: JWT_JWKS_URL
-              value: http://auth-service-preprod:3010/.well-known/jwks.json
+              value: http://auth-service:3010/auth/.well-known/jwks.json
             - name: LIVEKIT_API_URL
               value: http://livekit-server.whispr-preprod:7880
             - name: LIVEKIT_PUBLIC_URL

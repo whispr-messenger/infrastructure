@@ -73,7 +73,7 @@ for now (preprod is simple, prod will split). Key pointers:
 - `SECRET_KEY_BASE` from `calls-preprod-secrets`
 - `REDIS_SENTINEL_URLS`, `REDIS_SENTINEL_MASTER`, `REDIS_USERNAME`,
   `REDIS_PASSWORD` - same pattern as the other Elixir services
-- `JWT_JWKS_URL=http://auth-service-preprod:3010/.well-known/jwks.json`
+- `JWT_JWKS_URL=http://auth-service:3010/auth/.well-known/jwks.json`
 - `LIVEKIT_API_URL=http://livekit-server.whispr-preprod:7880`
 - `LIVEKIT_PUBLIC_URL=wss://livekit-preprod.roadmvn.com`
 - `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET` / `LIVEKIT_WEBHOOK_SECRET` from
