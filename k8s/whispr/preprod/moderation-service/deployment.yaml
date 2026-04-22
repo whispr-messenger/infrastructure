@@ -20,8 +20,8 @@ spec:
     spec:
       containers:
         - name: moderation-service
-          image: ghcr.io/whispr-messenger/moderation-service:sha-7e4116b
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/whispr-messenger/moderation-service:preprod
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8000
@@ -30,6 +30,13 @@ spec:
                 name: moderation-service-env
             - configMapRef:
                 name: moderation-config
+          env:
+            - name: MOD_BLOCK_THRESHOLD
+              value: "0.6"
+            - name: MOD_MAX_UPLOAD_MB
+              value: "10"
+            - name: MOD_RATE_LIMIT
+              value: "30/minute"
           # WHISPR-1065 : startupProbe couvre le chargement du modèle (plusieurs
           # dizaines de secondes au cold start) avant d'activer le livenessProbe.
           startupProbe:
@@ -48,10 +55,12 @@ spec:
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /health
+              path: /ready
               port: 8000
             initialDelaySeconds: 20
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             requests:
               memory: 512Mi
