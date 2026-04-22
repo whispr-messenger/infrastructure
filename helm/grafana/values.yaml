@@ -80,6 +80,24 @@ grafana:
           url: http://loki.monitoring.svc.cluster.local:3100
           access: proxy
           editable: false
+        # WHISPR-1067 : Tempo pour l'exploration des traces OTEL, déployé par
+        # argocd/applications/monitoring/tempo.yaml. Le service `tempo`
+        # expose le port 3100 (query frontend) ; 4317 est l'OTLP gRPC qui
+        # reçoit du Collector (cf. opentelemetry-collector values).
+        - name: Tempo
+          type: tempo
+          uid: tempo
+          url: http://tempo.monitoring.svc.cluster.local:3100
+          access: proxy
+          editable: false
+          jsonData:
+            tracesToLogsV2:
+              datasourceUid: loki
+              filterByTraceID: true
+              spanStartTimeShift: "-1m"
+              spanEndTimeShift: "1m"
+            tracesToMetrics:
+              datasourceUid: prometheus
 
   # ------------------------------------------------------------------
   # Dashboard providers — load JSON dashboards from ConfigMaps
