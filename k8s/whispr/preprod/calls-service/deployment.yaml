@@ -93,6 +93,14 @@ spec:
             limits:
               memory: 1Gi
               cpu: 1000m
+          # WHISPR-1065 : startupProbe pour couvrir la bootstrap LiveKit/Ecto
+          # avant que le livenessProbe ne tape.
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 4012
+            failureThreshold: 30
+            periodSeconds: 2
           livenessProbe:
             httpGet:
               path: /health/live

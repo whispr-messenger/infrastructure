@@ -42,6 +42,13 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
+          # WHISPR-1065 : startupProbe pour couvrir le warm-up Nest + cron bootstrap.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3013
+            failureThreshold: 30
+            periodSeconds: 2
           livenessProbe:
             httpGet:
               path: /health

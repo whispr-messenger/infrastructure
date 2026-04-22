@@ -44,6 +44,15 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
+          # WHISPR-1065 : startupProbe évite le livenessProbe prématuré pendant
+          # le warm-up (Nest + TypeORM ~20-40 s). failureThreshold * periodSeconds
+          # = 60 s max avant abandon du démarrage.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3011
+            failureThreshold: 30
+            periodSeconds: 2
           livenessProbe:
             httpGet:
               path: /health
