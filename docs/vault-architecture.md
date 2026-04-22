@@ -32,3 +32,17 @@ HashiCorp Vault est utilisé pour centraliser la gestion des secrets dans le clu
 ## Rotation des secrets
 
 La rotation se fait via le script `scripts/vault/populate-secrets.sh`. Les secrets sont mis à jour dans Vault, puis ESO synchronise automatiquement les Kubernetes Secrets.
+
+## Procédure de rotation
+
+```
+1. Mettre à jour le secret dans Vault
+   vault kv put secret/auth-service DB_PASSWORD=new_value
+
+2. ESO détecte le changement (polling)
+
+3. K8s Secret mis à jour automatiquement
+
+4. Les pods récupèrent la nouvelle valeur
+   au prochain restart
+```
