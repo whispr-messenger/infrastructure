@@ -32,6 +32,14 @@ spec:
             limits:
               memory: 256Mi
               cpu: 250m
+          # WHISPR-1065 : startupProbe pour l'image static ; l'extraction
+          # du bundle peut durer quelques secondes au cold start.
+          startupProbe:
+            httpGet:
+              path: /
+              port: 3020
+            failureThreshold: 30
+            periodSeconds: 2
           livenessProbe:
             httpGet:
               path: /

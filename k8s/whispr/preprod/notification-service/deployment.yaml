@@ -41,6 +41,14 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
+          # WHISPR-1065 : startupProbe pour éviter un redémarrage liveness
+          # pendant le warm-up Elixir/BEAM.
+          startupProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4011
+            failureThreshold: 30
+            periodSeconds: 2
           livenessProbe:
             httpGet:
               path: /api/v1/health

@@ -30,6 +30,22 @@ spec:
                 name: moderation-service-env
             - configMapRef:
                 name: moderation-config
+          # WHISPR-1065 : startupProbe couvre le chargement du modèle (plusieurs
+          # dizaines de secondes au cold start) avant d'activer le livenessProbe.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            failureThreshold: 60
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health

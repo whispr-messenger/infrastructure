@@ -44,6 +44,14 @@ spec:
             limits:
               memory: 1Gi
               cpu: 1000m
+          # WHISPR-1065 : startupProbe pour laisser le temps à Ecto/Phoenix
+          # de se connecter avant que le livenessProbe ne déclenche.
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 4010
+            failureThreshold: 30
+            periodSeconds: 2
           livenessProbe:
             httpGet:
               path: /health/live

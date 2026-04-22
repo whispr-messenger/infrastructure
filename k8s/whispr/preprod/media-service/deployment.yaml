@@ -50,6 +50,14 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
+          # WHISPR-1065 : startupProbe laisse le temps au démarrage (Vault
+          # handshake + S3 sanity) avant de solliciter le livenessProbe.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3012
+            failureThreshold: 30
+            periodSeconds: 2
           livenessProbe:
             httpGet:
               path: /health
