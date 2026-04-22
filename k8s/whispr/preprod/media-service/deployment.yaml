@@ -54,13 +54,13 @@ spec:
           # handshake + S3 sanity) avant de solliciter le livenessProbe.
           startupProbe:
             httpGet:
-              path: /health
+              path: /media/v1/health
               port: 3012
             failureThreshold: 30
             periodSeconds: 2
           livenessProbe:
             httpGet:
-              path: /health
+              path: /media/v1/health
               port: 3012
             initialDelaySeconds: 30
             periodSeconds: 20
@@ -68,7 +68,7 @@ spec:
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /health
+              path: /media/v1/health
               port: 3012
             initialDelaySeconds: 10
             periodSeconds: 10
