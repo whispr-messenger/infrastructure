@@ -89,6 +89,18 @@ infrastructure/
 └── Justfile                   # Task automation
 ```
 
+## Microservices déployés
+
+| Service | Langage | Port |
+|---------|---------|------|
+| auth-service | TypeScript/NestJS | 3000 |
+| messaging-service | Elixir/Phoenix | 4000 |
+| user-service | TypeScript/NestJS | 3000 |
+| notification-service | Elixir/Phoenix | 4000 |
+| scheduling-service | TypeScript/NestJS | 3000 |
+| media-service | TypeScript/NestJS | 3000 |
+| moderation-service | Python/FastAPI | 8000 |
+
 ## Documentation détaillée
 
 - [Topologie réseau](docs/network-topology.md)
@@ -169,3 +181,8 @@ cd scripts/vault
 # Déployer le SecretStore
 kubectl apply -f k8s/vault/vault-secret-store.yaml
 ```
+
+## Liens utiles
+
+- [Sécurité](SECURITY.md)
+- [Contribuer](CONTRIBUTING.md)
