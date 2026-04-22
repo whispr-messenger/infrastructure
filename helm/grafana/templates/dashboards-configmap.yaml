@@ -21,3 +21,5 @@ data:
     {{ .Files.Get "dashboards/services-overview.json" | nindent 4 }}
   redis-overview.json: |-
     {{ .Files.Get "dashboards/redis-overview.json" | nindent 4 }}
+  whispr-admin-overview.json: |-
+    {{ .Files.Get "dashboards/whispr-admin-overview.json" | nindent 4 }}
