@@ -29,6 +29,8 @@ spec:
           envFrom:
             - secretRef:
                 name: notification-service-env
+            - configMapRef:
+                name: notification-service-config
           env:
             - name: DATABASE_HOST
               value: postgresql.postgresql.svc.cluster.local
