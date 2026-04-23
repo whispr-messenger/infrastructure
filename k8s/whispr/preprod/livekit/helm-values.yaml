@@ -21,6 +21,12 @@
 replicaCount: 1
 terminationGracePeriodSeconds: 18000
 
+# hostNetwork=true binds ports directly on the node, so a rolling surge
+# would always fail (port collision with the running pod). Use Recreate
+# to ensure old pod terminates before the new one schedules.
+deploymentStrategy:
+  type: Recreate
+
 image:
   repository: livekit/livekit-server
   pullPolicy: IfNotPresent
