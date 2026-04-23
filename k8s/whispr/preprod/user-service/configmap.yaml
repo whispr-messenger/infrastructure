@@ -7,3 +7,4 @@ data:
   JWT_JWKS_URL: "http://auth-service.whispr-preprod.svc.cluster.local:3010/auth/.well-known/jwks.json"
   JWT_ISSUER: "https://auth.whispr.roadmvn.com"
   JWT_AUDIENCE: "whispr-api"
+  MESSAGING_SERVICE_URL: "http://messaging-service.whispr-preprod.svc.cluster.local:4010"
