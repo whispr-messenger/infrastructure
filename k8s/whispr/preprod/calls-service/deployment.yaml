@@ -19,8 +19,8 @@ spec:
     spec:
       containers:
         - name: calls-service
-          image: ghcr.io/whispr-messenger/calls-service/calls-service:preprod
-          imagePullPolicy: Always
+          image: ghcr.io/whispr-messenger/calls-service:sha-b4b2f0c
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 4012
