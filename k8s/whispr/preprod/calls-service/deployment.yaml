@@ -44,7 +44,6 @@ spec:
             - sh
             - -c
             - |
-              /app/bin/whispr_calls eval "WhisprCalls.Release.migrate()"
               /app/bin/whispr_calls start &
               PID=$!
               wait $PID
