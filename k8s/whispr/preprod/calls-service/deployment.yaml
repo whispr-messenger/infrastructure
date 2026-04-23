@@ -21,7 +21,7 @@ spec:
         - name: ghcr-calls
       containers:
         - name: calls-service
-          image: ghcr.io/whispr-messenger/calls-service:sha-b4b2f0c
+          image: ghcr.io/whispr-messenger/calls-service:sha-dc94fca
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
