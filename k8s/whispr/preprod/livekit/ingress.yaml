@@ -22,7 +22,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: livekit-server
+                name: preprod-livekit-livekit-server
                 port:
                   number: 80
   tls:
