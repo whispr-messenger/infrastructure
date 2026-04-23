@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: livekit-server
-          image: livekit/livekit-server:v1.9.0
+          image: livekit/livekit-server:v1.11.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
