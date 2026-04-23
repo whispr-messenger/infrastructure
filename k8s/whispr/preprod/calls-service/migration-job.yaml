@@ -19,6 +19,8 @@ spec:
         component: migration
     spec:
       restartPolicy: OnFailure
+      imagePullSecrets:
+        - name: ghcr-calls
       containers:
         - name: migrate
           image: ghcr.io/whispr-messenger/calls-service:sha-b4b2f0c
