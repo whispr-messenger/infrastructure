@@ -16,9 +16,6 @@ spec:
     server: https://kubernetes.default.svc
     namespace: whispr-preprod
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
     syncOptions:
       - CreateNamespace=false
       - ServerSideApply=true
