@@ -5,4 +5,4 @@ metadata:
   name: expo-url-config
   namespace: whispr-preprod
 data:
-  url: "exp://requires-accuracy-referrals-sally.trycloudflare.com"
+  url: "exp+https://dangerous-respiratory-horses-wiley.trycloudflare.com"
