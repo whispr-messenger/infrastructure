@@ -21,6 +21,11 @@ spec:
         - name: calls-service
           image: k3d-whispr-dev-registry:5000/calls-service:dev
           imagePullPolicy: IfNotPresent
+          # stdin: true pour que kubelet garde stdin ouvert sinon le script
+          # bin/whispr_calls `start` recoit un EOF et stoppe le BEAM proprement
+          # au bout de quelques secondes.
+          stdin: true
+          tty: true
           ports:
             - name: http
               containerPort: 4012
