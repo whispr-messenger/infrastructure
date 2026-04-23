@@ -28,6 +28,10 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      # Prevent selfHeal from overwriting the fields listed in
+      # ignoreDifferences (real api keys + redis password injected
+      # out-of-band, see k8s/whispr/preprod/livekit/README.md).
+      - RespectIgnoreDifferences=true
     retry:
       limit: 5
       backoff:
