@@ -45,16 +45,24 @@ spec:
             limits:
               memory: 768Mi
               cpu: 750m
+          # Header X-Forwarded-Proto=https injecte pour que Plug.SSL ne redirige
+          # pas les sondes kubelet (sinon les logs sont pollues par des 301).
           startupProbe:
             httpGet:
               path: /health/ready
               port: 4012
+              httpHeaders:
+                - name: X-Forwarded-Proto
+                  value: https
             failureThreshold: 30
             periodSeconds: 2
           livenessProbe:
             httpGet:
               path: /health/live
               port: 4012
+              httpHeaders:
+                - name: X-Forwarded-Proto
+                  value: https
             initialDelaySeconds: 30
             periodSeconds: 20
             timeoutSeconds: 5
@@ -63,6 +71,9 @@ spec:
             httpGet:
               path: /health/ready
               port: 4012
+              httpHeaders:
+                - name: X-Forwarded-Proto
+                  value: https
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 5
