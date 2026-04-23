@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: calls-service-config
+  namespace: whispr-preprod
+data:
+  PHX_HOST: "whispr.devzeyu.com"
+  PHX_SERVER: "true"
+  PORT: "4012"
+  GRPC_PORT: "40012"
+  POOL_SIZE: "10"
+  LOG_LEVEL: "info"
+  JWT_JWKS_URL: "http://auth-service:3010/auth/.well-known/jwks.json"
+  MESSAGING_GRPC_ENDPOINT: "messaging-service:40010"
+  LIVEKIT_API_URL: "http://livekit-placeholder.whispr-preprod.svc.cluster.local:7880"
+  LIVEKIT_PUBLIC_URL: "wss://whispr.devzeyu.com/livekit"

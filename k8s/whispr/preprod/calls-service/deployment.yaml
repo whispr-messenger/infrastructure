@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calls-service
+  namespace: whispr-preprod
+  labels:
+    app: calls-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calls-service
+  template:
+    metadata:
+      labels:
+        app: calls-service
+    spec:
+      containers:
+        - name: calls-service
+          # Image poussée sur le registry local k3d tant que la CI ghcr n'a pas
+          # publié une première release de whispr-messenger/calls-service.
+          image: k3d-whispr-dev-registry:5000/calls-service:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 4012
+            - name: grpc
+              containerPort: 40012
+          envFrom:
+            - secretRef:
+                name: calls-service-env
+            - configMapRef:
+                name: calls-service-config
+          env:
+            - name: REDIS_HOST
+              value: redis-master.redis.svc.cluster.local
+            - name: REDIS_PORT
+              value: "6379"
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 768Mi
+              cpu: 750m
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 4012
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 4012
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 4012
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
