@@ -12,4 +12,4 @@ spec:
     - name: http
       port: 80
       targetPort: 80
-      nodePort: 30180
+      nodePort: 30140
