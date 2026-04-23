@@ -12,5 +12,5 @@ data:
   LOG_LEVEL: "info"
   JWT_JWKS_URL: "http://auth-service:3010/auth/.well-known/jwks.json"
   MESSAGING_GRPC_ENDPOINT: "messaging-service:40010"
-  LIVEKIT_API_URL: "http://livekit-placeholder.whispr-preprod.svc.cluster.local:7880"
+  LIVEKIT_API_URL: "http://livekit-server.whispr-preprod.svc.cluster.local:7880"
   LIVEKIT_PUBLIC_URL: "wss://whispr.devzeyu.com/livekit"

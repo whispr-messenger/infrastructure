@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livekit-server
+  namespace: whispr-preprod
+  labels:
+    app: livekit-server
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  # Recreate parce que le SFU ne supporte pas deux instances qui se partagent
+  # les memes cles + Redis (state de room dupplique). Single-node suffit pour
+  # devzeyu.
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: livekit-server
+  template:
+    metadata:
+      labels:
+        app: livekit-server
+    spec:
+      containers:
+        - name: livekit-server
+          image: livekit/livekit-server:v1.8.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 7880
+            - name: rtc-tcp
+              containerPort: 7881
+          env:
+            - name: LIVEKIT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-keys
+                  key: api-key
+            - name: LIVEKIT_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-keys
+                  key: api-secret
+          # La section `keys` du config.yaml doit contenir des valeurs reelles :
+          # on la rend au demarrage dans un tmpfs a partir du secret livekit-keys.
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              printf '%s: %s\n' "$LIVEKIT_API_KEY" "$LIVEKIT_API_SECRET" > /tmp/keys.yaml
+              exec /livekit-server --config /etc/livekit/config.yaml --key-file /tmp/keys.yaml
+          volumeMounts:
+            - name: config
+              mountPath: /etc/livekit
+              readOnly: true
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 768Mi
+              cpu: 500m
+          startupProbe:
+            httpGet:
+              path: /
+              port: 7880
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 7880
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 7880
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: config
+          configMap:
+            name: livekit-server-config

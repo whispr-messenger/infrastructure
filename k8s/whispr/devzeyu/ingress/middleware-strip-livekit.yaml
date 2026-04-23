@@ -1,0 +1,11 @@
+---
+# LiveKit ne connait pas le prefix /livekit, on le retire avant forward.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-livekit
+  namespace: whispr-preprod
+spec:
+  stripPrefix:
+    prefixes:
+      - /livekit

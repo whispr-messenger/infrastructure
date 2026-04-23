@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - middleware-cors.yaml
   - middleware-xfproto-https.yaml
+  - middleware-strip-livekit.yaml
   - ingressroute-api.yaml
   - ingressroute-admin.yaml
   - ingressroute-media-blob.yaml
