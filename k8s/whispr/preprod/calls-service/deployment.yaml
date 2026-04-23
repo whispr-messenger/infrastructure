@@ -49,6 +49,13 @@ spec:
             - sh
             - -c
             - |
+              trap 'echo "[sh] received SIGHUP"; exit 1' HUP
+              trap 'echo "[sh] received SIGINT"; exit 1' INT
+              trap 'echo "[sh] received SIGTERM"; exit 1' TERM
+              trap 'echo "[sh] received SIGPIPE"' PIPE
+              echo "[sh] starting beam"
               /app/bin/whispr_calls start &
               PID=$!
+              echo "[sh] beam pid=$PID"
               wait $PID
+              echo "[sh] wait returned $?"
