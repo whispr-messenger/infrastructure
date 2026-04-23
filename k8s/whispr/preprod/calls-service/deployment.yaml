@@ -38,43 +38,7 @@ spec:
               value: redis-master.redis.svc.cluster.local
             - name: REDIS_PORT
               value: "6379"
-          resources:
-            requests:
-              memory: 256Mi
-              cpu: 100m
-            limits:
-              memory: 768Mi
-              cpu: 750m
-          # Header X-Forwarded-Proto=https injecte pour que Plug.SSL ne redirige
-          # pas les sondes kubelet (sinon les logs sont pollues par des 301).
-          startupProbe:
-            httpGet:
-              path: /health/ready
-              port: 4012
-              httpHeaders:
-                - name: X-Forwarded-Proto
-                  value: https
-            failureThreshold: 30
-            periodSeconds: 2
-          livenessProbe:
-            httpGet:
-              path: /health/live
-              port: 4012
-              httpHeaders:
-                - name: X-Forwarded-Proto
-                  value: https
-            initialDelaySeconds: 30
-            periodSeconds: 20
-            timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /health/ready
-              port: 4012
-              httpHeaders:
-                - name: X-Forwarded-Proto
-                  value: https
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
+          # Probes et resources temporairement retires : le BEAM mourait
+          # silencieusement exit 1 apres 8s avec eux, alors qu'un pod a nu
+          # (bin/whispr_calls start, meme image, meme env) reste stable.
+          # A re-attacher apres diagnostic.
