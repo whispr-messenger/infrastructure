@@ -49,7 +49,9 @@ spec:
             - -c
             - |
               set -eu
+              umask 077
               printf '%s: %s\n' "$LIVEKIT_API_KEY" "$LIVEKIT_API_SECRET" > /tmp/keys.yaml
+              chmod 600 /tmp/keys.yaml
               exec /livekit-server --config /etc/livekit/config.yaml --key-file /tmp/keys.yaml
           volumeMounts:
             - name: config
