@@ -19,8 +19,6 @@ spec:
     spec:
       containers:
         - name: calls-service
-          # Image poussée sur le registry local k3d tant que la CI ghcr n'a pas
-          # publié une première release de whispr-messenger/calls-service.
           image: k3d-whispr-dev-registry:5000/calls-service:dev
           imagePullPolicy: IfNotPresent
           ports:
@@ -38,7 +36,15 @@ spec:
               value: redis-master.redis.svc.cluster.local
             - name: REDIS_PORT
               value: "6379"
-          # Probes et resources temporairement retires : le BEAM mourait
-          # silencieusement exit 1 apres 8s avec eux, alors qu'un pod a nu
-          # (bin/whispr_calls start, meme image, meme env) reste stable.
-          # A re-attacher apres diagnostic.
+          # Wrapping volontaire dans une sh backgroundee : `exec bin/... start`
+          # en PID 1 du container fait mourir le BEAM exit 1 ~8s apres boot.
+          # En le lancant comme fils du shell (& + wait), le BEAM vit.
+          # Probes + resources desactivees tant qu'on n'a pas root-cause.
+          command:
+            - sh
+            - -c
+            - |
+              /app/bin/whispr_calls eval "WhisprCalls.Release.migrate()"
+              /app/bin/whispr_calls start &
+              PID=$!
+              wait $PID
