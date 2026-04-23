@@ -1,0 +1,14 @@
+---
+# Force X-Forwarded-Proto a "https" en upstream : l'entrypoint Traefik 'web' est
+# en clair, mais le nginx hote termine deja le TLS. Phoenix Plug.SSL consulte
+# cet en-tete via `force_ssl: [rewrite_on: [:x_forwarded_proto]]` et renvoie
+# sinon une boucle de redirection 301.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: xfproto-https
+  namespace: whispr-preprod
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Proto: "https"

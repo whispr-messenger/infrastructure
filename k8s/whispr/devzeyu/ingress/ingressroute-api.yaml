@@ -78,5 +78,7 @@ spec:
           namespace: whispr-preprod
           port: 4012
       middlewares:
+        - name: xfproto-https
+          namespace: whispr-preprod
         - name: whispr-cors
           namespace: whispr-preprod
