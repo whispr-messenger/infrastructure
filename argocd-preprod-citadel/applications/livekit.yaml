@@ -34,6 +34,16 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
+  ignoreDifferences:
+    # The livekit-server ConfigMap is patched out-of-band with real API
+    # keys and redis password (see k8s/whispr/preprod/livekit/README.md).
+    # We do not commit those secrets to git, so ArgoCD must not try to
+    # reconcile `data.config.yaml` back to the placeholder values.
+    - group: ""
+      kind: ConfigMap
+      name: preprod-livekit-livekit-server
+      jsonPointers:
+        - /data/config.yaml
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
