@@ -29,6 +29,18 @@ directly on the node. This means only **one** LiveKit replica per node -
 Ports 7881 / 7882 / 30000-30100 UDP are OUTSIDE the k3s NodePort range
 (30110-30200) used by the other preprod services, so there is no conflict.
 
+## TLS termination
+
+TLS is **not** handled by cert-manager / ingress-nginx in-cluster. All public
+preprod domains on this VPS are terminated by the host-level nginx in
+`/etc/nginx/sites-enabled/livekit-preprod.roadmvn.com.conf`, with certs
+provisioned via `certbot` (webroot `/var/www/certbot`). The host nginx
+reverse-proxies to `127.0.0.1:7880` which the LiveKit pod exposes directly
+thanks to `hostNetwork: true`.
+
+The k8s `Ingress` resource in `ingress.yaml` is kept for reference / future
+migration but the live traffic flow is: client -> host nginx (443) -> pod.
+
 ## Manual bootstrap (run once per cluster)
 
 ### 1. API keys (REQUIRED before first traffic)
