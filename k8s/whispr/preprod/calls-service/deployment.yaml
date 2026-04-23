@@ -17,6 +17,8 @@ spec:
       labels:
         app: calls-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-calls
       containers:
         - name: calls-service
           image: ghcr.io/whispr-messenger/calls-service:sha-b4b2f0c
