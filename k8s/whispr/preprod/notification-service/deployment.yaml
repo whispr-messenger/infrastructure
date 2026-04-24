@@ -36,6 +36,10 @@ spec:
               value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
               value: redis-master.redis.svc.cluster.local
+          volumeMounts:
+            - name: fcm-service-account
+              mountPath: /etc/fcm
+              readOnly: true
           resources:
             requests:
               memory: 128Mi
@@ -67,3 +71,10 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+      volumes:
+        - name: fcm-service-account
+          secret:
+            secretName: notification-service-fcm
+            items:
+              - key: service-account.json
+                path: service-account.json

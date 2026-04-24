@@ -8,3 +8,7 @@ data:
   JWT_AUDIENCE: "whispr-api"
   AUTH_JWKS_URL: "http://auth-service.whispr-preprod.svc.cluster.local:3010/auth/.well-known/jwks.json"
   JWKS_REFRESH_INTERVAL_MS: "3600000"
+  # FCM — service-account JSON is mounted from the `notification-service-fcm`
+  # Secret (see fcm-secret.yaml). Path must match the Deployment volumeMount.
+  FCM_PROJECT_ID: "whispr-preprod"
+  FCM_JSON_KEYFILE: "/etc/fcm/service-account.json"
