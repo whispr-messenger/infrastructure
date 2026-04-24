@@ -8,7 +8,7 @@ redis:
   enabled: true
 
 global:
-  domain: argocd.whispr.epitech.beer
+  domain: argocd.roadmvn.com
 
 controller:
   replicas: 1
@@ -40,7 +40,7 @@ configs:
     application.instanceLabelKey: argocd.argoproj.io/instance
     server.insecure: true
   cm:
-    url: https://argocd.whispr.epitech.beer
+    url: https://argocd.roadmvn.com
     repositories: |
       - url: https://github.com/whispr-messenger/infrastructure/
         type: git

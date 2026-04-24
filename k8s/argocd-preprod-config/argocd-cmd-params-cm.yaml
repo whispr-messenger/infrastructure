@@ -1,0 +1,9 @@
+---
+# Argo CD env variables configuration — preprod
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmd-params-cm
+  namespace: argocd-preprod
+data:
+  server.insecure: "true"
