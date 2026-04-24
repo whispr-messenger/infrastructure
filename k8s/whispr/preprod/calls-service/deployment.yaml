@@ -62,7 +62,7 @@ spec:
             - name: JWT_JWKS_URL
               value: http://auth-service:3010/auth/.well-known/jwks.json
             - name: LIVEKIT_API_URL
-              value: http://livekit-server.whispr-preprod:7880
+              value: http://preprod-livekit-livekit-server.whispr-preprod:80
             - name: LIVEKIT_PUBLIC_URL
               value: wss://livekit-preprod.roadmvn.com
             - name: LIVEKIT_API_KEY
