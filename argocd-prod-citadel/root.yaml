@@ -5,7 +5,7 @@ metadata:
   name: whispr-citadel
   namespace: argocd
 spec:
-  project: default
+  project: whispr-infra
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
     targetRevision: main

@@ -1,0 +1,31 @@
+---
+# AppProject: whispr-infra
+# Contains cluster-level / shared infrastructure (namespaces, Vault bootstrap,
+# secrets, observability hooks, network plumbing). Applications in this
+# project may create cluster-scoped resources and target any namespace.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: whispr-infra
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Shared infrastructure for the prod cluster (namespaces, secrets, observability).
+  sourceRepos:
+    - https://github.com/whispr-messenger/infrastructure.git
+    - https://grafana.github.io/helm-charts
+    - https://prometheus-community.github.io/helm-charts
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: '*'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  orphanedResources:
+    warn: true
