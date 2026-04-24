@@ -10,5 +10,5 @@ data:
   JWKS_REFRESH_INTERVAL_MS: "3600000"
   # FCM — service-account JSON is mounted from the `notification-service-fcm`
   # Secret (see fcm-secret.yaml). Path must match the Deployment volumeMount.
-  FCM_PROJECT_ID: "whispr-preprod"
+  FCM_PROJECT_ID: "whispr-perso-test"
   FCM_JSON_KEYFILE: "/etc/fcm/service-account.json"
