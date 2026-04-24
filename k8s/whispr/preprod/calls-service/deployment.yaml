@@ -17,10 +17,12 @@ spec:
       labels:
         app: calls-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-calls
       containers:
         - name: calls-service
-          image: ghcr.io/whispr-messenger/calls-service/calls-service:preprod
-          imagePullPolicy: Always
+          image: ghcr.io/whispr-messenger/calls-service:sha-2f45d15
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 4012
@@ -49,20 +51,14 @@ spec:
               value: info
             - name: POOL_SIZE
               value: "10"
-            - name: REDIS_SENTINEL_URLS
-              value: "redis.redis.svc.cluster.local:26379"
-            - name: REDIS_SENTINEL_MASTER
-              value: mymaster
-            - name: REDIS_USERNAME
+            # runtime.exs prefers REDIS_URL (includes the default-ACL
+            # password for the shared Bitnami Redis); REDIS_HOST/REDIS_PORT
+            # fallback is a no-auth dev default.
+            - name: REDIS_URL
               valueFrom:
                 secretKeyRef:
-                  name: redis-preprod
-                  key: username
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: redis-preprod
-                  key: password
+                  name: calls-preprod-secrets
+                  key: redis_url
             - name: JWT_JWKS_URL
               value: http://auth-service:3010/auth/.well-known/jwks.json
             - name: LIVEKIT_API_URL

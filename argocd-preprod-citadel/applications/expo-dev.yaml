@@ -2,16 +2,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: preprod-user-service
+  name: preprod-expo-dev
   namespace: argocd-preprod
   annotations:
-    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-wave: "10"
 spec:
-  project: whispr-app
+  project: default
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
     targetRevision: deploy/preprod
-    path: k8s/whispr/preprod/user-service
+    path: k8s/whispr/preprod/expo-dev
   destination:
     server: https://kubernetes.default.svc
     namespace: whispr-preprod
@@ -20,16 +20,11 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=false
       - ServerSideApply=true
-    retry:
-      limit: 5
-      backoff:
-        duration: 5s
-        factor: 2
-        maxDuration: 3m
   ignoreDifferences:
-    - group: apps
-      kind: Deployment
+    - group: ""
+      kind: ConfigMap
+      name: expo-url-config
       jsonPointers:
-        - /spec/replicas
+        - /data/url

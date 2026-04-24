@@ -19,10 +19,12 @@ spec:
         component: migration
     spec:
       restartPolicy: OnFailure
+      imagePullSecrets:
+        - name: ghcr-calls
       containers:
         - name: migrate
-          image: ghcr.io/whispr-messenger/calls-service/calls-service:preprod
-          imagePullPolicy: Always
+          image: ghcr.io/whispr-messenger/calls-service:sha-2f45d15
+          imagePullPolicy: IfNotPresent
           command: ["/app/bin/whispr_calls"]
           args:
             - eval
@@ -38,6 +40,13 @@ spec:
                 secretKeyRef:
                   name: calls-preprod-secrets
                   key: secret_key_base
+            # Required by runtime.exs even though the migration command doesn't
+            # use JWT. When calls-service runtime.exs is refactored to only
+            # require JWT_JWKS_URL for server boot, this can be removed.
+            - name: JWT_JWKS_URL
+              value: http://auth-service:3010/auth/.well-known/jwks.json
+            - name: PHX_HOST
+              value: calls-preprod.roadmvn.com
           resources:
             requests:
               memory: 256Mi
