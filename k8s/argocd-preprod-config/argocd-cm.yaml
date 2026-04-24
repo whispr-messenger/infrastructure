@@ -1,24 +1,21 @@
 ---
-# General Argo CD configuration
+# General Argo CD configuration — preprod
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: argocd-cm
-  namespace: argocd
+  namespace: argocd-preprod
   labels:
     app.kubernetes.io/name: argocd-cm
     app.kubernetes.io/part-of: argocd
 data:
-  # Argo CD's externally facing base URL (optional). Required when configuring SSO
-  url: https://argocd.roadmvn.com
-  # Enables application status badge feature
+  url: https://preprod-argocd.roadmvn.com
   statusbadge.enabled: "true"
-  # Enable insecure mode for server (will be terminated by ingress)
   server.insecure: "true"
-  # Application instance label key
   application.instanceLabelKey: argocd.argoproj.io/instance
-  
-  # Dex configuration for GitHub OAuth (following best practices article)
+
+  # Dex GitHub OAuth — shares the same GitHub org but uses a dedicated
+  # OAuth App because the redirect URI differs from prod.
   dex.config: |
     connectors:
     - type: github
@@ -28,7 +25,6 @@ data:
         baseURL: https://github.com
         clientID: $dex.github.clientId
         clientSecret: $dex.github.clientSecret
-        redirectURI: https://argocd.roadmvn.com/api/dex/callback
+        redirectURI: https://preprod-argocd.roadmvn.com/api/dex/callback
         orgs:
         - name: whispr-messenger
-          # Remove teams restriction to allow all org members
