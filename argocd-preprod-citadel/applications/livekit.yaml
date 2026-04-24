@@ -7,7 +7,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "5"
 spec:
-  project: default
+  project: whispr-app
   sources:
     - repoURL: https://helm.livekit.io
       chart: livekit-server
@@ -28,12 +28,26 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      # Prevent selfHeal from overwriting the fields listed in
+      # ignoreDifferences (real api keys + redis password injected
+      # out-of-band, see k8s/whispr/preprod/livekit/README.md).
+      - RespectIgnoreDifferences=true
     retry:
       limit: 5
       backoff:
         duration: 5s
         factor: 2
         maxDuration: 3m
+  ignoreDifferences:
+    # The livekit-server ConfigMap is patched out-of-band with real API
+    # keys and redis password (see k8s/whispr/preprod/livekit/README.md).
+    # We do not commit those secrets to git, so ArgoCD must not try to
+    # reconcile `data.config.yaml` back to the placeholder values.
+    - group: ""
+      kind: ConfigMap
+      name: preprod-livekit-livekit-server
+      jsonPointers:
+        - /data/config.yaml
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -43,7 +57,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "6"
 spec:
-  project: default
+  project: whispr-app
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
     targetRevision: deploy/preprod

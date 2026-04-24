@@ -5,7 +5,7 @@ metadata:
   name: whispr-preprod
   namespace: argocd-preprod
 spec:
-  project: default
+  project: whispr-infra
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
     targetRevision: deploy/preprod

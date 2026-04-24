@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expo-status
+  namespace: whispr-preprod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expo-status
+  template:
+    metadata:
+      labels:
+        app: expo-status
+    spec:
+      containers:
+        - name: server
+          image: python:3.11-alpine
+          command: ["python3", "-c"]
+          args:
+            - |
+              import http.server, json, time, os
+              class H(http.server.BaseHTTPRequestHandler):
+                def do_GET(self):
+                  if self.path == "/expo-launch.html":
+                    p = "/html/expo-launch.html"
+                    if os.path.exists(p):
+                      body = open(p, "rb").read()
+                      self.send_response(200)
+                      self.send_header("Content-Type", "text/html; charset=utf-8")
+                      self.send_header("Content-Length", len(body))
+                      self.end_headers()
+                      self.wfile.write(body)
+                    else:
+                      self.send_error(404)
+                  else:
+                    url = open("/cfg/url").read().strip() if os.path.exists("/cfg/url") else ""
+                    body = json.dumps({"url": url, "ts": int(time.time())}).encode()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Content-Length", len(body))
+                    self.end_headers()
+                    self.wfile.write(body)
+                def log_message(self, *a): pass
+              http.server.HTTPServer(("0.0.0.0", 80), H).serve_forever()
+          volumeMounts:
+            - mountPath: /cfg
+              name: url-cfg
+            - mountPath: /html
+              name: html-cfg
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      volumes:
+        - name: url-cfg
+          configMap:
+            name: expo-url-config
+        - name: html-cfg
+          configMap:
+            name: expo-launcher-html

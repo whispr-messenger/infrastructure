@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: expo-url-config
+  namespace: whispr-preprod
+data:
+  url: "exp://arb1adg-roadmvn-8081.exp.direct"
