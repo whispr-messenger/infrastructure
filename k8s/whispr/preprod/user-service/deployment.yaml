@@ -39,10 +39,10 @@ spec:
               value: "fab8817a-27a0-4537-89c1-be05f783150b,3378ee73-ce43-4145-b689-ba982d97721e"
           resources:
             requests:
-              memory: 128Mi
+              memory: 256Mi
               cpu: 100m
             limits:
-              memory: 384Mi
+              memory: 512Mi
               cpu: 500m
           # WHISPR-1065 : startupProbe évite le livenessProbe prématuré pendant
           # le warm-up (Nest + TypeORM ~20-40 s). failureThreshold * periodSeconds
