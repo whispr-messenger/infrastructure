@@ -1,0 +1,56 @@
+# Flux Service Mesh
+
+## Requête entrante complète
+
+```
+┌──────────┐
+│  Client  │
+└────┬─────┘
+     │ HTTPS
+     ▼
+┌──────────────┐
+│  Cloud DNS   │
+│  whispr.fr   │
+└────┬─────────┘
+     │
+     ▼
+┌──────────────┐
+│  GCP Load    │
+│  Balancer    │
+└────┬─────────┘
+     │
+     ▼
+┌──────────────────┐
+│  Nginx Ingress   │
+│  (TLS termination)│
+└────┬─────────────┘
+     │
+     ▼
+┌──────────────┐
+│ Istio Gateway│
+└────┬─────────┘
+     │
+     ▼
+┌──────────────┐
+│ Envoy Sidecar│
+│  (mTLS)      │
+└────┬─────────┘
+     │
+     ▼
+┌──────────────┐
+│ Microservice │
+└──────────────┘
+```
+
+## Requête inter-services
+
+```
+┌───────────┐     ┌─────────┐     ┌─────────┐     ┌───────────┐
+│ Service A │────▶│ Envoy A │────▶│ Envoy B │────▶│ Service B │
+└───────────┘     │ (sidecar)│     │(sidecar)│     └───────────┘
+                  └─────────┘     └─────────┘
+                       │               │
+                       └───── mTLS ────┘
+```
+
+Le trafic entre services est toujours chiffré via les sidecars Envoy.

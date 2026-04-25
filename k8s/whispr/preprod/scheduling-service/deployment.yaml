@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: scheduling-service
-          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-e05d353
+          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-e2f6b51
           ports:
             - name: http
               containerPort: 3013
@@ -42,26 +42,3 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
-          # WHISPR-1065 : startupProbe pour couvrir le warm-up Nest + cron bootstrap.
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 3013
-            failureThreshold: 30
-            periodSeconds: 2
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 3013
-            initialDelaySeconds: 30
-            periodSeconds: 20
-            timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 3013
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
