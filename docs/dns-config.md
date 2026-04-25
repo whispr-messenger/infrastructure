@@ -17,3 +17,12 @@ Le domaine `whispr.fr` pointe vers le load balancer GCP du cluster.
 ```
 Client ──▶ whispr.fr ──▶ Cloud DNS ──▶ GCP LB ──▶ Nginx Ingress
 ```
+
+## Propagation DNS
+
+```
+Changement DNS ──▶ Cloud DNS ──▶ Propagation (~5min)
+                                       │
+                                 Vérification
+                                 dig whispr.fr
+```
