@@ -15,3 +15,13 @@ Charge élevée ──▶ HPA détecte ──▶ Scale up pods
                                         │
 Charge faible ──▶ HPA détecte ──▶ Scale down pods
 ```
+
+## Commandes utiles
+
+```bash
+# Voir le HPA
+kubectl get hpa
+
+# Voir le VPA
+kubectl get vpa
+```
