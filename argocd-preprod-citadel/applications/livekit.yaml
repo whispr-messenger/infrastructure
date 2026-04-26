@@ -11,7 +11,7 @@ spec:
   sources:
     - repoURL: https://helm.livekit.io
       chart: livekit-server
-      targetRevision: 1.7.2
+      targetRevision: 1.9.0
       helm:
         valueFiles:
           - $values/k8s/whispr/preprod/livekit/helm-values.yaml
