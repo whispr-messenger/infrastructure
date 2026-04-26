@@ -82,6 +82,14 @@ spec:
                   key: api-secret
             - name: MESSAGING_GRPC_ENDPOINT
               value: messaging-service:40010
+            - name: MESSAGING_HTTP_ENDPOINT
+              value: http://messaging-service:4010
+            - name: MESSAGING_SERVICE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: calls-preprod-secrets
+                  key: messaging_service_token
+                  optional: true
           resources:
             requests:
               memory: 512Mi
