@@ -22,6 +22,12 @@ spec:
       labels:
         app: livekit-server
     spec:
+      # WHISPR-1201 : sans hostNetwork, le pod tourne dans le reseau k3d interne
+      # (10.42.x.x) et les ports RTC ne sont jamais joignables depuis le navigateur.
+      # On bind directement sur le container k3d agent ; le DNAT cote workstation
+      # fait remonter 7881/TCP et 7882/UDP de l'IP publique vers ce container.
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: livekit-server
           image: livekit/livekit-server:v1.11.0
@@ -31,6 +37,9 @@ spec:
               containerPort: 7880
             - name: rtc-tcp
               containerPort: 7881
+            - name: rtc-udp
+              containerPort: 7882
+              protocol: UDP
           env:
             - name: LIVEKIT_API_KEY
               valueFrom:

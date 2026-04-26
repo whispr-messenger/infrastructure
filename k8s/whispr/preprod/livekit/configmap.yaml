@@ -11,7 +11,14 @@ data:
     log_level: info
     rtc:
       tcp_port: 7881
-      use_external_ip: false
+      # WHISPR-1201 : single-port UDP mode. Tout le media est multiplexe sur
+      # 7882/UDP, ce qui evite d'avoir a forwarder une plage de ports cote
+      # routeur. La plage port_range_* reste configuree comme fallback.
+      udp_port: 7882
+      # use_external_ip: true fait detecter par STUN l'IP publique vue par le
+      # navigateur (l'IP publique du routeur, NAT inclus). LiveKit l'utilise
+      # comme ICE candidate au lieu de l'IP du container k3d.
+      use_external_ip: true
       port_range_start: 50000
       port_range_end: 50100
     redis:
