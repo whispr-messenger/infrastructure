@@ -11,13 +11,11 @@ data:
     log_level: info
     rtc:
       tcp_port: 7881
-      # WHISPR-1201 : single-port UDP mode. Tout le media est multiplexe sur
-      # 7882/UDP, ce qui evite d'avoir a forwarder une plage de ports cote
-      # routeur. La plage port_range_* reste configuree comme fallback.
-      udp_port: 7882
-      # use_external_ip: true fait detecter par STUN l'IP publique vue par le
-      # navigateur (l'IP publique du routeur, NAT inclus). LiveKit l'utilise
-      # comme ICE candidate au lieu de l'IP du container k3d.
+      # WHISPR-1201 : LiveKit ecoute le RTC UDP sur les ports dynamiques de
+      # la plage port_range_*, pas sur un single port. udp_port a ete
+      # retire car en 1.11 il n'ouvre pas reellement de socket UDP, ce qui
+      # cassait les ICE candidates. La plage 50000-50100 est forwardee
+      # cote routeur ET cote workstation iptables (whispr-livekit-rtc.sh).
       use_external_ip: true
       port_range_start: 50000
       port_range_end: 50100

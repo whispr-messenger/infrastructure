@@ -37,9 +37,6 @@ spec:
               containerPort: 7880
             - name: rtc-tcp
               containerPort: 7881
-            - name: rtc-udp
-              containerPort: 7882
-              protocol: UDP
           env:
             - name: LIVEKIT_API_KEY
               valueFrom:
