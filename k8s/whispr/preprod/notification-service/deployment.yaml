@@ -29,6 +29,8 @@ spec:
           envFrom:
             - secretRef:
                 name: notification-service-env
+            - configMapRef:
+                name: notification-service-config
           env:
             - name: DATABASE_HOST
               value: postgresql.postgresql.svc.cluster.local
@@ -41,3 +43,15 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
+          volumeMounts:
+            - name: apns-key
+              mountPath: /etc/apns
+              readOnly: true
+      volumes:
+        - name: apns-key
+          secret:
+            secretName: notification-service-apns
+            items:
+              - key: AuthKey.p8
+                path: AuthKey.p8
+            optional: true
