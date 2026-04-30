@@ -1,0 +1,119 @@
+name: Sync image tags from deploy/preprod to zeyu/preprod
+
+# zeyu/preprod is the local cluster overlay branch — it carries env/probe
+# overrides (S3 endpoint cluster-internal, livenessProbe paths, etc.) that
+# never go to deploy/preprod, but it should still pick up image bumps that
+# the per-service CD pipelines push to deploy/preprod. This workflow
+# patches only the `containers[*].image` field in each k8s/whispr/preprod/
+# deployment.yaml, leaving every other field on zeyu/preprod untouched.
+
+on:
+  push:
+    branches: [deploy/preprod]
+    paths:
+      - 'k8s/whispr/preprod/**/deployment.yaml'
+  schedule:
+    # Safety net in case a push event is missed.
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-images-to-zeyu
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout zeyu/preprod
+        uses: actions/checkout@v5
+        with:
+          ref: zeyu/preprod
+          fetch-depth: 0
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq \
+            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Patch image tags from deploy/preprod
+        id: patch
+        run: |
+          set -euo pipefail
+          git fetch origin deploy/preprod:refs/remotes/origin/deploy/preprod --depth=1
+
+          changed=0
+          summary=""
+
+          # Iterate every deployment.yaml that exists on deploy/preprod under
+          # k8s/whispr/preprod/. Files that exist on zeyu/preprod but not on
+          # deploy/preprod (zeyu-only services) are skipped naturally.
+          while IFS= read -r src_file; do
+            tgt_file="$src_file"
+            if [ ! -f "$tgt_file" ]; then
+              echo "::notice::skip $src_file (not present on zeyu/preprod)"
+              continue
+            fi
+
+            src_yaml=$(git show "origin/deploy/preprod:$src_file")
+            n=$(echo "$src_yaml" | yq '.spec.template.spec.containers | length' 2>/dev/null)
+            [ "$n" = "null" ] || [ -z "$n" ] && continue
+
+            for i in $(seq 0 $((n - 1))); do
+              src_image=$(echo "$src_yaml" | yq ".spec.template.spec.containers[$i].image" 2>/dev/null || echo null)
+              tgt_image=$(yq ".spec.template.spec.containers[$i].image" "$tgt_file" 2>/dev/null || echo null)
+
+              if [ "$src_image" = "null" ] || [ "$tgt_image" = "null" ]; then
+                continue
+              fi
+              if [ "$src_image" = "$tgt_image" ]; then
+                continue
+              fi
+
+              # Only sync when the image *name* matches — refuse to swap
+              # registry/repo if zeyu intentionally points elsewhere.
+              src_name="${src_image%:*}"
+              tgt_name="${tgt_image%:*}"
+              if [ "$src_name" != "$tgt_name" ]; then
+                echo "::warning::skip $src_file [container $i] — different image name (zeyu=$tgt_name vs deploy=$src_name)"
+                continue
+              fi
+
+              echo "bump $src_file [container $i] $tgt_image -> $src_image"
+              summary="${summary}- ${src_file}: ${tgt_image##*:} -> ${src_image##*:}"$'\n'
+              yq -i ".spec.template.spec.containers[$i].image = \"$src_image\"" "$tgt_file"
+              changed=$((changed + 1))
+            done
+          done < <(git ls-tree -r --name-only origin/deploy/preprod | grep '^k8s/whispr/preprod/.*/deployment\.yaml$')
+
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          {
+            echo "summary<<EOF"
+            echo "$summary"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push
+        if: steps.patch.outputs.changed != '0'
+        env:
+          SUMMARY: ${{ steps.patch.outputs.summary }}
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+          git add k8s/whispr/preprod/
+
+          # Body lists every (file, old->new) pair so the commit alone is
+          # auditable without re-running the workflow.
+          git commit -m "chore(zeyu/preprod): sync image tags from deploy/preprod" \
+            -m "$SUMMARY"
+
+          git push origin zeyu/preprod
+
+      - name: Report no-op
+        if: steps.patch.outputs.changed == '0'
+        run: echo "All zeyu/preprod image tags already match deploy/preprod — nothing to do."
