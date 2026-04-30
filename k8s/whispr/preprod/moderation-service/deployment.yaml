@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: moderation-service
-          image: ghcr.io/whispr-messenger/moderation-service:sha-7e4116b
+          image: ghcr.io/whispr-messenger/moderation-service:preprod
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -58,3 +58,7 @@ spec:
       port: 8000
       targetPort: 8000
       nodePort: 30014
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/whispr-messenger/moderation-service:preprod
