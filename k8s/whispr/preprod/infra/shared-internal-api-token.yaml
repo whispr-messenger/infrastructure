@@ -1,0 +1,27 @@
+---
+# Shared service-to-service auth token for the user-service ↔ messaging-service
+# internal API (WHISPR-1229: GET /internal/v1/contacts/check, header
+# x-internal-token, env INTERNAL_API_TOKEN). Both Deployments mount the same
+# Secret/key — any drift between sender and receiver yields a 401.
+#
+# The token is bootstrapped out-of-band (kubectl) and ArgoCD MUST NOT overwrite
+# the data field. We declare only the Secret shell here (metadata + type, no
+# stringData) and rely on ServerSideApply so the kubectl-applied data is owned
+# by the bootstrap (or a future Vault projection), not by Git.
+#
+# Bootstrap command (rerun to rotate; rolling-restart both Deployments after):
+#
+#   kubectl -n whispr-preprod create secret generic shared-internal-api-token \
+#     --from-literal=INTERNAL_API_TOKEN="$(openssl rand -hex 32)" \
+#     --dry-run=client -o yaml | kubectl apply -f -
+#
+# The data key MUST be "INTERNAL_API_TOKEN" — both Deployments reference it via
+# secretKeyRef.key under that exact name.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: shared-internal-api-token
+  namespace: whispr-preprod
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
+type: Opaque
