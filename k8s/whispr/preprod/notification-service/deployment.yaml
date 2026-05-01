@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: ghcr.io/whispr-messenger/notification-service:sha-f44500e
+          image: ghcr.io/whispr-messenger/notification-service:sha-a14e9de
           imagePullPolicy: Always
           ports:
             - name: http
@@ -36,10 +36,6 @@ spec:
               value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
               value: redis-master.redis.svc.cluster.local
-          volumeMounts:
-            - name: fcm-service-account
-              mountPath: /etc/fcm
-              readOnly: true
           resources:
             requests:
               memory: 128Mi
@@ -47,34 +43,15 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
-          # WHISPR-1065 : startupProbe pour éviter un redémarrage liveness
-          # pendant le warm-up Elixir/BEAM.
-          startupProbe:
-            httpGet:
-              path: /api/v1/health
-              port: 4011
-            failureThreshold: 30
-            periodSeconds: 2
-          livenessProbe:
-            httpGet:
-              path: /api/v1/health
-              port: 4011
-            initialDelaySeconds: 30
-            periodSeconds: 20
-            timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /api/v1/health
-              port: 4011
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
+          volumeMounts:
+            - name: apns-key
+              mountPath: /etc/apns
+              readOnly: true
       volumes:
-        - name: fcm-service-account
+        - name: apns-key
           secret:
-            secretName: notification-service-fcm
+            secretName: notification-service-apns
             items:
-              - key: service-account.json
-                path: service-account.json
+              - key: AuthKey.p8
+                path: AuthKey.p8
+            optional: true
