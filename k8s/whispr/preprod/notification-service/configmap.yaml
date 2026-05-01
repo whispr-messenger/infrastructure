@@ -4,11 +4,7 @@ metadata:
   name: notification-service-config
   namespace: whispr-preprod
 data:
-  JWT_ISSUER: "https://auth.whispr.roadmvn.com"
-  JWT_AUDIENCE: "whispr-api"
-  AUTH_JWKS_URL: "http://auth-service.whispr-preprod.svc.cluster.local:3010/auth/.well-known/jwks.json"
-  JWKS_REFRESH_INTERVAL_MS: "3600000"
-  # FCM — service-account JSON is mounted from the `notification-service-fcm`
-  # Secret (see fcm-secret.yaml). Path must match the Deployment volumeMount.
-  FCM_PROJECT_ID: "whispr-perso-test"
-  FCM_JSON_KEYFILE: "/etc/fcm/service-account.json"
+  APNS_KEY_PATH: "/etc/apns/AuthKey.p8"
+  APNS_KEY_ID: ""
+  APNS_TEAM_ID: ""
+  APNS_MODE: "dev"
