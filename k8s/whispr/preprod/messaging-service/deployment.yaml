@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: messaging-service
-          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-6933534
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-7ce26dd
           ports:
             - name: http
               containerPort: 4010
@@ -44,32 +44,8 @@ spec:
                   key: INTERNAL_API_TOKEN
           resources:
             requests:
-              memory: 512Mi
-              cpu: 250m
+              memory: 256Mi
+              cpu: 100m
             limits:
-              memory: 1Gi
-              cpu: 1000m
-          # WHISPR-1065 : startupProbe pour laisser le temps à Ecto/Phoenix
-          # de se connecter avant que le livenessProbe ne déclenche.
-          startupProbe:
-            httpGet:
-              path: /ready
-              port: 4010
-            failureThreshold: 30
-            periodSeconds: 2
-          livenessProbe:
-            httpGet:
-              path: /live
-              port: 4010
-            initialDelaySeconds: 30
-            periodSeconds: 20
-            timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /ready
-              port: 4010
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
+              memory: 512Mi
+              cpu: 500m
