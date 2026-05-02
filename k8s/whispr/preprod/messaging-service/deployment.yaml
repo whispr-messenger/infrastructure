@@ -19,8 +19,7 @@ spec:
     spec:
       containers:
         - name: messaging-service
-          image: messaging-service:hotfix-1214
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-3ce6b5f
           ports:
             - name: http
               containerPort: 4010
