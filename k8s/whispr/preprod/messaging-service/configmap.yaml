@@ -8,8 +8,3 @@ data:
   JWT_AUDIENCE: "whispr-api"
   USER_SERVICE_HTTP_URL: "http://user-service:3011"
   ADMIN_USER_IDS: "3378ee73-ce43-4145-b689-ba982d97721e,fab8817a-27a0-4537-89c1-be05f783150b"
-  # WHISPR-838 / WHISPR-839 — required in :prod (CORS plug + WS check_origin).
-  # Native RN client n'envoie pas d'Origin → ws_check_origin n'est pas appelé,
-  # donc une seule entrée suffit. Browser web et tunnel Expo sont listés pour
-  # ne pas bloquer ces canaux quand quelqu'un ouvre la mobile-web depuis là.
-  CORS_ALLOWED_ORIGINS: "https://whispr.devzeyu.com,https://x42hmmy-gutgut512-8081.exp.direct"
