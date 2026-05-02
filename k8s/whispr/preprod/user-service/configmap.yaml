@@ -7,3 +7,9 @@ data:
   JWT_JWKS_URL: "http://auth-service.whispr-preprod.svc.cluster.local:3010/auth/.well-known/jwks.json"
   JWT_ISSUER: "https://auth.whispr.roadmvn.com"
   JWT_AUDIENCE: "whispr-api"
+  MESSAGING_SERVICE_URL: "http://messaging-service.whispr-preprod.svc.cluster.local:4010"
+  # In-cluster Service DNS — local k3d resolves it via CoreDNS. The previous
+  # public URL (preprod-whispr-api.roadmvn.com) ne tourne plus, ce qui cassait
+  # presignProfilePictureUrl + getMediaMetadata côté user-service.
+  MEDIA_SERVICE_URL: "http://media-service.whispr-preprod.svc.cluster.local:3012"
+  DB_LOGGING: "false"
