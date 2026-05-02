@@ -34,6 +34,16 @@ spec:
       containers:
         - name: postgres
           image: postgres:15-alpine
+          # Pool tuning for the local devzeyu cluster: mobile reload triggers
+          # a thundering herd of /user/v1/profile/<id> + /media/v1/<id>/blob
+          # requests, with each backend service holding ~10 idle connections.
+          # Bumped max_connections from 100 → 200 to absorb the burst.
+          args:
+            - postgres
+            - -c
+            - max_connections=200
+            - -c
+            - shared_buffers=512MB
           ports:
             - containerPort: 5432
               name: postgres
@@ -69,10 +79,10 @@ spec:
             periodSeconds: 15
           resources:
             requests:
-              memory: 256Mi
-              cpu: 100m
+              memory: 512Mi
+              cpu: 200m
             limits:
-              memory: 1Gi
+              memory: 2Gi
               cpu: 1000m
       volumes:
         - name: init
