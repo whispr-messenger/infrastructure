@@ -35,6 +35,15 @@ spec:
               value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
               value: redis-master.redis.svc.cluster.local
+            - name: SEED_ADMIN_USER_IDS
+              value: "fab8817a-27a0-4537-89c1-be05f783150b,3378ee73-ce43-4145-b689-ba982d97721e"
+            # WHISPR-1229 : token partagé pour le canal user-service ↔ messaging-service
+            # via /internal/v1/contacts/check ; même secret que messaging-service.
+            - name: INTERNAL_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-internal-api-token
+                  key: INTERNAL_API_TOKEN
           resources:
             requests:
               memory: 128Mi
