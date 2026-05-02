@@ -1,0 +1,83 @@
+# WHISPR-1067 — OpenTelemetry Collector en mode deployment (single replica,
+# suffisant pour le cluster dev). Reçoit OTLP gRPC/HTTP des services Whispr,
+# forward vers Tempo pour les traces et Prometheus scrape pour les métriques
+# standards du collector lui-même.
+
+mode: deployment
+
+image:
+  repository: otel/opentelemetry-collector-contrib
+
+# L'image contrib est nécessaire pour le processeur `transform` et l'exporter
+# Tempo/Loki si on étend plus tard.
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Ports standard OTLP exposés par le service ClusterIP.
+ports:
+  otlp:
+    enabled: true
+    containerPort: 4317
+    servicePort: 4317
+    protocol: TCP
+  otlp-http:
+    enabled: true
+    containerPort: 4318
+    servicePort: 4318
+    protocol: TCP
+  metrics:
+    enabled: true
+    containerPort: 8888
+    servicePort: 8888
+    protocol: TCP
+
+service:
+  type: ClusterIP
+
+# WHISPR-1067 : pipeline traces — OTLP → batch → Tempo.
+# Les services configurent OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector.monitoring:4317
+# et les traces passent par ici avant d'atterrir dans Tempo.
+config:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+  processors:
+    batch: {}
+    memory_limiter:
+      check_interval: 5s
+      limit_percentage: 80
+      spike_limit_percentage: 25
+
+  exporters:
+    otlp/tempo:
+      endpoint: tempo.monitoring.svc.cluster.local:4317
+      tls:
+        insecure: true
+    # Fallback debug : si Tempo est down, on voit les traces en logs Collector
+    # (visibles dans Grafana via Loki car Promtail scrape `monitoring` ns).
+    debug:
+      verbosity: basic
+
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [memory_limiter, batch]
+        exporters: [otlp/tempo, debug]
+
+    telemetry:
+      metrics:
+        address: 0.0.0.0:8888

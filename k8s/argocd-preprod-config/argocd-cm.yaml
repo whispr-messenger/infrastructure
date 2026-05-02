@@ -1,0 +1,30 @@
+---
+# General Argo CD configuration — preprod
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd-preprod
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  url: https://preprod-argocd.roadmvn.com
+  statusbadge.enabled: "true"
+  server.insecure: "true"
+  application.instanceLabelKey: argocd.argoproj.io/instance
+
+  # Dex GitHub OAuth — shares the same GitHub org but uses a dedicated
+  # OAuth App because the redirect URI differs from prod.
+  dex.config: |
+    connectors:
+    - type: github
+      id: github
+      name: GitHub
+      config:
+        baseURL: https://github.com
+        clientID: $dex.github.clientId
+        clientSecret: $dex.github.clientSecret
+        redirectURI: https://preprod-argocd.roadmvn.com/api/dex/callback
+        orgs:
+        - name: whispr-messenger

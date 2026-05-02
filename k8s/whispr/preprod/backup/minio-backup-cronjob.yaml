@@ -1,0 +1,52 @@
+# WHISPR-1069 : réplication quotidienne du bucket `whispr-media` vers
+# `whispr-backups/minio/` via `mc mirror`. Placé dans le namespace `minio`
+# pour accéder au secret MinIO root sans cross-namespace.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: minio-backup
+  namespace: minio
+  labels:
+    app: minio-backup
+    managed-by: whispr-infrastructure
+spec:
+  # 03:00 UTC — après le dump Postgres (02:00) pour éviter une charge
+  # disque simultanée sur le single-node.
+  schedule: "0 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 7200
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: minio/mc:RELEASE.2025-05-21T01-59-54Z
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: MC_HOST_minio
+                  valueFrom:
+                    secretKeyRef:
+                      name: minio-backup-credentials
+                      key: mc-host
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  set -o pipefail
+                  echo "[backup] mirror whispr-media -> whispr-backups/minio/"
+                  mc mirror --overwrite --remove \
+                    minio/whispr-media \
+                    minio/whispr-backups/minio/whispr-media
+                  echo "[backup] done"
+              resources:
+                requests:
+                  memory: 128Mi
+                  cpu: 100m
+                limits:
+                  memory: 512Mi
+                  cpu: 500m
