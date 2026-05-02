@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/whispr-messenger/infrastructure.git
-    targetRevision: deploy/preprod
+    targetRevision: zeyu/preprod
     path: k8s/whispr/preprod/messaging-service
   destination:
     server: https://kubernetes.default.svc
