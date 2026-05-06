@@ -8,3 +8,4 @@ data:
   APNS_KEY_ID: ""
   APNS_TEAM_ID: ""
   APNS_MODE: "dev"
+  AUTH_JWKS_URL: "https://whispr-preprod.roadmvn.com/auth/.well-known/jwks.json"
