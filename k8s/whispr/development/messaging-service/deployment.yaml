@@ -17,6 +17,7 @@ spec:
       labels:
         app: messaging-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: whispr-messaging-api
           image: messaging-service:dev
