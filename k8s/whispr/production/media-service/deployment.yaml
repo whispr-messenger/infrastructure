@@ -32,6 +32,7 @@ spec:
         fsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
+      automountServiceAccountToken: false
       containers:
         - name: whispr-media-api
           # The image is automatically updated by the CD pipeline with yq
@@ -98,6 +99,7 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "200m"
+              ephemeral-storage: 2Gi
           # Security context for the container
           securityContext:
             allowPrivilegeEscalation: false

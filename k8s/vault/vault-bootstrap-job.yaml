@@ -16,6 +16,14 @@ spec:
       containers:
         - name: vault-config
           image: ghcr.io/whispr-messenger/vault-config-job:sha-4cea5de
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 50m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+              ephemeral-storage: 512Mi
           env:
             - name: VAULT_ADDR
               value: http://vault.vault.svc:8200

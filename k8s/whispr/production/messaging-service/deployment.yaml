@@ -30,6 +30,7 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+      automountServiceAccountToken: false
       containers:
         - name: messaging-service
           image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-3ce6b5f
@@ -89,6 +90,7 @@ spec:
             limits:
               cpu: "200m"
               memory: "512Mi"
+              ephemeral-storage: 1Gi
           livenessProbe:
             httpGet:
               path: /live

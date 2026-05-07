@@ -16,6 +16,7 @@ spec:
       labels:
         app: messaging-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: messaging-service
           image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-3ce6b5f

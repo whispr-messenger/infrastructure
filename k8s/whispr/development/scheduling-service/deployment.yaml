@@ -17,6 +17,7 @@ spec:
       labels:
         app: scheduling-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: whispr-scheduling-api
           image: scheduling-service:latest
@@ -88,6 +89,7 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1000m"
+              ephemeral-storage: 1Gi
           livenessProbe:
             httpGet:
               path: /health/live
