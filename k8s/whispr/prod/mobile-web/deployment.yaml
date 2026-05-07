@@ -16,6 +16,7 @@ spec:
       labels:
         app: mobile-web
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: mobile-web
           image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-4bd3396

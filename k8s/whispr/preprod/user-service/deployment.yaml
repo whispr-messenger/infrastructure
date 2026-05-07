@@ -17,6 +17,7 @@ spec:
       labels:
         app: user-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: user-service
           image: ghcr.io/whispr-messenger/user-service/user-service:sha-86b51e7
