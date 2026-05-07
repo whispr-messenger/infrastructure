@@ -18,6 +18,7 @@ spec:
       labels:
         app: moderation-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: moderation-service
           image: ghcr.io/whispr-messenger/moderation-service:sha-7e4116b

@@ -17,6 +17,7 @@ spec:
       labels:
         app: notification-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: notification-service
           image: ghcr.io/whispr-messenger/notification-service:sha-63c3b63

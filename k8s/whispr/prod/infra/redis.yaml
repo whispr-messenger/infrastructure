@@ -16,6 +16,7 @@ spec:
       labels:
         app: redis
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: redis
           image: redis:7-alpine
@@ -38,6 +39,7 @@ spec:
             limits:
               memory: 512Mi
               cpu: 250m
+              ephemeral-storage: 1Gi
           readinessProbe:
             exec:
               command:
