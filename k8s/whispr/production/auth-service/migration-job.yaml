@@ -31,6 +31,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       restartPolicy: Never
+      automountServiceAccountToken: false
       containers:
         - name: migration
           image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-822b3cb
@@ -67,6 +68,7 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "200m"
+              ephemeral-storage: 1Gi
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true

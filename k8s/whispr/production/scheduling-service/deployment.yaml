@@ -28,6 +28,7 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+      automountServiceAccountToken: false
       containers:
         - name: scheduling-service
           image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-0a33c0b
