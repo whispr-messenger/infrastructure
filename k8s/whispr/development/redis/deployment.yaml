@@ -17,6 +17,7 @@ spec:
       labels:
         app: redis
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: redis
           image: redis:7-alpine
@@ -42,6 +43,7 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "200m"
+              ephemeral-storage: 1Gi
           volumeMounts:
             - name: redis-data
               mountPath: /data

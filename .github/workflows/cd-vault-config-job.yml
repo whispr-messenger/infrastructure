@@ -48,28 +48,33 @@ jobs:
 
       - name: Validate and determine commit SHA
         id: validate_commit
+        env:
+          INPUT_COMMIT_SHA: ${{ inputs.commit_sha }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          GITHUB_SHA_FALLBACK: ${{ github.sha }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            if [ -n "${{ inputs.commit_sha }}" ]; then
-              COMMIT_SHA="${{ inputs.commit_sha }}"
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ -n "$INPUT_COMMIT_SHA" ]; then
+              COMMIT_SHA="$INPUT_COMMIT_SHA"
               echo "Validating manually provided commit SHA: $COMMIT_SHA"
               if ! echo "$COMMIT_SHA" | grep -qE '^[a-fA-F0-9]{7,40}$'; then
-                echo "❌ Error: Invalid commit SHA format."
+                echo "Error: Invalid commit SHA format."
                 exit 1
               fi
               # Pad short SHA to full length for consistency (no git rev-parse:
               # checkout is shallow so historical commits may not be present)
-              echo "✅ Commit SHA format valid: $COMMIT_SHA"
+              echo "Commit SHA format valid: $COMMIT_SHA"
             else
-              COMMIT_SHA="${{ github.sha }}"
+              COMMIT_SHA="$GITHUB_SHA_FALLBACK"
             fi
           else
-            COMMIT_SHA="${{ github.event.workflow_run.head_sha }}"
+            COMMIT_SHA="$WORKFLOW_RUN_HEAD_SHA"
             if [ -z "$COMMIT_SHA" ]; then
-              COMMIT_SHA="${{ github.sha }}"
+              COMMIT_SHA="$GITHUB_SHA_FALLBACK"
             fi
           fi
-          echo "commit_sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
+          echo "commit_sha=${COMMIT_SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Update image tag in deployment
         run: |

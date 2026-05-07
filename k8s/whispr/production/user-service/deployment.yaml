@@ -31,6 +31,7 @@ spec:
         fsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
+      automountServiceAccountToken: false
       containers:
         - name: whispr-user-api
           # the image is automatically updated by the CD pipeline with yq
@@ -87,6 +88,7 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "200m"
+              ephemeral-storage: 1Gi
           # Security context for the container
           securityContext:
             allowPrivilegeEscalation: false

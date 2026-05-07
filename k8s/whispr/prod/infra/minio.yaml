@@ -16,6 +16,7 @@ spec:
       labels:
         app: minio
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: minio
           image: minio/minio:RELEASE.2025-09-07T16-13-09Z-cpuv1
@@ -45,6 +46,7 @@ spec:
             limits:
               memory: 1Gi
               cpu: 500m
+              ephemeral-storage: 1Gi
           readinessProbe:
             httpGet:
               path: /minio/health/ready

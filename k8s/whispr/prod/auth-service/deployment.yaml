@@ -16,6 +16,7 @@ spec:
       labels:
         app: auth-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: auth-service
           image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-b1ff3fc
