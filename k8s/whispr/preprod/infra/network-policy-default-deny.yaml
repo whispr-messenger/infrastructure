@@ -1,0 +1,34 @@
+# Politique de refus par defaut pour le namespace whispr-preprod.
+# Tout trafic ingress ET egress est bloque sauf autorisation explicite par une
+# NetworkPolicy supplementaire. Le DNS (port 53) est autorise globalement via
+# la politique dns-egress-allow ci-dessous pour que la resolution de noms
+# de service k8s fonctionne.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: whispr-preprod
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+# Autorisation DNS sortant pour tous les pods du namespace.
+# Sans ca, kube-dns est inaccessible et les services ne peuvent pas se resoudre.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-egress
+  namespace: whispr-preprod
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
