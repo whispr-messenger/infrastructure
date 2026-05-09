@@ -1,18 +1,33 @@
+---
+# JWT signing keys for auth-service.
+#
+# The real key pair is provisioned out-of-band via kubectl (or Vault projection)
+# and MUST NOT be committed to Git.  We declare only the Secret shell here
+# (metadata + type, no stringData) so ArgoCD can reconcile metadata without
+# taking ownership of the key material.  ServerSideApply ensures the
+# kubectl-applied data field survives every ArgoCD sync.
+#
+# Bootstrap / rotate (run both; rolling-restart auth-service after):
+#
+#   openssl ecparam -name prime256v1 -genkey -noout \
+#     | openssl pkcs8 -topk8 -nocrypt -out /tmp/jwt_private.pem
+#   openssl ec -in /tmp/jwt_private.pem -pubout -out /tmp/jwt_public.pem
+#
+#   kubectl -n whispr-preprod create secret generic jwt-keys \
+#     --from-file=jwt_private.pem=/tmp/jwt_private.pem \
+#     --from-file=jwt_public.pem=/tmp/jwt_public.pem \
+#     --dry-run=client -o yaml | kubectl apply -f -
+#
+#   rm /tmp/jwt_private.pem /tmp/jwt_public.pem
+#
+# The data keys MUST be "jwt_private.pem" and "jwt_public.pem" - the Deployment
+# mounts the Secret at /app/secrets and auth-service reads those exact filenames.
 apiVersion: v1
 kind: Secret
 metadata:
   name: jwt-keys
   namespace: whispr-preprod
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+    argocd.argoproj.io/sync-options: ServerSideApply=true
 type: Opaque
-stringData:
-  jwt_private.pem: |
-    -----BEGIN PRIVATE KEY-----
-    MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgHsf9dwYN2HGRxFvB
-    aU0E3vGek/qB8Tm03A1iZL1bBZ+hRANCAATV FCY2BF5cv+tbNdOMzDWJAqofvtDx
-    8xEf8nB4jBejIDAOT/3L2uXhcxmoOGcwvI9SvXkzSZGHdmd2Tz0d1rrc
-    -----END PRIVATE KEY-----
-  jwt_public.pem: |
-    -----BEGIN PUBLIC KEY-----
-    MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1RQmNgReXL/rWzXTjMw1iQKqH77Q
-    8fMRH/JweIwXoyAwDk/9y9rl4XMZqDhnMLyPUr15M0mRh3Zndk89Hda63A==
-    -----END PUBLIC KEY-----
