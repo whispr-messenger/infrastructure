@@ -71,6 +71,9 @@ spec:
             - name: apns-key
               mountPath: /etc/apns
               readOnly: true
+            - name: fcm-key
+              mountPath: /etc/fcm
+              readOnly: true
       volumes:
         - name: apns-key
           secret:
@@ -78,4 +81,11 @@ spec:
             items:
               - key: AuthKey.p8
                 path: AuthKey.p8
+            optional: true
+        - name: fcm-key
+          secret:
+            secretName: notification-fcm-keyfile
+            items:
+              - key: keyfile.json
+                path: keyfile.json
             optional: true
