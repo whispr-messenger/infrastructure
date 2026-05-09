@@ -5,6 +5,19 @@ controller:
     nodePorts:
       http: 30080
       https: 30443
+  config:
+    # Restreint la confiance X-Forwarded-For au seul noeud Citadel (Tailscale).
+    # 0.0.0.0/0 (valeur globale) permettrait a n'importe quel client de forger
+    # son IP source via ce header - vecteur de bypass de rate-limiting.
+    proxy-real-ip-cidr: "100.123.120.92/32"
+    use-forwarded-headers: "true"
+    enable-real-ip: "true"
+    # TLS 1.2 minimum - desactive TLS 1.0 et 1.1 (deprecated RFC 8996).
+    ssl-protocols: "TLSv1.2 TLSv1.3"
+    # HSTS 1 an avec preload pour les domaines publics Citadel.
+    hsts: "true"
+    hsts-max-age: "31536000"
+    hsts-include-subdomains: "true"
   resources:
     requests:
       cpu: 100m
