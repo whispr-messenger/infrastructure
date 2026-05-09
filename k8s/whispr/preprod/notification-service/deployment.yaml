@@ -36,6 +36,26 @@ spec:
               value: postgresql.postgresql.svc.cluster.local
             - name: REDIS_HOST
               value: redis-master.redis.svc.cluster.local
+          startupProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4011
+            failureThreshold: 15
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health/ready
+              port: 4011
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4011
+            initialDelaySeconds: 45
+            periodSeconds: 30
+            failureThreshold: 3
           resources:
             requests:
               memory: 128Mi
