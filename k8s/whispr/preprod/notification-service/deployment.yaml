@@ -43,6 +43,30 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
+          # WHISPR-1340 : ajout des probes manquants pour que k8s detecte
+          # les hangs/deadlocks et restart le pod automatiquement.
+          startupProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4011
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4011
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4011
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           volumeMounts:
             - name: apns-key
               mountPath: /etc/apns
