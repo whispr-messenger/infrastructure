@@ -8,3 +8,7 @@ data:
   JWT_AUDIENCE: "whispr-api"
   USER_SERVICE_HTTP_URL: "http://user-service:3011"
   ADMIN_USER_IDS: "3378ee73-ce43-4145-b689-ba982d97721e,fab8817a-27a0-4537-89c1-be05f783150b"
+  # WHISPR-1341 : autorise http:// pour JWT_JWKS_URL en MIX_ENV=prod car
+  # auth-service est joint via DNS k8s interne (cluster-internal, HTTP legitime).
+  # NE PAS activer en prod publique.
+  WHISPR_ALLOW_HTTP_JWKS: "true"
