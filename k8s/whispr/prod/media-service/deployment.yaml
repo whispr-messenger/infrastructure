@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: media-service
-          image: ghcr.io/whispr-messenger/media-service/media-service:sha-ba9f537
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-f4c0aac
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -70,4 +70,4 @@ spec:
   template:
     spec:
       containers:
-        - image: ghcr.io/whispr-messenger/media-service/media-service:sha-ba9f537
+        - image: ghcr.io/whispr-messenger/media-service/media-service:sha-f4c0aac
