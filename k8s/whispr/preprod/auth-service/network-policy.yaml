@@ -1,7 +1,7 @@
 # NetworkPolicy pour auth-service (preprod).
-# Ingress : nginx-ingress (trafic externe) + notification-service ne l'appelle pas,
-#           mais auth l'appelle en sortie. On accepte aussi les appels internes
-#           (user, media, scheduling, messaging) pour la validation JWKS.
+# Ingress : nginx-ingress (trafic externe) + tous les services qui fetche le
+#           JWKS pour valider les JWT (user, media, scheduling, messaging,
+#           moderation, notification, calls).
 # Egress  : postgres (5432), redis (6379), notification-service (4011 gRPC)
 ---
 apiVersion: networking.k8s.io/v1
@@ -42,6 +42,12 @@ spec:
         - podSelector:
             matchLabels:
               app: moderation-service
+        - podSelector:
+            matchLabels:
+              app: notification-service
+        - podSelector:
+            matchLabels:
+              app: calls-service
       ports:
         - port: 3010
           protocol: TCP
