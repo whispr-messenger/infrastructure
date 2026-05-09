@@ -55,6 +55,9 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
+              # borne le stockage ephemere pour que les jobs temporaires NestJS dans /tmp
+              # ne saturent pas le noeud en cas de crash en boucle
+              ephemeralStorage: 256Mi
           # WHISPR-1065 : startupProbe evite le livenessProbe premature pendant
           # le warm-up (Nest + TypeORM). failureThreshold * periodSeconds
           # = 60 s max avant abandon du demarrage.
