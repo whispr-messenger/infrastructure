@@ -20,7 +20,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: media-service
-          image: ghcr.io/whispr-messenger/media-service/media-service:sha-cd4d332
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-2585255
           ports:
             - name: http
               containerPort: 3012
