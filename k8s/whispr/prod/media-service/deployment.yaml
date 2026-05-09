@@ -37,7 +37,7 @@ spec:
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /media/v1/health/ready
+              path: /media/v1/health/live
               port: 3012
             initialDelaySeconds: 45
             periodSeconds: 30
