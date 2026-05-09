@@ -67,6 +67,9 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
+              # borne le stockage ephemere pour que les uploads temporaires NestJS dans /tmp
+              # ne saturent pas le noeud
+              ephemeralStorage: 512Mi
           # WHISPR-1065 : startupProbe laisse le temps au demarrage (Vault
           # handshake + S3 sanity) avant de solliciter le livenessProbe.
           startupProbe:

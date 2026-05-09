@@ -81,6 +81,9 @@ spec:
             limits:
               memory: 1Gi
               cpu: 500m
+              # borne le stockage ephemere pour que le model cache NudeNet dans /tmp
+              # ne sature pas le noeud en cas de chargement en boucle
+              ephemeralStorage: 512Mi
           volumeMounts:
             # readOnlyRootFilesystem=true : NudeNet ecrit son model cache dans /tmp.
             # Ce volume emptyDir donne un /tmp writable sans monter le FS racine.
