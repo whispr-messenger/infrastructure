@@ -1,0 +1,70 @@
+# NetworkPolicy pour user-service (preprod).
+# Ingress : nginx-ingress + appels internes depuis messaging-service et moderation-service.
+# Egress  : postgres, redis, auth-service (JWKS endpoint).
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: user-service-network-policy
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: user-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Trafic depuis nginx-ingress
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3011
+          protocol: TCP
+    # Appels HTTP internes (messaging, scheduling, moderation)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+        - podSelector:
+            matchLabels:
+              app: scheduling-service
+        - podSelector:
+            matchLabels:
+              app: moderation-service
+      ports:
+        - port: 3011
+          protocol: TCP
+    # gRPC interne
+    - from:
+        - podSelector: {}
+      ports:
+        - port: 50011
+          protocol: TCP
+  egress:
+    # PostgreSQL
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+    # auth-service (JWKS)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP

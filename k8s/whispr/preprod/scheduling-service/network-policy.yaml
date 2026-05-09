@@ -1,0 +1,64 @@
+# NetworkPolicy pour scheduling-service (preprod).
+# Ingress : nginx-ingress (API programmation de messages).
+# Egress  : postgres, redis, auth-service (JWKS), messaging-service (envoi programme).
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: scheduling-service-network-policy
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: scheduling-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # nginx-ingress
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3013
+          protocol: TCP
+    # gRPC interne
+    - from:
+        - podSelector: {}
+      ports:
+        - port: 50013
+          protocol: TCP
+  egress:
+    # PostgreSQL
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis (jobs BullMQ / queues)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+    # auth-service (JWKS pour valider le JWT du createur)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP
+    # messaging-service (poster le message programme a l'echeance)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+      ports:
+        - port: 4010
+          protocol: TCP
