@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: auth-service-pdb
+  namespace: whispr-prod
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: auth-service
