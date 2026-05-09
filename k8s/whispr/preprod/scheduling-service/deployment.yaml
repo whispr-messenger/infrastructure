@@ -18,9 +18,21 @@ spec:
         app: scheduling-service
     spec:
       automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: scheduling-service
           image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-8d83a20
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+            runAsNonRoot: true
           ports:
             - name: http
               containerPort: 3013
@@ -43,9 +55,9 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
-          # WHISPR-1065 : startupProbe évite le livenessProbe prématuré pendant
+          # WHISPR-1065 : startupProbe evite le livenessProbe premature pendant
           # le warm-up (Nest + TypeORM). failureThreshold * periodSeconds
-          # = 60 s max avant abandon du démarrage.
+          # = 60 s max avant abandon du demarrage.
           startupProbe:
             httpGet:
               path: /health
@@ -68,3 +80,11 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+          volumeMounts:
+            # readOnlyRootFilesystem=true : NestJS ecrit dans /tmp (jobs temp, caches
+            # runtime). Ce volume emptyDir donne un /tmp writable en RAM.
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

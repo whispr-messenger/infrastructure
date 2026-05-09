@@ -31,6 +31,10 @@ image:
   repository: livekit/livekit-server
   pullPolicy: IfNotPresent
 
+# Desactive pour eviter qu'un container compromis sniffe le trafic node
+# et bypasse les NetworkPolicies. Les ports RTC sont exposes via NodePort.
+podHostNetwork: false
+
 livekit:
   port: 7880
   log_level: info
@@ -49,18 +53,14 @@ livekit:
   # it back on once the cert is provisioned.
   turn:
     enabled: false
-  # Placeholder API keys. The admin MUST override these via the ArgoCD
-  # Application helm.parameters block or by patching the generated
-  # `livekit-server` ConfigMap after the first sync. Real keys also need
-  # to be mirrored into the calls-service secret so backend and SFU
-  # agree on the key pair.
-  keys:
-    REPLACE_ME: REPLACE_ME_WITH_REAL_SECRET
+  # Aucune cle reelle committee en git. Le ConfigMap livekit-server est patche
+  # out-of-band par l'admin apres le premier sync ArgoCD (voir README.md).
+  # ignoreDifferences dans livekit.yaml empeche ArgoCD de revenir a {} au selfHeal.
+  keys: {}
 
 loadBalancer:
   # ClusterIP-only Service for the HTTP API (exposed via nginx Ingress in
-  # ingress.yaml). RTC TCP/UDP are published via hostPort + hostNetwork
-  # on the node (chart default podHostNetwork: true).
+  # ingress.yaml). RTC TCP/UDP sont exposes via NodePort dedie.
   type: disable
 
 resources:

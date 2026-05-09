@@ -19,10 +19,22 @@ spec:
         app: moderation-service
     spec:
       automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: moderation-service
           image: ghcr.io/whispr-messenger/moderation-service:preprod
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+            runAsNonRoot: true
           ports:
             - name: http
               containerPort: 8000
@@ -38,7 +50,7 @@ spec:
               value: "10"
             - name: MOD_RATE_LIMIT
               value: "30/minute"
-          # WHISPR-1065 : startupProbe couvre le chargement du modèle (plusieurs
+          # WHISPR-1065 : startupProbe couvre le chargement du modele (plusieurs
           # dizaines de secondes au cold start) avant d'activer le livenessProbe.
           startupProbe:
             httpGet:
@@ -69,3 +81,11 @@ spec:
             limits:
               memory: 1Gi
               cpu: 500m
+          volumeMounts:
+            # readOnlyRootFilesystem=true : NudeNet ecrit son model cache dans /tmp.
+            # Ce volume emptyDir donne un /tmp writable sans monter le FS racine.
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
