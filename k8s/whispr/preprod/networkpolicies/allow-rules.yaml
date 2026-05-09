@@ -1,0 +1,469 @@
+# Règles d'autorisation réseau pour whispr-preprod.
+# Chaque policy est ciblée sur un pod précis et n'autorise que le strict nécessaire.
+# Les labels utilisés correspondent aux sélecteurs définis dans chaque Deployment.
+#
+# Ordre d'application ArgoCD : ce fichier DOIT être appliqué en même temps que
+# default-deny.yaml — les deux sont dans le même répertoire ArgoCD suit.
+#
+# Structure :
+#   1. DNS - tous les pods doivent résoudre les noms de service k8s
+#   2. Ingress depuis ingress-nginx vers chaque service exposé
+#   3. Egress vers PostgreSQL (port 5432) par service
+#   4. Egress vers Redis (port 6379) par service
+#   5. Egress inter-services (appels gRPC internes)
+#   6. Egress vers internet (FCM/APNs pour notification-service)
+
+---
+# 1. DNS : tous les pods → kube-dns (UDP+TCP 53 dans kube-system).
+# Sans cette règle, la résolution de nom échoue et les connexions Postgres/Redis
+# plantent même si leur port est autorisé plus bas.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-dns
+  namespace: whispr-preprod
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+
+---
+# 2a. Ingress depuis ingress-nginx → auth-service (HTTP 3010, gRPC 50010).
+# ingress-nginx tourne dans le namespace ingress-nginx avec le label standard.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-auth-service
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: auth-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3010
+          protocol: TCP
+        - port: 50010
+          protocol: TCP
+
+---
+# 2b. Ingress depuis ingress-nginx → user-service (HTTP 3011, gRPC 50011).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-user-service
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: user-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3011
+          protocol: TCP
+        - port: 50011
+          protocol: TCP
+
+---
+# 2c. Ingress depuis ingress-nginx → messaging-service (HTTP 4010, gRPC 40010).
+# Le WebSocket /messaging/ws passe également par le port 4010.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-messaging-service
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: messaging-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 4010
+          protocol: TCP
+        - port: 40010
+          protocol: TCP
+
+---
+# 2d. Ingress depuis ingress-nginx → calls-service (HTTP 4012, gRPC 40012).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-calls-service
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: calls-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 4012
+          protocol: TCP
+        - port: 40012
+          protocol: TCP
+
+---
+# 2e. Ingress depuis ingress-nginx → notification-service (HTTP 4011, gRPC 40011).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-notification-service
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: notification-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 4011
+          protocol: TCP
+        - port: 40011
+          protocol: TCP
+
+---
+# 2f. Ingress depuis ingress-nginx → media-service (HTTP 3012, gRPC 50012).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-media-service
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: media-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3012
+          protocol: TCP
+        - port: 50012
+          protocol: TCP
+
+---
+# 2g. Ingress depuis ingress-nginx → scheduling-service (HTTP 3013, gRPC 50013).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-scheduling-service
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: scheduling-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3013
+          protocol: TCP
+        - port: 50013
+          protocol: TCP
+
+---
+# 3. Egress vers PostgreSQL (port 5432) depuis tous les services whispr-preprod.
+# PostgreSQL tourne dans le namespace postgresql avec le label app.kubernetes.io/name=postgresql
+# (chart Bitnami standard). Tous les services applicatifs ont besoin de cet accès.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-postgresql
+  namespace: whispr-preprod
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+
+---
+# 4. Egress vers Redis (port 6379) depuis tous les services whispr-preprod.
+# Redis Bitnami tourne dans le namespace redis avec le label app.kubernetes.io/name=redis.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-redis
+  namespace: whispr-preprod
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+
+---
+# 5a. Egress calls-service → messaging-service (HTTP 4010 + gRPC 40010).
+# calls-service appelle messaging-service pour créer les events d'appel
+# (MESSAGING_HTTP_ENDPOINT + MESSAGING_GRPC_ENDPOINT dans son env).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-calls-to-messaging
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: calls-service
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+      ports:
+        - port: 4010
+          protocol: TCP
+        - port: 40010
+          protocol: TCP
+
+---
+# 5b. Egress calls-service → auth-service (HTTP 3010) pour la validation JWKS.
+# calls-service lit JWT_JWKS_URL = http://auth-service:3010/auth/.well-known/jwks.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-calls-to-auth
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: calls-service
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP
+
+---
+# 5c. Egress calls-service → livekit-server (HTTP 80 dans whispr-preprod).
+# LIVEKIT_API_URL = http://preprod-livekit-livekit-server.whispr-preprod:80
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-calls-to-livekit
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: calls-service
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: livekit
+      ports:
+        - port: 80
+          protocol: TCP
+
+---
+# 5d. Egress messaging-service → auth-service (HTTP 3010) pour JWKS.
+# messaging-service valide les tokens JWT en lisant les clés publiques d'auth.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-messaging-to-auth
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: messaging-service
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP
+
+---
+# 5e. Egress messaging-service → notification-service (gRPC 40011).
+# messaging-service notifie notification-service via gRPC à chaque nouveau message.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-messaging-to-notification
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: messaging-service
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: notification-service
+      ports:
+        - port: 40011
+          protocol: TCP
+
+---
+# 5f. Ingress notification-service ← messaging-service (gRPC 40011).
+# Côté ingress de notification-service pour les appels gRPC internes.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-notification-from-messaging
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: notification-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+      ports:
+        - port: 40011
+          protocol: TCP
+
+---
+# 5g. Ingress user-service ← messaging-service (gRPC 50011).
+# messaging-service appelle user-service pour vérifier contacts/profils.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-user-from-messaging
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: user-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+      ports:
+        - port: 50011
+          protocol: TCP
+
+---
+# 5h. Egress messaging-service → user-service (gRPC 50011).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-messaging-to-user
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: messaging-service
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: user-service
+      ports:
+        - port: 50011
+          protocol: TCP
+
+---
+# 6. Egress notification-service → internet (HTTPS 443) pour FCM et APNs.
+# notification-service doit joindre :
+#   - FCM : fcm.googleapis.com:443
+#   - APNs : api.push.apple.com:443
+# On ouvre le port 443 vers l'extérieur (0.0.0.0/0 hors cluster).
+# On exclut explicitement le CIDR pod/service interne pour éviter le bypass.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-notification-internet
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: notification-service
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            # Exclure le réseau pod k3s (10.42.0.0/16) et le réseau service (10.43.0.0/16)
+            # pour que cette règle ne serve qu'à joindre internet, pas à bypasser
+            # les autres NetworkPolicy intra-cluster.
+            except:
+              - 10.42.0.0/16
+              - 10.43.0.0/16
+      ports:
+        - port: 443
+          protocol: TCP
