@@ -1,0 +1,31 @@
+# Politique de refus par defaut pour le namespace whispr-prod.
+# Identique a whispr-preprod - tout trafic bloque sauf autorisation explicite.
+# Les NetworkPolicies par service seront ajoutees dans un ticket dedie prod.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: whispr-prod
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+# DNS sortant global pour resolution de noms de service k8s.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-egress
+  namespace: whispr-prod
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
