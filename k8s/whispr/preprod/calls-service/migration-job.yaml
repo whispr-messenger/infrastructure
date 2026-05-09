@@ -23,7 +23,7 @@ spec:
         - name: ghcr-calls
       containers:
         - name: migrate
-          image: ghcr.io/whispr-messenger/calls-service:sha-f78b97d
+          image: ghcr.io/whispr-messenger/calls-service:sha-4915e59
           imagePullPolicy: IfNotPresent
           command: ["/app/bin/whispr_calls"]
           args:

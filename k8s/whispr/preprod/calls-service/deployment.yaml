@@ -28,7 +28,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: calls-service
-          image: ghcr.io/whispr-messenger/calls-service:sha-f78b97d
+          image: ghcr.io/whispr-messenger/calls-service:sha-4915e59
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
