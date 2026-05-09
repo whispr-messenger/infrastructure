@@ -1,0 +1,121 @@
+# NetworkPolicy pour calls-service (preprod).
+# Ingress : nginx-ingress (HTTP + WebSocket signaling), messaging-service
+#           (webhooks LiveKit evenements), notification-service (unused direct
+#           pour l'instant mais prevu pour push appel entrant).
+# Egress  : postgres, redis, auth-service (JWKS), messaging-service (gRPC
+#           pour notifier message appel), notification-service (push appel
+#           entrant), livekit server in-cluster (API REST + RTC TCP/UDP),
+#           HTTPS 443 vers LiveKit cloud SDK (token validation, webhooks).
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: calls-service-network-policy
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: calls-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Trafic depuis nginx-ingress (HTTP + WebSocket signaling Phoenix)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 4012
+          protocol: TCP
+    # messaging-service (webhooks evenements LiveKit)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+      ports:
+        - port: 4012
+          protocol: TCP
+    # notification-service (appels internes si necessaire)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: notification-service
+      ports:
+        - port: 4012
+          protocol: TCP
+    # gRPC interne
+    - from:
+        - podSelector: {}
+      ports:
+        - port: 40012
+          protocol: TCP
+  egress:
+    # PostgreSQL
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis (cache sessions appels)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+    # auth-service (JWKS endpoint pour verify JWT)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP
+    # notification-service (push appel entrant)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: notification-service
+      ports:
+        - port: 4011
+          protocol: TCP
+        - port: 40011
+          protocol: TCP
+    # messaging-service (notifier message appel via gRPC + HTTP)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+      ports:
+        - port: 4010
+          protocol: TCP
+        - port: 40010
+          protocol: TCP
+    # LiveKit server in-cluster (API REST port 7880, RTC TCP 7881, RTC UDP 7882)
+    # Pod label genere par le chart livekit-server : app.kubernetes.io/name=livekit-server
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: livekit-server
+      ports:
+        - port: 7880
+          protocol: TCP
+        - port: 7881
+          protocol: TCP
+        - port: 7882
+          protocol: UDP
+    # LiveKit cloud SDK + webhooks externes (endpoints sans IP fixe)
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - port: 443
+          protocol: TCP
