@@ -17,12 +17,24 @@ spec:
       labels:
         app: calls-service
     spec:
+      automountServiceAccountToken: false
       imagePullSecrets:
         - name: ghcr-calls
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: calls-service
           image: ghcr.io/whispr-messenger/calls-service:sha-c257fc9
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
           ports:
             - name: http
               containerPort: 4012
