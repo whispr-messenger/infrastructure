@@ -19,7 +19,7 @@ spec:
       containers:
         - name: mobile-web
           image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-4bd3396
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 3020

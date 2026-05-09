@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: moderation-service-pdb
+  namespace: whispr-preprod
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: moderation-service
