@@ -6,4 +6,5 @@ metadata:
 data:
   JWT_ISSUER: "https://auth.whispr.roadmvn.com"
   JWT_AUDIENCE: "whispr-api"
-  DB_LOGGING: "false"
+  NOTIFICATION_SERVICE_HOST: "notification-service.whispr-preprod.svc.cluster.local"
+  NOTIFICATION_SERVICE_PORT: "4011"
