@@ -8,3 +8,6 @@ data:
   APNS_KEY_ID: ""
   APNS_TEAM_ID: ""
   APNS_MODE: "dev"
+  # FCM_PROJECT_ID : remplacer par le project ID Firebase exact (visible dans la console Firebase > Paramètres du projet)
+  FCM_PROJECT_ID: "whispr-messenger"
+  FCM_JSON_KEYFILE: "/etc/fcm/keyfile.json"
