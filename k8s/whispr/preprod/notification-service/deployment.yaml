@@ -56,6 +56,9 @@ spec:
             limits:
               memory: 384Mi
               cpu: 500m
+              # borne le stockage ephemere pour que les crash dumps BEAM dans /tmp
+              # (emptyDir) ne saturent pas le noeud en cas de crash en boucle
+              ephemeralStorage: 256Mi
           # WHISPR-1340 : ajout des probes manquants pour que k8s detecte
           # les hangs/deadlocks et restart le pod automatiquement.
           startupProbe:
