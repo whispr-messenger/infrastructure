@@ -20,7 +20,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: notification-service
-          image: ghcr.io/whispr-messenger/notification-service:sha-972c982
+          image: ghcr.io/whispr-messenger/notification-service:sha-d683d62
           imagePullPolicy: Always
           ports:
             - name: http
