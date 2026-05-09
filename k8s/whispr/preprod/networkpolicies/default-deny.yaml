@@ -1,0 +1,20 @@
+# Politique réseau par défaut pour le namespace whispr-preprod.
+#
+# Bloque tout le trafic ingress ET egress sur tous les pods du namespace
+# sauf ce qui est explicitement autorisé dans allow-rules.yaml.
+# Un pod compromis ne peut donc pas atteindre directement PostgreSQL, Redis
+# ou les autres services sans passer par une règle explicite.
+#
+# ATTENTION : appliquer cette policy APRES avoir vérifié allow-rules.yaml
+# en dry-run. Un ArgoCD sync sans les allow-rules en place coupe tout le trafic.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: whispr-preprod
+spec:
+  # S'applique à tous les pods du namespace
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
