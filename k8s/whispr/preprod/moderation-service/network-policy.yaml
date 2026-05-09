@@ -53,3 +53,11 @@ spec:
       ports:
         - port: 3011
           protocol: TCP
+    # auth-service (JWKS endpoint pour verify JWT)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP
