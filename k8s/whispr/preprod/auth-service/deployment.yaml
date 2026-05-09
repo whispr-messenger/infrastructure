@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: auth-service
-          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-8a31ad9
+          image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-61d099b
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
