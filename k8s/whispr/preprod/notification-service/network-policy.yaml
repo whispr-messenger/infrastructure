@@ -1,0 +1,77 @@
+# NetworkPolicy pour notification-service (preprod).
+# Ingress : auth-service et messaging-service (envoi push).
+# Egress  : postgres, redis, FCM Google (443), APNs Apple (443).
+# Note : FCM et APNs sont des endpoints HTTPS externes, le CIDR block
+#        couvre 0.0.0.0/0 sur port 443 - acceptable car il n'y a pas de
+#        plage IP fixe documentee pour ces services Google/Apple.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: notification-service-network-policy
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: notification-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # auth-service (envoi OTP par push)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 4011
+          protocol: TCP
+        - port: 40011
+          protocol: TCP
+    # messaging-service (push nouveaux messages)
+    - from:
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+      ports:
+        - port: 4011
+          protocol: TCP
+        - port: 40011
+          protocol: TCP
+    # nginx-ingress (health check endpoint)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 4011
+          protocol: TCP
+  egress:
+    # PostgreSQL
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+    # FCM (Google Firebase Cloud Messaging) et APNs (Apple Push Notification service)
+    # Ces endpoints cloud n'ont pas de plage IP fixe - on autorise HTTPS sortant.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - port: 443
+          protocol: TCP
