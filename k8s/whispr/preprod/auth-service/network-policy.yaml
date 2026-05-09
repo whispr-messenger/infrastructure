@@ -1,0 +1,80 @@
+# NetworkPolicy pour auth-service (preprod).
+# Ingress : nginx-ingress (trafic externe) + notification-service ne l'appelle pas,
+#           mais auth l'appelle en sortie. On accepte aussi les appels internes
+#           (user, media, scheduling, messaging) pour la validation JWKS.
+# Egress  : postgres (5432), redis (6379), notification-service (4011 gRPC)
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: auth-service-network-policy
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: auth-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Trafic depuis le controleur nginx-ingress (namespace ingress-nginx)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3010
+          protocol: TCP
+    # Trafic interne depuis les services whispr-preprod qui fetche le JWKS
+    - from:
+        - podSelector:
+            matchLabels:
+              app: user-service
+        - podSelector:
+            matchLabels:
+              app: media-service
+        - podSelector:
+            matchLabels:
+              app: scheduling-service
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+        - podSelector:
+            matchLabels:
+              app: moderation-service
+      ports:
+        - port: 3010
+          protocol: TCP
+    # gRPC interne (appels inter-service si necessaire)
+    - from:
+        - podSelector: {}
+      ports:
+        - port: 50010
+          protocol: TCP
+  egress:
+    # PostgreSQL (namespace postgresql)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis (namespace redis)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+    # notification-service (envoi OTP push)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: notification-service
+      ports:
+        - port: 4011
+          protocol: TCP
+        - port: 40011
+          protocol: TCP
