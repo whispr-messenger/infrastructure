@@ -28,6 +28,12 @@ spec:
           envFrom:
             - secretRef:
                 name: notification-service-env
+          startupProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4011
+            failureThreshold: 15
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /api/v1/health
