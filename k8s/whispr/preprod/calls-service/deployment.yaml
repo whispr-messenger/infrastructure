@@ -102,6 +102,12 @@ spec:
                   name: calls-preprod-secrets
                   key: messaging_service_token
                   optional: true
+            # WHISPR-1354 : whitelist des origins autorisees pour le WebSocket
+            # /calls/ws (signaling LiveKit). En prod, runtime.exs override
+            # check_origin pour appeler ws_check_origin/1 qui lit cette var.
+            # Si la var est absente/vide/wildcard, le boot raise (fail-closed).
+            - name: CORS_ALLOWED_ORIGINS
+              value: "https://whispr-preprod.roadmvn.com,https://preprod-whispr-api.roadmvn.com,https://whispr-api.roadmvn.com"
           resources:
             requests:
               memory: 512Mi
