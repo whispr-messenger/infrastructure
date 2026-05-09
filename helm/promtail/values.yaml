@@ -6,6 +6,34 @@ config:
 
   snippets:
     extraScrapeConfigs: |
+      # Scrape tous les pods applicatifs sans sidecar istio-proxy
+      - job_name: kubernetes-pods
+        pipeline_stages:
+          - cri: {}
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          # Ignorer les pods avec sidecar istio-proxy (couverts par le job ci-dessous)
+          - source_labels: [__meta_kubernetes_pod_annotation_sidecar_istio_io_status]
+            action: drop
+            regex: .+
+          # Ignorer les pods non demarres
+          - source_labels: [__meta_kubernetes_pod_phase]
+            action: drop
+            regex: (Failed|Succeeded)
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            target_label: app
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            target_label: container
+          - source_labels: [__meta_kubernetes_pod_uid, __meta_kubernetes_pod_container_name]
+            target_label: __path__
+            separator: /
+            replacement: /var/log/pods/*$1/*.log
+
       # Scrape Istio JSON access logs with json parsing
       - job_name: kubernetes-pods-istio
         kubernetes_sd_configs:
