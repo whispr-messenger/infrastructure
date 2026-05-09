@@ -43,7 +43,7 @@ spec:
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /auth/v1/health/ready
+              path: /auth/v1/health/live
               port: 3010
             initialDelaySeconds: 45
             periodSeconds: 30
