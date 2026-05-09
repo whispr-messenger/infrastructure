@@ -36,7 +36,7 @@ spec:
       containers:
         - name: whispr-media-api
           # The image is automatically updated by the CD pipeline with yq
-          image: ghcr.io/whispr-messenger/media-service/media-service:sha-2585255 # Placeholder, replaced by CD pipeline
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-ba9f537 # Placeholder, replaced by CD pipeline
           ports:
             - name: http
               containerPort: 3001
