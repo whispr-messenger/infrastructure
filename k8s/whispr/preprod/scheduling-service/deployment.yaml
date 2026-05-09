@@ -20,7 +20,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: scheduling-service
-          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-8f41412
+          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-fb3bd0d
           ports:
             - name: http
               containerPort: 3013
