@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: messaging-service
-          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-5a7e8c4
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-0eb9620
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
