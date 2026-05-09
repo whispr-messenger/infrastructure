@@ -19,7 +19,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: media-service
-          image: ghcr.io/whispr-messenger/media-service/media-service:sha-c2f537e
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-cd4d332
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -71,4 +71,4 @@ spec:
   template:
     spec:
       containers:
-        - image: ghcr.io/whispr-messenger/media-service/media-service:sha-c2f537e
+        - image: ghcr.io/whispr-messenger/media-service/media-service:sha-cd4d332
