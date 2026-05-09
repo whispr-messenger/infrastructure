@@ -18,9 +18,21 @@ spec:
         app: media-service
     spec:
       automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: media-service
           image: ghcr.io/whispr-messenger/media-service/media-service:sha-2585255
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+            runAsNonRoot: true
           ports:
             - name: http
               containerPort: 3012
@@ -52,10 +64,14 @@ spec:
             requests:
               memory: 128Mi
               cpu: 100m
+              ephemeralStorage: 256Mi
             limits:
               memory: 384Mi
               cpu: 500m
-          # WHISPR-1065 : startupProbe laisse le temps au démarrage (Vault
+              # borne le stockage ephemere pour que les uploads temporaires NestJS dans /tmp
+              # ne saturent pas le noeud
+              ephemeralStorage: 512Mi
+          # WHISPR-1065 : startupProbe laisse le temps au demarrage (Vault
           # handshake + S3 sanity) avant de solliciter le livenessProbe.
           startupProbe:
             httpGet:
@@ -79,3 +95,12 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+          volumeMounts:
+            # readOnlyRootFilesystem=true : NestJS peut ecrire dans /tmp (upload temp,
+            # multipart). Ce volume emptyDir donne un /tmp writable en RAM.
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 512Mi
