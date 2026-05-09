@@ -20,7 +20,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: user-service
-          image: ghcr.io/whispr-messenger/user-service/user-service:sha-f08328f
+          image: ghcr.io/whispr-messenger/user-service/user-service:sha-c9d1b06
           ports:
             - name: http
               containerPort: 3011
