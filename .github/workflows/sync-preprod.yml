@@ -7,11 +7,15 @@ on:
       - 'k8s/whispr/preprod/**'
       - 'k8s/whispr/prod/**'
 
+permissions: {}
+
 jobs:
   sync:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -30,13 +34,13 @@ jobs:
             if git merge origin/main --no-edit; then
               echo "Merge succeeded cleanly"
             else
-              echo "Merge conflict detected — auto-resolving with main's version"
+              echo "Merge conflict detected - auto-resolving with main's version"
               git checkout --theirs .
               git add -A
               git commit --no-edit
             fi
           else
-            echo "deploy/preprod does not exist yet — creating from main"
+            echo "deploy/preprod does not exist yet - creating from main"
             git checkout -b deploy/preprod origin/main
           fi
 
