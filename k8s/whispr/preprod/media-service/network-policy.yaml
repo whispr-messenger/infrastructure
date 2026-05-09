@@ -1,0 +1,68 @@
+# NetworkPolicy pour media-service (preprod).
+# Ingress : nginx-ingress.
+# Egress  : postgres, redis, minio (9000), auth-service (JWKS).
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: media-service-network-policy
+  namespace: whispr-preprod
+spec:
+  podSelector:
+    matchLabels:
+      app: media-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Trafic depuis nginx-ingress
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3012
+          protocol: TCP
+    # gRPC interne (ex: messaging-service demande une URL presignee)
+    - from:
+        - podSelector: {}
+      ports:
+        - port: 50012
+          protocol: TCP
+        - port: 3012
+          protocol: TCP
+  egress:
+    # PostgreSQL
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+    # MinIO (S3 interne) - port API S3 et port console
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: minio
+      ports:
+        - port: 9000
+          protocol: TCP
+        - port: 9001
+          protocol: TCP
+    # auth-service (JWKS pour validation JWT)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP
