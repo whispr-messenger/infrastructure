@@ -31,20 +31,20 @@ spec:
                 name: messaging-service-env
           startupProbe:
             httpGet:
-              path: /messaging/api/v1/live
+              path: /messaging/api/v1/health/live
               port: 4010
             failureThreshold: 15
             periodSeconds: 5
           readinessProbe:
             httpGet:
-              path: /messaging/api/v1/ready
+              path: /messaging/api/v1/health/ready
               port: 4010
             initialDelaySeconds: 20
             periodSeconds: 10
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /messaging/api/v1/live
+              path: /messaging/api/v1/health/live
               port: 4010
             initialDelaySeconds: 45
             periodSeconds: 30
