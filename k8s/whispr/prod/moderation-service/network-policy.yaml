@@ -1,0 +1,63 @@
+# NetworkPolicy pour moderation-service (prod).
+# Ingress : nginx-ingress (API moderation admin) + user-service / messaging-service (signalements).
+# Egress  : postgres (sanctions, appeals), user-service (lookup profils), auth-service (JWKS).
+# Note    : moderation-service est Python, pas de Redis dans les env observes.
+#           En prod, postgres est in-namespace whispr-prod.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: moderation-service-network-policy
+  namespace: whispr-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: moderation-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # nginx-ingress (API moderation admin)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 8000
+          protocol: TCP
+    # user-service et messaging-service peuvent soumettre des signalements
+    - from:
+        - podSelector:
+            matchLabels:
+              app: user-service
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+      ports:
+        - port: 8000
+          protocol: TCP
+  egress:
+    # PostgreSQL (in-namespace whispr-prod) - sanctions, appeals, classifier logs
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # user-service (lookup profils pour review)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: user-service
+      ports:
+        - port: 3011
+          protocol: TCP
+    # auth-service (JWKS endpoint pour verify JWT)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP

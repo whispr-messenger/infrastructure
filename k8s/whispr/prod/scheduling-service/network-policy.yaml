@@ -1,0 +1,75 @@
+# NetworkPolicy pour scheduling-service (prod).
+# Ingress : nginx-ingress (API programmation de messages) + gRPC interne.
+# Egress  : postgres, redis, auth-service (JWKS), messaging-service (envoi
+#           programme), user-service (lookup destinataires).
+# Note    : en prod, postgres et redis sont in-namespace whispr-prod, on cible
+#           par podSelector au lieu de namespaceSelector.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: scheduling-service-network-policy
+  namespace: whispr-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: scheduling-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # nginx-ingress
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3013
+          protocol: TCP
+    # gRPC interne
+    - from:
+        - podSelector: {}
+      ports:
+        - port: 50013
+          protocol: TCP
+  egress:
+    # PostgreSQL (in-namespace whispr-prod)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis (in-namespace whispr-prod) - jobs BullMQ / queues
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+    # auth-service (JWKS pour valider le JWT du createur)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP
+    # messaging-service (poster le message programme a l'echeance)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: messaging-service
+      ports:
+        - port: 4010
+          protocol: TCP
+    # user-service (lookup destinataires)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: user-service
+      ports:
+        - port: 3011
+          protocol: TCP
