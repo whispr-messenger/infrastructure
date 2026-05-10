@@ -32,6 +32,11 @@ spec:
           env:
             - name: DB_SYNCHRONIZE
               value: "false"
+            - name: INTERNAL_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-internal-api-token
+                  key: INTERNAL_API_TOKEN
           readinessProbe:
             httpGet:
               path: /user/v1/health/ready
