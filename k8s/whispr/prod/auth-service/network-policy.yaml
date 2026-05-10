@@ -2,10 +2,13 @@
 # Ingress : nginx-ingress (trafic externe) + tous les services qui fetche le
 #           JWKS pour valider les JWT (user, media, scheduling, messaging,
 #           moderation, notification).
-# Egress  : postgres (5432), redis (6379), notification-service (4011 gRPC).
+# Egress  : postgres (5432), redis (6379), notification-service (4011 gRPC),
+#           Twilio API (HTTPS 443 externe pour envoi SMS OTP en prod reelle).
 # Note    : en prod, postgres et redis sont dans le meme namespace whispr-prod
 #           (cf infra/postgres.yaml et infra/redis.yaml), donc on cible par
 #           podSelector au lieu de namespaceSelector comme en preprod.
+#           Twilio egress non present en preprod car TWILIO_AUTH_TOKEN y est
+#           un mock, donc le SDK ne tente pas la connexion sortante.
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -83,4 +86,19 @@ spec:
         - port: 4011
           protocol: TCP
         - port: 40011
+          protocol: TCP
+    # Twilio API (envoi OTP par SMS). Endpoint HTTPS externe api.twilio.com,
+    # pas de plage IP fixe documentee donc on autorise HTTPS sortant general
+    # en excluant les ranges RFC1918 (trafic interne deja regle par les rules
+    # specifiques ci-dessus). Sans cet egress, le health check Twilio fail et
+    # auth-service reste 0/1 Ready, ce qui casse tous les fetch JWKS aval.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - port: 443
           protocol: TCP
