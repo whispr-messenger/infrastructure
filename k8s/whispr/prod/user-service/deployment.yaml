@@ -37,6 +37,8 @@ spec:
                 secretKeyRef:
                   name: shared-internal-api-token
                   key: INTERNAL_API_TOKEN
+            - name: MESSAGING_SERVICE_URL
+              value: "http://messaging-service.whispr-prod.svc.cluster.local:4010"
           readinessProbe:
             httpGet:
               path: /user/v1/health/ready
