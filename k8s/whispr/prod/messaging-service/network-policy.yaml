@@ -1,0 +1,85 @@
+# NetworkPolicy pour messaging-service (prod).
+# Ingress : nginx-ingress (HTTP + WebSocket Phoenix), scheduling-service.
+# Egress  : postgres, redis, user-service (contacts), notification-service
+#           (push), auth-service (JWKS), media-service (URL presignees).
+# Note    : en prod, postgres et redis sont in-namespace whispr-prod, on cible
+#           par podSelector au lieu de namespaceSelector.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: messaging-service-network-policy
+  namespace: whispr-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: messaging-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Trafic depuis nginx-ingress (HTTP + WebSocket Phoenix)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 4010
+          protocol: TCP
+    # scheduling-service peut poster des messages programmes
+    - from:
+        - podSelector:
+            matchLabels:
+              app: scheduling-service
+      ports:
+        - port: 4010
+          protocol: TCP
+    # gRPC interne
+    - from:
+        - podSelector: {}
+      ports:
+        - port: 40010
+          protocol: TCP
+  egress:
+    # PostgreSQL (in-namespace whispr-prod)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis (in-namespace whispr-prod) - pub/sub Phoenix PubSub + cache
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+    # user-service (check_users_are_contacts, profils)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: user-service
+      ports:
+        - port: 3011
+          protocol: TCP
+    # notification-service (push notifications nouveaux messages)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: notification-service
+      ports:
+        - port: 4011
+          protocol: TCP
+        - port: 40011
+          protocol: TCP
+    # auth-service (JWKS endpoint pour verify JWT)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP

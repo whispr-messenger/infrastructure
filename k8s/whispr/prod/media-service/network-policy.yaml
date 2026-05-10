@@ -1,0 +1,71 @@
+# NetworkPolicy pour media-service (prod).
+# Ingress : nginx-ingress + appels internes gRPC depuis tous services
+#           (ex: messaging-service demande une URL presignee).
+# Egress  : postgres, redis, minio (9000 + 9001), auth-service (JWKS).
+# Note    : en prod, postgres, redis et minio sont in-namespace whispr-prod,
+#           on cible par podSelector au lieu de namespaceSelector.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: media-service-network-policy
+  namespace: whispr-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: media-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Trafic depuis nginx-ingress
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3012
+          protocol: TCP
+    # gRPC interne (ex: messaging-service demande une URL presignee)
+    - from:
+        - podSelector: {}
+      ports:
+        - port: 50012
+          protocol: TCP
+        - port: 3012
+          protocol: TCP
+  egress:
+    # PostgreSQL (in-namespace whispr-prod)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgresql
+      ports:
+        - port: 5432
+          protocol: TCP
+    # Redis (in-namespace whispr-prod)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - port: 6379
+          protocol: TCP
+    # MinIO (S3 interne) - port API S3 et port console (in-namespace whispr-prod)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: minio
+      ports:
+        - port: 9000
+          protocol: TCP
+        - port: 9001
+          protocol: TCP
+    # auth-service (JWKS pour validation JWT)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: auth-service
+      ports:
+        - port: 3010
+          protocol: TCP
