@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: scheduling-service
-          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-dd41ddc
+          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-7a26c08
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
