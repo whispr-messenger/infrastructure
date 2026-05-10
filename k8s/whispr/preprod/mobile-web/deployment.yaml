@@ -17,7 +17,7 @@ spec:
     spec:
       automountServiceAccountToken: false
       containers:
-        - image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-6fb51fa
+        - image: ghcr.io/whispr-messenger/mobile-app/mobile-web:sha-22d0578
           imagePullPolicy: Always
           name: mobile-web
           env:
