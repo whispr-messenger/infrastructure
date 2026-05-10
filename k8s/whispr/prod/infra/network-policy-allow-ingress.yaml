@@ -1,0 +1,21 @@
+# NetworkPolicy d'ingress pour les pods infra (postgresql, redis, minio) dans whispr-prod.
+# default-deny-all bloque tout, et les NPs par service ont bien un egress vers postgres/redis/minio,
+# mais les pods infra eux-memes n'avaient aucune regle d'ingress -> ECONNREFUSED au boot des backends.
+# Cette regle autorise l'ingress depuis tous les pods de la meme namespace whispr-prod.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: infra-services-allow-ingress
+  namespace: whispr-prod
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values: [postgresql, redis, minio]
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector: {}
