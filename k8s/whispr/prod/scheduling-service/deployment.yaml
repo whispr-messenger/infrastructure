@@ -35,6 +35,10 @@ spec:
                 secretKeyRef:
                   name: shared-internal-api-token
                   key: INTERNAL_API_TOKEN
+            # Run TypeORM migrations at boot so the scheduled_messages chain
+            # creates its tables on first deploy of the registration fix.
+            - name: DB_MIGRATIONS_RUN
+              value: "true"
           readinessProbe:
             httpGet:
               path: /health/ready
