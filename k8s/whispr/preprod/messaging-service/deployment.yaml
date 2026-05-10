@@ -17,21 +17,9 @@ spec:
       labels:
         app: messaging-service
     spec:
-      automountServiceAccountToken: false
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: messaging-service
-          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-7527288
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop: [ALL]
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-7ee4e68
           ports:
             - name: http
               containerPort: 4010
@@ -61,29 +49,3 @@ spec:
             limits:
               memory: 512Mi
               cpu: 500m
-          # WHISPR-1329 : probes manquants - ajout des 3 pour éviter le trafic
-          # vers un pod non prêt et détecter les deadlocks runtime Elixir/Phoenix.
-          # paths /live et /ready exposés à la racine par WhisprMessagingWeb.Router
-          # (le scope /messaging/api/v1/health/* existe aussi mais probes preferent root).
-          startupProbe:
-            httpGet:
-              path: /live
-              port: 4010
-            failureThreshold: 30
-            periodSeconds: 2
-          livenessProbe:
-            httpGet:
-              path: /live
-              port: 4010
-            initialDelaySeconds: 30
-            periodSeconds: 20
-            timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /ready
-              port: 4010
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3

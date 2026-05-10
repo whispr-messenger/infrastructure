@@ -19,7 +19,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: messaging-service
-          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-3ce6b5f
+          image: ghcr.io/whispr-messenger/messaging-service/messaging-service:sha-7ee4e68
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
