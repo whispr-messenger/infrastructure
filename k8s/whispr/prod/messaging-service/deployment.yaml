@@ -28,6 +28,12 @@ spec:
           envFrom:
             - secretRef:
                 name: messaging-service-env
+          env:
+            - name: INTERNAL_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: shared-internal-api-token
+                  key: INTERNAL_API_TOKEN
           startupProbe:
             httpGet:
               path: /messaging/api/v1/live
