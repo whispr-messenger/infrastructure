@@ -1,0 +1,29 @@
+# NetworkPolicy pour mobile-web (prod).
+# mobile-web est un conteneur de fichiers statiques Expo Web (PWA).
+# Il ne fait aucun appel sortant cluster-interne : le navigateur client
+# appelle directement l'API via nginx-ingress.
+# Ingress : uniquement nginx-ingress.
+# Egress  : aucun (pas de backend appele depuis le pod).
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mobile-web-network-policy
+  namespace: whispr-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: mobile-web
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # nginx-ingress (serveur de fichiers statiques PWA)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 3020
+          protocol: TCP
+  egress: []
