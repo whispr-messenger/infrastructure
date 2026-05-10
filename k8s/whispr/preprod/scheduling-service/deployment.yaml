@@ -17,22 +17,9 @@ spec:
       labels:
         app: scheduling-service
     spec:
-      automountServiceAccountToken: false
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: scheduling-service
-          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-936d6e9
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop: [ALL]
-            runAsNonRoot: true
+          image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-ef6ede2
           ports:
             - name: http
               containerPort: 3013
@@ -52,44 +39,6 @@ spec:
             requests:
               memory: 128Mi
               cpu: 100m
-              ephemeralStorage: 128Mi
             limits:
               memory: 384Mi
               cpu: 500m
-              # borne le stockage ephemere pour que les jobs temporaires NestJS dans /tmp
-              # ne saturent pas le noeud en cas de crash en boucle
-              ephemeralStorage: 256Mi
-          # WHISPR-1065 : startupProbe evite le livenessProbe premature pendant
-          # le warm-up (Nest + TypeORM). failureThreshold * periodSeconds
-          # = 60 s max avant abandon du demarrage.
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 3013
-            failureThreshold: 30
-            periodSeconds: 2
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 3013
-            initialDelaySeconds: 30
-            periodSeconds: 20
-            timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 3013
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-          volumeMounts:
-            # readOnlyRootFilesystem=true : NestJS ecrit dans /tmp (jobs temp, caches
-            # runtime). Ce volume emptyDir donne un /tmp writable en RAM.
-            - name: tmp
-              mountPath: /tmp
-      volumes:
-        - name: tmp
-          emptyDir:
-            sizeLimit: 256Mi
