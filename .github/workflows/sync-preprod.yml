@@ -1,11 +1,7 @@
 name: Sync deploy/preprod with main
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'k8s/whispr/preprod/**'
-      - 'k8s/whispr/prod/**'
+  workflow_dispatch:
 
 jobs:
   sync:
