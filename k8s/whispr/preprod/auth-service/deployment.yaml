@@ -17,10 +17,22 @@ spec:
       labels:
         app: auth-service
     spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: auth-service
           image: ghcr.io/whispr-messenger/auth-service/auth-service:sha-54a8689
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
           ports:
             - name: http
               containerPort: 3010

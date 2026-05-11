@@ -1,0 +1,40 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: preprod-grafana
+  namespace: argocd-preprod
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+spec:
+  project: default
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+
+  sources:
+    - repoURL: https://github.com/whispr-messenger/infrastructure.git
+      targetRevision: deploy/preprod
+      path: helm/grafana
+      helm:
+        valueFiles:
+          - values.yaml
+
+    - repoURL: https://github.com/whispr-messenger/infrastructure.git
+      targetRevision: deploy/preprod
+      path: k8s/grafana
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

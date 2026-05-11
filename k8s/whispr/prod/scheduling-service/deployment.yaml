@@ -16,6 +16,7 @@ spec:
       labels:
         app: scheduling-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: scheduling-service
           image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-ef6ede2

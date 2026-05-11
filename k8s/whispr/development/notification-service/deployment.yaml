@@ -17,6 +17,7 @@ spec:
       labels:
         app: notification-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: whispr-notification-api
           image: notification-service:dev

@@ -1,0 +1,41 @@
+# WHISPR-1067 — Grafana Tempo en mode single-binary, stockage local.
+# Backend OpenTelemetry pour les traces ; single-node suffit pour le
+# cluster dev (89.156.15.147). Les traces ont une rétention courte.
+
+tempo:
+  retention: 24h
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+      wal:
+        path: /var/tempo/wal
+  reportingEnabled: false
+
+# Expose OTLP/gRPC et HTTP — le Collector (et des services pour le debug) peuvent
+# pusher directement dessus.
+tempo.receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+persistence:
+  enabled: true
+  size: 5Gi
+  accessModes:
+    - ReadWriteOnce
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+service:
+  type: ClusterIP

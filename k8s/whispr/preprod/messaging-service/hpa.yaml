@@ -1,0 +1,30 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: messaging-service-preprod
+  namespace: whispr-preprod
+  labels:
+    app: messaging-service
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: messaging-service
+  minReplicas: 1
+  # WHISPR-1066 : chemin critique — fanout des messages + WebSockets
+  # persistants. BEAM est efficace mais les pics de présence font
+  # monter la CPU quand des milliers de sockets s'abonnent en même temps.
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80

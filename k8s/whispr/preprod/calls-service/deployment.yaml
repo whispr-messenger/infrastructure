@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calls-service
+  namespace: whispr-preprod
+  labels:
+    app: calls-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calls-service
+  template:
+    metadata:
+      labels:
+        app: calls-service
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: ghcr-calls
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: calls-service
+          image: ghcr.io/whispr-messenger/calls-service:sha-cc6b218
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          ports:
+            - name: http
+              containerPort: 4012
+            - name: grpc
+              containerPort: 40012
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: calls-preprod-db
+                  key: url
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: calls-preprod-secrets
+                  key: secret_key_base
+            - name: PHX_HOST
+              value: calls-preprod.roadmvn.com
+            - name: PHX_SERVER
+              value: "true"
+            - name: PORT
+              value: "4012"
+            - name: GRPC_PORT
+              value: "40012"
+            - name: LOG_LEVEL
+              value: info
+            - name: POOL_SIZE
+              value: "10"
+            # runtime.exs prefers REDIS_URL (includes the default-ACL
+            # password for the shared Bitnami Redis); REDIS_HOST/REDIS_PORT
+            # fallback is a no-auth dev default.
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: calls-preprod-secrets
+                  key: redis_url
+            - name: JWT_JWKS_URL
+              value: http://auth-service:3010/auth/.well-known/jwks.json
+            - name: LIVEKIT_API_URL
+              value: http://preprod-livekit-livekit-server.whispr-preprod:80
+            - name: LIVEKIT_PUBLIC_URL
+              value: wss://livekit-preprod.roadmvn.com
+            - name: LIVEKIT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-keys
+                  key: api-key
+            - name: LIVEKIT_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-keys
+                  key: api-secret
+            - name: LIVEKIT_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-keys
+                  key: api-secret
+            - name: MESSAGING_GRPC_ENDPOINT
+              value: messaging-service:40010
+            - name: MESSAGING_HTTP_ENDPOINT
+              value: http://messaging-service:4010
+            - name: MESSAGING_SERVICE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: calls-preprod-secrets
+                  key: messaging_service_token
+                  optional: true
+            # WHISPR-1354 : whitelist des origins autorisees pour le WebSocket
+            # /calls/ws (signaling LiveKit). En prod, runtime.exs override
+            # check_origin pour appeler ws_check_origin/1 qui lit cette var.
+            # Si la var est absente/vide/wildcard, le boot raise (fail-closed).
+            - name: CORS_ALLOWED_ORIGINS
+              value: "https://whispr-preprod.roadmvn.com,https://preprod-whispr-api.roadmvn.com,https://whispr-api.roadmvn.com"
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: 1000m
+          # WHISPR-1065 : startupProbe pour couvrir la bootstrap LiveKit/Ecto
+          # avant que le livenessProbe ne tape.
+          startupProbe:
+            httpGet:
+              path: /health/ready
+              port: 4012
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 4012
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 4012
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3

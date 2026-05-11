@@ -16,6 +16,7 @@ spec:
       labels:
         app: media-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: media-service
           image: ghcr.io/whispr-messenger/media-service/media-service:sha-4434e99

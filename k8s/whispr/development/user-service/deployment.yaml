@@ -17,6 +17,7 @@ spec:
       labels:
         app: user-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: whispr-user-api
           image: user-service:latest
@@ -73,6 +74,7 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1000m"
+              ephemeral-storage: 1Gi
           livenessProbe:
             httpGet:
               path: /user/v1/health/live

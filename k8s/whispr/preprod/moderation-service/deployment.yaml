@@ -18,10 +18,23 @@ spec:
       labels:
         app: moderation-service
     spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: moderation-service
-          image: ghcr.io/whispr-messenger/moderation-service:sha-7e4116b
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/whispr-messenger/moderation-service:preprod
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+            runAsNonRoot: true
           ports:
             - name: http
               containerPort: 8000
@@ -30,31 +43,54 @@ spec:
                 name: moderation-service-env
             - configMapRef:
                 name: moderation-config
+          env:
+            - name: MOD_BLOCK_THRESHOLD
+              value: "0.6"
+            - name: MOD_MAX_UPLOAD_MB
+              value: "10"
+            - name: MOD_RATE_LIMIT
+              value: "30/minute"
+          # WHISPR-1065 : startupProbe couvre le chargement du modele (plusieurs
+          # dizaines de secondes au cold start) avant d'activer le livenessProbe.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            failureThreshold: 60
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health
               port: 8000
             initialDelaySeconds: 20
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             requests:
               memory: 512Mi
               cpu: 250m
+              ephemeralStorage: 256Mi
             limits:
               memory: 1Gi
               cpu: 500m
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: moderation-service
-  namespace: whispr-preprod
-spec:
-  type: NodePort
-  selector:
-    app: moderation-service
-  ports:
-    - name: http
-      port: 8000
-      targetPort: 8000
-      nodePort: 30014
+              # borne le stockage ephemere pour que le model cache NudeNet dans /tmp
+              # ne sature pas le noeud en cas de chargement en boucle
+              ephemeralStorage: 512Mi
+          volumeMounts:
+            # readOnlyRootFilesystem=true : NudeNet ecrit son model cache dans /tmp.
+            # Ce volume emptyDir donne un /tmp writable sans monter le FS racine.
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 512Mi

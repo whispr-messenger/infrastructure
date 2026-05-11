@@ -17,6 +17,7 @@ spec:
       labels:
         app: media-service
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: whispr-media-api
           image: media-service:latest
@@ -83,6 +84,7 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1000m"
+              ephemeral-storage: 1Gi
           livenessProbe:
             httpGet:
               path: /media/v1/health/live

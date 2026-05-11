@@ -1,0 +1,77 @@
+# WHISPR-1069 : dump quotidien des bases Postgres vers MinIO.
+# Placé dans le namespace `postgresql` pour accéder directement au secret
+# `postgresql` (clé `postgres-password`) sans réplication cross-namespace.
+# Le pod monte un volume emptyDir, exécute pg_dumpall, compresse, puis
+# uploade via `mc` vers le bucket `whispr-backups/postgres/<date>.sql.gz`.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: postgresql
+  labels:
+    app: postgres-backup
+    managed-by: whispr-infrastructure
+spec:
+  # Tous les jours à 02:00 UTC — avant le job GDPR retention à 03:00 pour
+  # capturer un état antérieur à la purge.
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 3600
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: bitnami/postgresql:16
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: PGHOST
+                  value: postgresql.postgresql.svc.cluster.local
+                - name: PGPORT
+                  value: "5432"
+                - name: PGUSER
+                  value: postgres
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgresql
+                      key: postgres-password
+                - name: MC_HOST_minio
+                  valueFrom:
+                    secretKeyRef:
+                      name: minio-backup-credentials
+                      key: mc-host
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  set -o pipefail
+                  DATE=$(date -u +%Y-%m-%dT%H-%M-%SZ)
+                  FILE=/tmp/pg-dumpall-${DATE}.sql.gz
+                  echo "[backup] pg_dumpall -> ${FILE}"
+                  pg_dumpall --clean --if-exists | gzip -9 > "${FILE}"
+                  echo "[backup] uploading to minio/whispr-backups/postgres/"
+                  /opt/bitnami/postgresql/bin/postgres --version || true
+                  curl -fsSL https://dl.min.io/client/mc/release/linux-amd64/mc \
+                    -o /tmp/mc && chmod +x /tmp/mc
+                  /tmp/mc cp "${FILE}" "minio/whispr-backups/postgres/"
+                  echo "[backup] done"
+              resources:
+                requests:
+                  memory: 256Mi
+                  cpu: 100m
+                limits:
+                  memory: 1Gi
+                  cpu: 500m
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: tmp
+              emptyDir:
+                sizeLimit: 2Gi

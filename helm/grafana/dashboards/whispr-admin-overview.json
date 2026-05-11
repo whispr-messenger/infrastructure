@@ -1,0 +1,354 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "WHISPR-1064 — Vue consolidée pour les admins : santé des services critiques, latences API, modération (sanctions/appeals), erreurs. Complète cluster-overview / services-overview en se concentrant sur le domaine métier.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": true,
+      "tags": ["whispr"],
+      "title": "Autres dashboards Whispr",
+      "type": "dashboards"
+    }
+  ],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Santé plateforme",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Services Whispr disponibles (pod ready) dans le namespace whispr-preprod.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 1 },
+              { "color": "green", "value": 5 }
+            ]
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "count(kube_deployment_status_replicas_available{namespace=\"whispr-preprod\", deployment=~\"auth-service|user-service|messaging-service|notification-service|media-service|moderation-service|scheduling-service|calls-service\"} > 0)",
+          "refId": "A"
+        }
+      ],
+      "title": "Services up (sur 8)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Requêtes HTTP sur les routes admin au cours des 5 dernières minutes.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] },
+          "unit": "reqps"
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(istio_requests_total{destination_service_namespace=\"whispr-preprod\", request_path=~\"/admin/.*|.*/audit-logs.*|.*/sanctions.*|.*/appeals.*\"}[5m]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Trafic admin (req/s)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Taux d'erreur HTTP 5xx tous services confondus (denominator = tous statuts).",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "100 * sum(rate(istio_requests_total{destination_service_namespace=\"whispr-preprod\", response_code=~\"5..\"}[5m])) / clamp_min(sum(rate(istio_requests_total{destination_service_namespace=\"whispr-preprod\"}[5m])), 1)",
+          "refId": "A"
+        }
+      ],
+      "title": "Taux d'erreur 5xx (5 min)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Latence P95 globale sur toutes les routes Whispr (Istio).",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 500 },
+              { "color": "red", "value": 1500 }
+            ]
+          },
+          "unit": "ms"
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(istio_request_duration_milliseconds_bucket{destination_service_namespace=\"whispr-preprod\"}[5m])))",
+          "refId": "A"
+        }
+      ],
+      "title": "Latence API P95",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 10,
+      "title": "Latences par service (P50 / P95 / P99)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "showPoints": "never" },
+          "unit": "ms"
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 6 },
+      "id": 11,
+      "options": {
+        "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "calcs": ["mean", "max"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "histogram_quantile(0.95, sum by (destination_service_name, le) (rate(istio_request_duration_milliseconds_bucket{destination_service_namespace=\"whispr-preprod\"}[5m])))",
+          "legendFormat": "{{destination_service_name}} p95",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "histogram_quantile(0.99, sum by (destination_service_name, le) (rate(istio_request_duration_milliseconds_bucket{destination_service_namespace=\"whispr-preprod\"}[5m])))",
+          "legendFormat": "{{destination_service_name}} p99",
+          "refId": "B"
+        }
+      ],
+      "title": "Latence par service (P95 / P99)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 20,
+      "title": "Modération & abus",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Sanctions (POST /user/v1/sanctions) et liftings (PATCH .../lift) toutes les 15 minutes. Sert à repérer un pic de modération.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "bars", "lineWidth": 1, "fillOpacity": 60 },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
+      "id": 21,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "increase(istio_requests_total{destination_service_namespace=\"whispr-preprod\", destination_service_name=\"user-service\", request_path=~\".*/sanctions.*\", request_method=\"POST\", response_code=~\"2..\"}[15m])",
+          "legendFormat": "sanctions créées",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "increase(istio_requests_total{destination_service_namespace=\"whispr-preprod\", destination_service_name=\"user-service\", request_path=~\".*/sanctions.*/lift.*\", response_code=~\"2..\"}[15m])",
+          "legendFormat": "sanctions levées",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "increase(istio_requests_total{destination_service_namespace=\"whispr-preprod\", destination_service_name=\"user-service\", request_path=~\".*/appeals.*\", request_method=\"POST\", response_code=~\"2..\"}[15m])",
+          "legendFormat": "appeals soumis",
+          "refId": "C"
+        }
+      ],
+      "title": "Activité sanctions / appels (15 min)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Requêtes de signalement sur messaging-service (POST /api/messages/:id/report).",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": { "drawStyle": "line", "fillOpacity": 30, "lineWidth": 2 },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
+      "id": 22,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(istio_requests_total{destination_service_namespace=\"whispr-preprod\", destination_service_name=\"messaging-service\", request_path=~\".*/messages/.*/report.*\"}[5m]))",
+          "legendFormat": "reports msg / s",
+          "refId": "A"
+        }
+      ],
+      "title": "Signalements messages (taux)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "id": 30,
+      "title": "Adoption & usage",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Logins réussis (register + login 2xx) sur auth-service — proxy de l'activité utilisateurs quotidienne en attendant une metric MAU dédiée.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "continuous-BlPu" },
+          "custom": { "drawStyle": "line", "fillOpacity": 50, "lineWidth": 2 },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 24 },
+      "id": 31,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(istio_requests_total{destination_service_namespace=\"whispr-preprod\", destination_service_name=\"auth-service\", request_path=~\".*/(login|register)$\", response_code=~\"2..\"}[5m]))",
+          "legendFormat": "login+register réussis /s",
+          "refId": "A"
+        }
+      ],
+      "title": "Authentifications réussies (proxy usage quotidien)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "Messages envoyés (POST /api/conversations/:id/messages sur messaging-service).",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "continuous-GrYlRd" },
+          "custom": { "drawStyle": "line", "fillOpacity": 50, "lineWidth": 2 },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 24 },
+      "id": 32,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(istio_requests_total{destination_service_namespace=\"whispr-preprod\", destination_service_name=\"messaging-service\", request_path=~\".*/conversations/.*/messages\", request_method=\"POST\", response_code=~\"2..\"}[5m]))",
+          "legendFormat": "messages / s",
+          "refId": "A"
+        }
+      ],
+      "title": "Messages envoyés (taux)",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["whispr", "admin"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {
+    "refresh_intervals": ["10s", "30s", "1m", "5m", "15m", "1h"]
+  },
+  "timezone": "",
+  "title": "Whispr — Admin Overview",
+  "uid": "whispr-admin-overview",
+  "version": 1,
+  "weekStart": ""
+}
