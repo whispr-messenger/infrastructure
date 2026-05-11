@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: media-service
-          image: ghcr.io/whispr-messenger/media-service/media-service:sha-4434e99
+          image: ghcr.io/whispr-messenger/media-service/media-service:sha-023fc86
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -67,3 +67,7 @@ spec:
     - name: grpc
       port: 50012
       targetPort: 50012
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/whispr-messenger/media-service/media-service:sha-023fc86
