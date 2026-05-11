@@ -16,12 +16,12 @@ controller:
 repoServer:
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 1
 
 server:
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 1
   service:
     type: ClusterIP
   metrics:
@@ -30,7 +30,7 @@ server:
     enabled: false
 
 applicationSet:
-  replicas: 2
+  replicas: 1
 
 crds:
   install: true
