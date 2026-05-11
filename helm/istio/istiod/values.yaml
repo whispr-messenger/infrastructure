@@ -1,3 +1,17 @@
+# Global mesh-wide configuration (applied to every injected sidecar proxy)
+global:
+  proxy:
+    # Sidecar proxy resource bounds.
+    # Defaults shipped by upstream istiod (100m / 2Gi limits) are oversized for
+    # our workloads and accumulate quickly across the mesh; cap them.
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
 # Pilot configuration --> ex name of istiod
 pilot:
   # Resources
