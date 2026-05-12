@@ -38,6 +38,10 @@ spec:
                   key: INTERNAL_API_TOKEN
             - name: MESSAGING_SERVICE_URL
               value: "http://messaging-service.whispr-prod.svc.cluster.local:4010"
+            - name: JWT_ISSUER
+              value: "https://auth.whispr.roadmvn.com"
+            - name: JWT_AUDIENCE
+              value: "whispr-api"
           readinessProbe:
             httpGet:
               path: /user/v1/health/ready
