@@ -27,7 +27,7 @@ spec:
               containerPort: 50010
           env:
             - name: JWT_ISSUER
-              value: "https://auth.whispr.epitech.beer"
+              value: "https://auth.whispr.roadmvn.com"
             - name: JWT_AUDIENCE
               value: "whispr-api"
           envFrom:
