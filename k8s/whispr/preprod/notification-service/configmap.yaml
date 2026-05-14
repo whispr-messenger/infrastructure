@@ -8,6 +8,10 @@ data:
   APNS_KEY_ID: ""
   APNS_TEAM_ID: ""
   APNS_MODE: "dev"
-  # FCM_PROJECT_ID : remplacer par le project ID Firebase exact (visible dans la console Firebase > Paramètres du projet)
-  FCM_PROJECT_ID: "whispr-messenger"
+  # FCM_PROJECT_ID : project Firebase exact (visible dans la console Firebase > Paramètres du projet).
+  # Doit matcher le project_id du service-account JSON injecté via le secret
+  # `notification-fcm-keyfile` (mounté à FCM_JSON_KEYFILE) ET le project_id du
+  # google-services.json côté mobile-app, sinon FCM répond sender_id_mismatch
+  # et le device est soft-deleted dès la 1re push.
+  FCM_PROJECT_ID: "whispr-perso-test"
   FCM_JSON_KEYFILE: "/etc/fcm/keyfile.json"
