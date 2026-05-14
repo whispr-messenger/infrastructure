@@ -10,5 +10,5 @@ data:
   APNS_MODE: "dev"
   APNS_DEFAULT_TOPIC: "com.anonymous.Whispr-Frontend"
   # FCM_PROJECT_ID : remplacer par le project ID Firebase exact (visible dans la console Firebase > Paramètres du projet)
-  FCM_PROJECT_ID: "whispr-messenger"
+  FCM_PROJECT_ID: "whispr-perso-test"
   FCM_JSON_KEYFILE: "/etc/fcm/keyfile.json"
