@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/cors-allow-credentials: 'true'
+    nginx.ingress.kubernetes.io/cors-allow-headers: Authorization, Content-Type, Accept,
+      Origin, X-Requested-With, X-Device-Type
+    nginx.ingress.kubernetes.io/cors-allow-methods: GET, POST, PUT, PATCH, DELETE,
+      OPTIONS
+    nginx.ingress.kubernetes.io/cors-allow-origin: https://whispr.roadmvn.com
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    nginx.ingress.kubernetes.io/proxy-http-version: '1.1'
+    nginx.ingress.kubernetes.io/proxy-set-headers: whispr-prod/custom-headers
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: whispr-prod-rewrite
+  namespace: whispr-prod
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: whispr-api.roadmvn.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: messaging-service
+            port:
+              number: 4010
+        path: /messaging(/|$)(.*)
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: notification-service
+            port:
+              number: 4011
+        path: /notification(/|$)(.*)
+        pathType: ImplementationSpecific
+      - backend:
+          service:
+            name: scheduling-service
+            port:
+              number: 3013
+        path: /scheduling(/|$)(.*)
+        pathType: ImplementationSpecific

@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: whispr-gateway
+  namespace: whispr-prod
+spec:
+  selector:
+    istio: gateway
+  servers:
+  - hosts:
+    - whispr-api.roadmvn.com
+    - whispr.roadmvn.com
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
