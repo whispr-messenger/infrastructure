@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: moderation-config
-  namespace: whispr
+  namespace: whispr-prod
 data:
   MOD_MUTE_THRESHOLD: "3"
   MOD_MUTE_DAYS: "7"

@@ -5,6 +5,8 @@ metadata:
   namespace: whispr-prod
   labels:
     app: notification-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   revisionHistoryLimit: 3
   replicas: 1
@@ -16,10 +18,23 @@ spec:
       labels:
         app: notification-service
     spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: notification-service
           image: ghcr.io/whispr-messenger/notification-service:sha-0d19e71
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
           ports:
             - name: http
               containerPort: 4011
@@ -28,6 +43,8 @@ spec:
           envFrom:
             - secretRef:
                 name: notification-service-env
+            - configMapRef:
+                name: notification-service-config
           startupProbe:
             httpGet:
               path: /api/v1/health
@@ -55,21 +72,15 @@ spec:
             limits:
               memory: 512Mi
               cpu: 500m
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: notification-service
-  namespace: whispr-prod
-spec:
-  type: NodePort
-  selector:
-    app: notification-service
-  ports:
-    - name: http
-      port: 4011
-      targetPort: 4011
-      nodePort: 30021
-    - name: grpc
-      port: 40011
-      targetPort: 40011
+          volumeMounts:
+            - name: apns-key
+              mountPath: /etc/apns
+              readOnly: true
+      volumes:
+        - name: apns-key
+          secret:
+            secretName: notification-service-apns
+            items:
+              - key: AuthKey.p8
+                path: AuthKey.p8
+            optional: true

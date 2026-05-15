@@ -5,6 +5,8 @@ metadata:
   namespace: whispr-prod
   labels:
     app: user-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   revisionHistoryLimit: 3
   replicas: 1
@@ -16,10 +18,23 @@ spec:
       labels:
         app: user-service
     spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: user-service
           image: ghcr.io/whispr-messenger/user-service/user-service:sha-01c4c8d
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
           ports:
             - name: http
               containerPort: 3011
@@ -28,33 +43,39 @@ spec:
           envFrom:
             - secretRef:
                 name: user-service-env
+            - configMapRef:
+                name: user-service-config
           env:
             - name: DB_SYNCHRONIZE
               value: "false"
+            - name: SEED_ADMIN_USER_IDS
+              value: "fab8817a-27a0-4537-89c1-be05f783150b,3378ee73-ce43-4145-b689-ba982d97721e"
             - name: INTERNAL_API_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: shared-internal-api-token
                   key: INTERNAL_API_TOKEN
-            - name: MESSAGING_SERVICE_URL
-              value: "http://messaging-service.whispr-prod.svc.cluster.local:4010"
-            - name: JWT_ISSUER
-              value: "https://auth.whispr.roadmvn.com"
-            - name: JWT_AUDIENCE
-              value: "whispr-api"
-          readinessProbe:
+          startupProbe:
             httpGet:
-              path: /user/v1/health/ready
+              path: /user/v1/health/live
               port: 3011
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            failureThreshold: 3
+            failureThreshold: 30
+            periodSeconds: 2
           livenessProbe:
             httpGet:
               path: /user/v1/health/live
               port: 3011
-            initialDelaySeconds: 45
-            periodSeconds: 30
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /user/v1/health/ready
+              port: 3011
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
             failureThreshold: 3
           resources:
             requests:
@@ -63,21 +84,3 @@ spec:
             limits:
               memory: 512Mi
               cpu: 500m
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: user-service
-  namespace: whispr-prod
-spec:
-  type: NodePort
-  selector:
-    app: user-service
-  ports:
-    - name: http
-      port: 3011
-      targetPort: 3011
-      nodePort: 30011
-    - name: grpc
-      port: 50011
-      targetPort: 50011
