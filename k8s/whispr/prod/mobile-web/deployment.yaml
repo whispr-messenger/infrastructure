@@ -68,6 +68,7 @@ spec:
             limits:
               memory: 128Mi
               cpu: 200m
+              ephemeral-storage: 128Mi
           volumeMounts:
             - name: nginx-cache
               mountPath: /var/cache/nginx
