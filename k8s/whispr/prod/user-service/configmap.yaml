@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-config
+  namespace: whispr-prod
+data:
+  JWT_JWKS_URL: "http://auth-service.whispr-prod.svc.cluster.local:3010/auth/.well-known/jwks.json"
+  JWT_ISSUER: "https://auth.whispr.roadmvn.com"
+  JWT_AUDIENCE: "whispr-api"
+  MESSAGING_SERVICE_URL: "http://messaging-service.whispr-prod.svc.cluster.local:4010"
+  MEDIA_SERVICE_URL: "https://whispr-api.roadmvn.com"
+  DB_LOGGING: "false"

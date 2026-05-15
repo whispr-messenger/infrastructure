@@ -5,6 +5,8 @@ metadata:
   namespace: whispr-prod
   labels:
     app: scheduling-service
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   revisionHistoryLimit: 3
   replicas: 1
@@ -16,10 +18,23 @@ spec:
       labels:
         app: scheduling-service
     spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: scheduling-service
           image: ghcr.io/whispr-messenger/scheduling-service/scheduling-service:sha-092f330
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
           ports:
             - name: http
               containerPort: 3013
@@ -29,28 +44,36 @@ spec:
             - secretRef:
                 name: scheduling-service-env
           env:
+            - name: JWT_JWKS_URL
+              value: http://auth-service:3010/auth/.well-known/jwks.json
             - name: INTERNAL_API_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: shared-internal-api-token
                   key: INTERNAL_API_TOKEN
-            # Run TypeORM migrations at boot so the scheduled_messages chain
-            # creates its tables on first deploy of the registration fix.
             - name: DB_MIGRATIONS_RUN
               value: "true"
-          readinessProbe:
+          startupProbe:
             httpGet:
-              path: /health/ready
+              path: /health
               port: 3013
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            failureThreshold: 3
+            failureThreshold: 30
+            periodSeconds: 2
           livenessProbe:
             httpGet:
-              path: /health/live
+              path: /health
               port: 3013
-            initialDelaySeconds: 45
-            periodSeconds: 30
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3013
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
             failureThreshold: 3
           resources:
             requests:
@@ -59,21 +82,3 @@ spec:
             limits:
               memory: 512Mi
               cpu: 500m
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: scheduling-service
-  namespace: whispr-prod
-spec:
-  type: NodePort
-  selector:
-    app: scheduling-service
-  ports:
-    - name: http
-      port: 3013
-      targetPort: 3013
-      nodePort: 30013
-    - name: grpc
-      port: 50013
-      targetPort: 50013
