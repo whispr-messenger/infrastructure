@@ -1,0 +1,65 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: whispr-routing
+  namespace: whispr-prod
+spec:
+  gateways:
+  - whispr-gateway
+  hosts:
+  - whispr-api.roadmvn.com
+  http:
+  - match:
+    - uri:
+        prefix: /auth
+    route:
+    - destination:
+        host: auth-service
+        port:
+          number: 3010
+  - match:
+    - uri:
+        prefix: /user
+    route:
+    - destination:
+        host: user-service
+        port:
+          number: 3011
+  - match:
+    - uri:
+        prefix: /media
+    route:
+    - destination:
+        host: media-service
+        port:
+          number: 3012
+  - match:
+    - uri:
+        prefix: /messaging
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: messaging-service
+        port:
+          number: 4010
+  - match:
+    - uri:
+        prefix: /notification
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: notification-service
+        port:
+          number: 4011
+  - match:
+    - uri:
+        prefix: /scheduling
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: scheduling-service
+        port:
+          number: 3013
