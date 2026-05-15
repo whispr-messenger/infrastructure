@@ -27,7 +27,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: user-service
-          image: ghcr.io/whispr-messenger/user-service/user-service:sha-01c4c8d
+          image: ghcr.io/whispr-messenger/user-service/user-service:sha-ce8d934
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
